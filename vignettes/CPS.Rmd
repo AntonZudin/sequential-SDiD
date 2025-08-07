@@ -87,7 +87,7 @@ for (m in 1:M) {
 }
 ```
 
-```{r fig.height=9, fig.width=9}
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_t_stat(
   t_stat_array = t_stat_sdid,
   lags = c(0, 4, 7),
@@ -98,7 +98,7 @@ plot_t_stat(
 )
 ```
 
-```{r fig.height=9, fig.width=9}
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_t_stat(
   t_stat_array = t_stat_did,
   lags = c(0, 4, 7),
@@ -121,6 +121,6 @@ create_tables(
 )
 ```
 
-```{r fig.height=9, fig.width=9}
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_cohorts(cohort_array, TRUE, 40, FALSE)
 ```

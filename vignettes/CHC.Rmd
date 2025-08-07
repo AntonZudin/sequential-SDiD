@@ -30,7 +30,6 @@ set.seed(42)
 
 ```{r}
 data(CHC)
-#CHC <- read.csv("data/CHC.csv")
 panel <- to_matrices(CHC,
   unit = 1, time = 3, outcome = 2,
   treatment = 4, contr_covs = c(5), treat_covs = c(),
@@ -51,18 +50,87 @@ est <- sequential_estimator(panel_avg, "cohort",
                             s2 = s2, "both")
 ```
 
-```{r}
-library(bench)
-mark(
-se <- vcov(est, panel, 200, return_tau_b = TRUE)
-)
-```
-
-```{r fig.height=9, fig.width=16}
+```{r, fig.retina = 3, fig.width=16, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid)
 ```
 
 # Simulation
+## 80 \% signal: no interactive FE
+```{r}
+params <- estimate_dgp_chc(
+  panel = panel, signal_share = 0.8,
+  scale = 4, rank = 5
+)
+panel_sim <- list(
+  Y = params$L,
+  W = params$W,
+  X = params$X,
+  never_treat = "2500"
+)
+```
+
+```{r}
+M <- 1000
+W_avg <- prepare_matrices(panel)$W_avg
+tau_array_sdid <- array(dim = c(max(rowSums(W_avg)), M))
+tau_array_did <- array(dim = c(max(rowSums(W_avg)), M))
+t_stat_sdid <- array(dim = c(max(rowSums(W_avg)), M))
+t_stat_did <- array(dim = c(max(rowSums(W_avg)), M))
+
+for (m in 1:M) {
+  Y <- simulate_dgp_chc(params)$Y
+  panel_b <- panel_sim
+  panel_b$Y <- Y
+  s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
+  #s2 <- params$sigma_2
+  panel_avg <- prepare_matrices(panel_b, "cohort", boot = TRUE)
+  panel_avg$W_avg <- W_avg
+
+  est <- sequential_estimator(panel_avg, "cohort",
+                              s2 = s2, "both")
+  se <- vcov(est, panel_b, 100)
+  tau_array_sdid[, m] <- est$tau_sdid
+  tau_array_did[, m] <- est$tau_did
+  t_stat_sdid[, m] <- est$tau_sdid / se$se_sdid
+  t_stat_did[, m] <- est$tau_did / se$se_did
+}
+```
+
+```{r}
+create_tables(
+  tau_array_sdid,
+  tau_array_did,
+  t_stat_sdid,
+  t_stat_did,
+  "CHC",
+  0.8,
+  FALSE
+)
+```
+
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
+plot_t_stat(
+  t_stat_array = t_stat_sdid,
+  lags = c(0, 4, 7),
+  type = "sdid",
+  sim_name = "CHC",
+  signal_share = 0.8,
+  breaks = 50
+)
+```
+
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
+plot_t_stat(
+  t_stat_array = t_stat_did,
+  lags = c(0, 4, 7),
+  type = "did",
+  sim_name = "CHC",
+  signal_share = 0.8,
+  breaks = 50,
+)
+```
+
+
 ## 0 \% signal: no interactive FE
 ```{r}
 params <- estimate_dgp_chc(
@@ -78,7 +146,7 @@ panel_sim <- list(
 ```
 
 ```{r}
-M <- 100
+M <- 1000
 W_avg <- prepare_matrices(panel)$W_avg
 tau_array_sdid <- array(dim = c(max(rowSums(W_avg)), M))
 tau_array_did <- array(dim = c(max(rowSums(W_avg)), M))
@@ -89,8 +157,8 @@ for (m in 1:M) {
   Y <- simulate_dgp_chc(params)$Y
   panel_b <- panel_sim
   panel_b$Y <- Y
-  #s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
-  s2 <- params$sigma_2
+  s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
+  #s2 <- params$sigma_2
   panel_avg <- prepare_matrices(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
@@ -116,7 +184,7 @@ create_tables(
 )
 ```
 
-```{r fig.height=9, fig.width=9}
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_t_stat(
   t_stat_array = t_stat_sdid,
   lags = c(0, 4, 7),
@@ -127,7 +195,7 @@ plot_t_stat(
 )
 ```
 
-```{r}
+```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_t_stat(
   t_stat_array = t_stat_did,
   lags = c(0, 4, 7),
@@ -137,3 +205,4 @@ plot_t_stat(
   breaks = 50,
 )
 ```
+
