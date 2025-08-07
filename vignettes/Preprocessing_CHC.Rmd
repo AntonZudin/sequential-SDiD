@@ -1,0 +1,61 @@
+---
+title: "Preprocessing CHC"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Preprocessing_CHC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Load raw Community Health Centers dataset
+```{r}
+data(CHC_original)
+```
+
+
+
+## Create treatment indicator column
+```{r}
+chc_df["year"] <- format(chc_df$year, format = "%Y")
+# Assign adoption year to never-treated; The latest adoption year is 1980
+chc_df$chc_year_exp[is.na(chc_df$chc_year_exp)] <- 2500
+chc_df$W <- as.numeric(chc_df$chc_year_exp <= chc_df$year)
+```
+
+## Remove 3 most populous counties
+```{r}
+chc_df <- chc_df[(chc_df$stfips != 36) | (chc_df$cofips != 61), ]
+chc_df <- chc_df[(chc_df$stfips != 6) | (chc_df$cofips != 37), ]
+chc_df <- chc_df[(chc_df$stfips != 17) | (chc_df$cofips != 31), ]
+```
+
+## Drop rows having NA in either treatment indicator column or age-adjusted mortality rate
+```{r}
+chc_df <- chc_df[!is.na(chc_df$W) & !is.na(chc_df$amr), ]
+```
+
+## Create covariate with 5 distinct values based on share of urban dwellers in the county in 1960
+```{r}
+chc_df$Durb <- 25*round(chc_df$`_60pcturban` / 25)
+colnames(chc_df)[5] <- "adoption_date"
+```
+
+## Remove observations post-1988 to match the original research, which covered the period from 1959 to 1988
+```{r}
+chc_df$Durb <- factor(chc_df$Durb)
+chc_df <- chc_df[chc_df$year <= 1988, ]
+```
+
+## Save the preprocessed dataframe
+```{r}
+df_final <- subset(chc_df, select=c(fips, amr, year, W, Durb, popwt))
+colnames(df_final) <- c("county", "mort", "year", "CHC", "urb_share", "popwt")
+write.csv(df_final, "CHC.csv", row.names = FALSE)
+```

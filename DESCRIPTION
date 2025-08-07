@@ -1,0 +1,34 @@
+Package: seq.sdid
+Type: Package
+Title: Sequential Synthetic Difference-in-Difference Estimation
+Version: 0.0.1
+Authors@R: c(
+    person(given = "Dmitry",
+           family = "Arkhangelsky",
+           role = "aut"),
+    person(given = "Aleksei",
+           family = "Samkov",
+           role = "aut"),
+    person(given = "Anton",
+           family = "Zudin",
+           role = "cre",
+           email = "anton.zudin0@outlook.com")
+    )
+Description: Estimate treatment effect with staggered treatment adoption. 
+    The method uses an iterative imputation procedure on aggregated data,
+    where estimates for early-adopting cohorts are used to construct counterfactuals for later ones.
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
+Imports: 
+    Rcpp, fixest, mvtnorm, dplyr, xtable
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+License: MIT + file LICENSE

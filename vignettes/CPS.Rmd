@@ -1,0 +1,126 @@
+---
+title: "CPS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CPS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library("seq.sdid")
+library(xtable)
+#devtools::load_all()
+set.seed(42)
+```
+
+```{r}
+#CPS <- read.csv("data/CPS.csv")
+data(CPS)
+panel <- to_matrices(CPS, unit = 1, time = 2,
+                     treatment = 'min_wage', outcome = 'log_wage',
+                     never_treat = "2500")
+panel <- prepare_matrices(panel, "unit")
+```
+
+```{r}
+params <- estimate_dgp(
+  panel$Y_avg, last_col(panel$W),
+  4, TRUE, panel$never_treat
+)
+pi <- params$pi
+pi[1] <- as.numeric(sort(pi)[2])
+pi_scaled <- (pi - min(pi)) / (max(pi) - min(pi))
+# Increase the treatment probability
+pi_scaled  <- 0.35 + 0.65*pi_scaled
+params$pi <- pi_scaled
+panel_sim <- list(
+  Y = NULL,
+  W = NULL,
+  X = subset(panel$X, select = -adopt_date),
+  never_treat = "2500"
+)
+T <- ncol(panel$Y) - 1
+```
+
+```{r}
+library(progress)
+
+sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
+M <- 100
+max_treat_periods <- T - sim_setup$a1 + 1
+tau_array_sdid <- array(dim = c(max_treat_periods, M))
+tau_array_did <- array(dim = c(max_treat_periods, M))
+t_stat_sdid <- array(dim = c(max_treat_periods, M))
+t_stat_did <- array(dim = c(max_treat_periods, M))
+cohort_array <- array(dim = c(nrow(panel$Y), M))
+pb <- progress_bar$new(total = M, format = "[:bar] :percent :eta :elapsed")
+pb$tick(0)
+
+for (m in 1:M) {
+  sim <- simulate_dgp(params, sim_setup$N1, sim_setup$a1, TRUE)
+
+  panel_b <- panel_sim
+  panel_b$Y <- sim$Y; panel_b$W <- sim$W
+  #s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
+  s2 <- params$sigma_2
+  panel_avg <- prepare_matrices(panel_b, "unit", boot = FALSE)
+
+  est <- sequential_estimator(panel_avg, "unit",
+                              s2 = s2, "both")
+  se <- vcov(est, panel_b, 100)
+  max_lag <- length(est$tau_sdid)
+  tau_array_sdid[1:max_lag, m] <- est$tau_sdid
+  tau_array_did[1:max_lag, m] <- est$tau_did
+  t_stat_sdid[1:max_lag, m] <- est$tau_sdid / se$se_sdid
+  t_stat_did[1:max_lag, m] <- est$tau_did / se$se_did
+  cohort_array[, m] <- sim$cohort
+
+  pb$tick()
+}
+```
+
+```{r fig.height=9, fig.width=9}
+plot_t_stat(
+  t_stat_array = t_stat_sdid,
+  lags = c(0, 4, 7),
+  type = "sdid",
+  sim_name = "CPS",
+  signal_share = 0,
+  breaks = 50
+)
+```
+
+```{r fig.height=9, fig.width=9}
+plot_t_stat(
+  t_stat_array = t_stat_did,
+  lags = c(0, 4, 7),
+  type = "did",
+  sim_name = "CPS",
+  signal_share = 0,
+  breaks = 50
+)
+```
+
+```{r}
+create_tables(
+  tau_array_sdid,
+  tau_array_did,
+  t_stat_sdid,
+  t_stat_did,
+  "CPS",
+  0.0,
+  FALSE
+)
+```
+
+```{r fig.height=9, fig.width=9}
+plot_cohorts(cohort_array, TRUE, 40, FALSE)
+```
