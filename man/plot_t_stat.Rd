@@ -15,7 +15,7 @@ plot_t_stat(
   width = 9,
   height = 9,
   save_pdf = FALSE,
-  path = ""
+  path = NULL
 )
 }
 \arguments{

@@ -1,8 +1,8 @@
 ---
-title: "CPS"
+title: "Current Population Survey"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{CPS}
+  %\VignetteIndexEntry{Current Population Survey}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,15 +24,15 @@ set.seed(42)
 ```{r}
 #CPS <- read.csv("data/CPS.csv")
 data(CPS)
-panel <- to_matrices(CPS, unit = 1, time = 2,
+panel <- to_wide(CPS, unit = 1, time = 2,
                      treatment = 'min_wage', outcome = 'log_wage',
                      never_treat = "2500")
-panel <- prepare_matrices(panel, "unit")
+panel <- prepare_wide(panel, "unit")
 ```
 
 ```{r}
 params <- estimate_dgp(
-  panel$Y_avg, last_col(panel$W),
+  panel$Y, last_col(panel$W),
   4, TRUE, panel$never_treat
 )
 pi <- params$pi
@@ -47,22 +47,18 @@ panel_sim <- list(
   X = subset(panel$X, select = -adopt_date),
   never_treat = "2500"
 )
-T <- ncol(panel$Y) - 1
+T <- ncol(panel$W_avg)
 ```
 
 ```{r}
-library(progress)
-
 sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
-M <- 100
+M <- 10
 max_treat_periods <- T - sim_setup$a1 + 1
 tau_array_sdid <- array(dim = c(max_treat_periods, M))
 tau_array_did <- array(dim = c(max_treat_periods, M))
 t_stat_sdid <- array(dim = c(max_treat_periods, M))
 t_stat_did <- array(dim = c(max_treat_periods, M))
 cohort_array <- array(dim = c(nrow(panel$Y), M))
-pb <- progress_bar$new(total = M, format = "[:bar] :percent :eta :elapsed")
-pb$tick(0)
 
 for (m in 1:M) {
   sim <- simulate_dgp(params, sim_setup$N1, sim_setup$a1, TRUE)
@@ -71,7 +67,7 @@ for (m in 1:M) {
   panel_b$Y <- sim$Y; panel_b$W <- sim$W
   #s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
   s2 <- params$sigma_2
-  panel_avg <- prepare_matrices(panel_b, "unit", boot = FALSE)
+  panel_avg <- prepare_wide(panel_b, "unit", boot = FALSE)
 
   est <- sequential_estimator(panel_avg, "unit",
                               s2 = s2, "both")
@@ -82,8 +78,6 @@ for (m in 1:M) {
   t_stat_sdid[1:max_lag, m] <- est$tau_sdid / se$se_sdid
   t_stat_did[1:max_lag, m] <- est$tau_did / se$se_did
   cohort_array[, m] <- sim$cohort
-
-  pb$tick()
 }
 ```
 
@@ -94,7 +88,8 @@ plot_t_stat(
   type = "sdid",
   sim_name = "CPS",
   signal_share = 0,
-  breaks = 50
+  breaks = 50,
+  save_pdf = TRUE
 )
 ```
 
@@ -105,7 +100,8 @@ plot_t_stat(
   type = "did",
   sim_name = "CPS",
   signal_share = 0,
-  breaks = 50
+  breaks = 50,
+  save_pdf = TRUE
 )
 ```
 
@@ -117,10 +113,10 @@ create_tables(
   t_stat_did,
   "CPS",
   0.0,
-  FALSE
+  TRUE
 )
 ```
 
 ```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
-plot_cohorts(cohort_array, TRUE, 40, FALSE)
+plot_cohorts(cohort_array, TRUE, 40, TRUE)
 ```

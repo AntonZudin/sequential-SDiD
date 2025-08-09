@@ -19,5 +19,6 @@ tau_sdid(Y, n_j, s2, type = "sdid")
 \code{tau} : Numeric. The base estimate on the Y submatrix.
 }
 \description{
+The R implementation of \code{base_estimator} algorithm.
 The bottom right cell is the only cell being treated (W_it = 1).
 }

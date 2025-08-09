@@ -63,7 +63,7 @@ plot_t_stat <- function(
     width = 9,
     height = 9,
     save_pdf = FALSE,
-    path = ""
+    path = NULL
 ) {
   if (!type %in% c("sdid", "did")) {
     stop("The type should be either 'sdid' or 'did'.")
@@ -99,15 +99,15 @@ plot_t_stat <- function(
     )
     if (save_pdf) {
       pdf_name <- paste0(
-        "results/", sim_name, "/plots/t-statistic ", type, " distibution ",
+        "t-statistic ", type, " distibution ",
         lag_show," lag ", signal_char[2], ".pdf"
       )
-      if (length(path) > 0 & path[length(path)] != "/") {
-        full_path = paste0(path, "/", pdf_name)
-      } else {
-        full_path = paste0(path, pdf_name)
-      }
-      pdf(full_path, width = width, height = height)
+      #if (length(path) > 0 & path[length(path)] != "/") {
+      #  full_path = paste0(path, "/", pdf_name)
+      #} else {
+      #  full_path = paste0(path, pdf_name)
+      #}
+      pdf(pdf_name, width = width, height = height)
       hist(
         t_stat_array[lag_show + 1, ], breaks = breaks, probability = TRUE,
         xlab = "t-statistic",
@@ -162,7 +162,9 @@ create_tables <- function(
   )
   colnames(perf_table) <-  as.character(0:(length(rmse_did) - 1))
 
-  num_digits <- if (signal_share > 0.5) floor(log10(round(signal_share))) + 1 else 1
+  signal_perc <- signal_share * 100
+
+  num_digits <- if (signal_perc > 0.5) floor(log10(round(signal_perc))) + 1 else 1
   if (sim_name == "CHC") {
     signal_char <- c(
       paste0(", ", as.character(signal_share)[1:num_digits], " % signal CHC"),
@@ -177,13 +179,15 @@ create_tables <- function(
   if (save_tables) {
     print(
       xtable::xtable(perf_table, caption = paste0("RMSE and Bias table", signal_char[1])),
-      file = paste0("results/", sim_name, "/tables/RMSE and Bias table", signal_char[2], ".tex")
+      file = paste0(path, "RMSE and Bias table", signal_char[2], ".tex")
     )
   }
   print(
     xtable::xtable(perf_table, caption = paste0("RMSE and Bias table", signal_char[1]))
   )
 
+  print()
+  print()
   # Coverage table
   coverage_sdid <- apply(abs(t_stat_sdid) < qnorm(0.975), 1, mean)
   coverage_did <- apply(abs(t_stat_did) < qnorm(0.975), 1, mean)
@@ -196,7 +200,7 @@ create_tables <- function(
       xtable::xtable(cov_table, caption = paste0(
         "Coverage table of estimators", signal_char[1])
       ),
-      file = paste0("results/", sim_name, "/tables/Coverage table", signal_char[2], ".tex")
+      file = paste0(path, "Coverage table", signal_char[2], ".tex")
     )
   }
   print(xtable::xtable(
@@ -242,7 +246,7 @@ plot_cohorts <- function(
   )
   if (save_pdf) {
     pdf(
-      paste0("results/CPS/plots/", title_add, "ECDF of adoption dates.pdf"),
+      paste0(title_add, "ECDF of adoption dates.pdf"),
       width = 9, height = 9
     )
     plot(x, emp_cdf(x), type = "b", col = "blue", lwd = 2,

@@ -27,7 +27,7 @@ estimate_dgp <- function(
   N <- dim(Y)[1]
   T <- dim(Y)[2]
   # Convert Y to a matrix
-  if (class(Y) == "data.frame") {
+  if (any(class(Y) == "data.frame")) {
     if ("adopt_date" %in% colnames(Y)) Y <- subset(Y, select = -c(adopt_date))
     Y <- as.matrix(Y)
   }

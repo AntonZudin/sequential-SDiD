@@ -40,7 +40,7 @@ The function should contain the following arguments:
 \item{return_s2}{:        Bool. If TRUE, returns s2. If s2 is not passed (NULL), s2 is estimated and returned.}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            sequential_estimator
+\if{html}{\out{<div class="sourceCode">}}\preformatted{              sequential_estimator
 }\if{html}{\out{</div>}}
 }
 \description{

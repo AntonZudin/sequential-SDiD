@@ -1,3 +1,21 @@
+#' Concatenates the `base_string` with the numbers from 1 to `len`.
+#' @description
+#' Creates a character vector containing strings of the following type "{base_string}{i}",
+#' where `i` is a number between 1 and `len`.
+#' If `len` argument is not positive, a vector of zero length is returned.
+#' @param base_string : Character. The base character that is used in concatenation.
+#' @param len :         Integer. The length of the output vector.
+#'
+#' @return              Character vector.
+vec_paste0 <- function(base_string, len) {
+  if (len > 0) {
+    return(paste0(base_string, 1:len))
+  } else {
+    return(c())
+  }
+}
+
+
 # FIXME: There is an issue that the aggregate_Y sorts the data by `adopt_date` in the increasing order,
 #       so the correctness of the output depends on the right format of `adopt_date` column.
 # TODO: Add sorting by colSums(W), so the unit order is correct
@@ -12,22 +30,20 @@
 #'   - Y:  Dataframe. The dataframe has 'Group', 'popwt' and time columns. 'Group' column is concatenation of 'adopt_date' and covariate columns.
 #'   - N:  Numeric. The number of rows of the Y dataframe after aggregation.
 aggregate_Y <- function(Y, covs, time_cols) {
-
   group_vars <- c("adopt_date", covs)
   sum_cols <- c(time_cols, "popwt")
 
-  if (length(group_vars) == 1) {
-    group_factor <- Y[[group_vars[1]]]
-  } else {
-    group_factor <- interaction(Y[group_vars], sep = "_", drop = TRUE)
-  }
+  group_str <- do.call(paste, c(Y[group_vars], sep = "_"))
 
-  unique_groups <- levels(as.factor(group_factor))
+  group_factor <- factor(group_str, levels = unique(group_str))
+  unique_groups <- levels(group_factor)
 
   sum_data <- as.matrix(Y[sum_cols])
   aggregated_sums <- rowsum(sum_data, group_factor, na.rm = TRUE)
 
-  group_info <- Y[match(unique_groups, group_factor), group_vars, drop = FALSE]
+  # Get info about covariates and `adopt_date`
+  first_occurrence <- match(unique_groups, group_str)
+  group_info <- Y[first_occurrence, group_vars, drop = FALSE]
 
   Y_avg <- cbind(group_info, aggregated_sums)
   Y_avg$Group <- unique_groups
@@ -35,6 +51,7 @@ aggregate_Y <- function(Y, covs, time_cols) {
   if (length(covs) > 0) {
     Y_avg <- Y_avg[, !colnames(Y_avg) %in% covs, drop = FALSE]
   }
+
   N <- nrow(Y_avg)
   list(Y = Y_avg, N = N)
 }
@@ -60,7 +77,7 @@ svd_compact <- function(A) {
 }
 
 # TODO: Write that we specify covariates by passing the arguments
-# TODO: Write that if you want to avoid utilizing to_matrices function,
+# TODO: Write that if you want to avoid utilizing to_wide function,
 #       then you need to have "contr_cov_" and "treat_cov_"
 # TODO: ?Sort unsorted dataframe, so that later treated units are later
 
@@ -79,10 +96,10 @@ svd_compact <- function(A) {
 #'   - `W`:  Dataframe. This is a wide panel dataframe of treatment indicators with adoption date column being the first one.
 #'   - `X`:  Dataframe. This is a dataframe with auxiliary data like adoption date, population weights and covariates.
 #' @export
-to_matrices <- function(
+to_wide <- function(
     panel,
     unit = 1, time = 2, outcome = 3, treatment = 4, population = NULL,
-    contr_covs = c(), treat_covs = c(), never_treat = "2500"
+    contr_covs = c(), treat_covs = c(), never_treat = "2500", sort = TRUE
 ) {
   if (is.null(population)) {
     panel$popwt <- rep(1, nrow(panel))
@@ -98,7 +115,7 @@ to_matrices <- function(
     stop("Column identifiers should be either integer or column names in `panel`.")
   }
 
-  index.to.name <- function(x) {
+  index_to_name <- function(x) {
     new_names <- c()
     for (col in c(x)) {
       if (col %in% 1:ncol(panel)) {
@@ -114,13 +131,13 @@ to_matrices <- function(
     }
   }
 
-  unit <- index.to.name(unit)
-  time <- index.to.name(time)
-  outcome <- index.to.name(outcome)
-  treatment <- index.to.name(treatment)
-  population <- index.to.name(population)
-  contr_covs <- unlist(sapply(contr_covs, index.to.name))
-  treat_covs <- unlist(sapply(treat_covs, index.to.name))
+  unit <- index_to_name(unit)
+  time <- index_to_name(time)
+  outcome <- index_to_name(outcome)
+  treatment <- index_to_name(treatment)
+  population <- index_to_name(population)
+  contr_covs <- unlist(sapply(contr_covs, index_to_name))
+  treat_covs <- unlist(sapply(treat_covs, index_to_name))
 
   keep <- c(unit, time, outcome, treatment,
             population, contr_covs, treat_covs)
@@ -149,7 +166,9 @@ to_matrices <- function(
     stop("Input `panel` must be a balanced panel: it must have an observation for every unit at every time.")
   }
 
-  panel <- panel[order(panel[, unit], panel[, time]), ]
+  if (sort) {
+    panel <- panel[order(panel[, unit], panel[, time]), ]
+  }
   num.years <- length(unique(panel[, time]))
   num.units <- length(unique(panel[, unit]))
 
@@ -217,7 +236,7 @@ to_matrices <- function(
 #'   -`W_avg`:  Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stairlike structure with treated cells being in the bottom.
 #'   -`coh`:    Numeric vector. The N x 1 cohort weights vector (the number of units in cohorts or the cohort population).
 #' @export
-prepare_matrices <- function(
+prepare_wide <- function(
     panel,
     level = "cohort",
     boot = FALSE
@@ -247,22 +266,20 @@ prepare_matrices <- function(
   }
 
   if (level == "unit") {
-    if ("Y" %in% names(panel) && "adopt_date" %in% colnames(panel$Y)) {
-      panel$Y_avg <- as.matrix(subset(panel$Y, select = -adopt_date))
+    if ("Y_wt" %in% names(panel)) {
+      # Y_wt is utilized for Y_avg and coh
+      Y_wt <- panel$Y_wt
+      exclude_cols <- c("adopt_date", "popwt") # No covariates
+      time_cols <- colnames(Y_wt)[!(colnames(Y_wt) %in% exclude_cols)]
+      panel$Y_avg <- as.matrix(Y_wt[, time_cols])
+      panel$coh <- panel$Y_wt$popwt
       if (!boot) {
         panel$W_avg <- as.matrix(subset(panel$W, select = -adopt_date))
+        panel$W <- NULL
       }
-    } else if ("Y" %in% names(panel)) {
-      panel$Y_avg <- panel$Y; if (!boot) panel$W_avg <- panel$W
-    }
-    panel$Y <- NULL; panel$W <- NULL
-    if ("Y_wt" %in% names(panel)) panel$coh <- panel$Y_wt$popwt
-    else panel$coh <- panel$X$popwt
-    return(panel)
-  }
-
-  if (level == "unit") {
-    if ("Y" %in% names(panel)) {
+      panel$Y_wt <- NULL
+    } else {
+      # Y and X are used for Y_avg and coh
       if ("adopt_date" %in% colnames(panel$Y)) {
         panel$Y_avg <- as.matrix(subset(panel$Y, select = -adopt_date))
         if (!boot) {
@@ -273,18 +290,7 @@ prepare_matrices <- function(
       }
       panel$coh <- panel$X$popwt
       panel$Y <- NULL; panel$W <- NULL
-    } else {
-      # Y_wt is utilized for Y_avg and coh
-      Y_wt <- panel$Y_wt
-      exclude_cols <- c("adopt_date", "popwt") # No covariates
-      time_cols <- colnames(Y_wt)[!(colnames(Y_wt) %in% exclude_cols)]
-      panel$Y_avg <- Y_wt[, time_cols]
-      panel$coh <- panel$Y_wt$popwt
-      if (!boot) {
-        panel$W_avg <- as.matrix(subset(panel$W, select = -adopt_date))
-      }
     }
-
     return(panel)
   }
 
@@ -298,7 +304,7 @@ prepare_matrices <- function(
     time_cols <- colnames(Y)[-1]
     T <- length(time_cols)
 
-    Y_wt <- merge(Y, X, by = c("row.names", "adopt_date"))
+    Y_wt <- merge(Y, X, by = c("row.names", "adopt_date"), sort = FALSE)
     row.names(Y_wt) <- Y_wt$`Row.names`
     Y_wt <- subset(Y_wt, select = -Row.names)
   } else {
@@ -324,15 +330,20 @@ prepare_matrices <- function(
                            time_cols)
   Y_avg_tr <- treat_agg$Y
   N1 <- treat_agg$N
-
-  Y_avg <- rbind(Y_avg_tr, Y_avg_c)
+  Y_avg <- rbind(Y_avg_c, Y_avg_tr)
   Y_avg[, time_cols] <- Y_avg[, time_cols] / Y_avg$popwt
   rownames(Y_avg) <- Y_avg$Group
+  coh <- Y_avg$popwt
+  ad_date <- Y_avg$adopt_date
+  Y_avg <- as.matrix(subset(Y_avg, select = -c(Group, popwt, adopt_date)))
+
+
   # TODO: Understand why we reverse everything
-  coh <- rev(Y_avg$popwt)
-  ad_date <- rev(Y_avg$adopt_date)
-  Y_avg <- subset(Y_avg, select = -c(Group, popwt, adopt_date))
-  Y_avg <- apply(Y_avg, 2, rev)
+
+  #coh <- rev(Y_avg$popwt)
+  #ad_date <- rev(Y_avg$adopt_date)
+  #Y_avg <- subset(Y_avg, select = -c(Group, popwt, adopt_date))
+  #Y_avg <- apply(Y_avg, 2, rev)
 
 
   if (!boot) {

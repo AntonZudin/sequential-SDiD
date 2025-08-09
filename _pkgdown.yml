@@ -1,0 +1,46 @@
+navbar:
+  type: default
+  left:
+  - icon: fa-home
+    href: index.html
+  - text: "CPS"
+    href: articles/CPS.html
+  - text: "CHC"
+    href: articles/CHC.html
+  - text: "Preprocessing CHC"
+    href: articles/Preprocessing_CHC.html
+  - text: "References"
+    href: reference/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/AntonZudin/sequential-sdid
+
+  reference:
+    - title: Estimators
+      contents:
+        - sequential_estimator
+        - estimation_unit
+        - estimation_cohort
+
+    - title: Summary methods
+      contents:
+        - synthdid_controls
+        - summary.synthdid_estimate
+        - print.synthdid_estimate
+
+    - title: Data preparation
+      contents:
+        - to_wide
+        - prepare_wide
+
+    - title: Plots and Tables
+      contents:
+      - plot_chc_effect
+      - create_tables
+      - plot_t_stat
+      - plot_cohorts
+
+    - title: Data sets
+      contents:
+        - CHC
+        - CPS

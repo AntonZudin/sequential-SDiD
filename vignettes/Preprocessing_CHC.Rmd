@@ -2,7 +2,7 @@
 title: "Preprocessing CHC"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Preprocessing_CHC}
+  %\VignetteIndexEntry{Preprocessing CHC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,11 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 ## Load raw Community Health Centers dataset
-```{r}
-data(CHC_original)
+```{r setup}
+data("CHC_original", package = "seq.sdid")
 ```
-
-
 
 ## Create treatment indicator column
 ```{r}

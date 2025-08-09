@@ -31,26 +31,9 @@ last_col = function(X) {
 }
 
 
-#' Concatenates the `base_string` with the numbers from 1 to `len`.
-#' @description
-#' Creates a character vector containing strings of the following type "{base_string}{i}",
-#' where `i` is a number between 1 and `len`.
-#' If `len` argument is not positive, a vector of zero length is returned.
-#' @param base_string : Character. The base character that is used in concatenation.
-#' @param len :         Integer. The length of the output vector.
-#'
-#' @return              Character vector.
-vec_paste0 <- function(base_string, len) {
-  if (len > 0) {
-    return(paste0(base_string, 1:len))
-  } else {
-    return(c())
-  }
-}
-
-
 #' Computes the base synthetic diff-in-diff or diff-in-diff estimate.
 #' @description
+#' The R implementation of `base_estimator` algorithm.
 #' The bottom right cell is the only cell being treated (W_it = 1).
 #' @param Y :    Numeric matrix. A submatrix of outcomes with one treated obs in the bottom right corner.
 #' @param n_j :  Numeric vector. The vector of cohort weights (the number of units in cohorts or the cohort population).
@@ -143,7 +126,7 @@ tau_sdid <- function(Y, n_j, s2, type = "sdid") {
 #' @param type :      Character. Type of the estimator should be `sdid` or `did`.
 #' @param N0 :        Integer. The number of control (never-treated) units.
 #'
-#' @return `tau_lag`: Numeric vector. The max_lag x 1 vector of treatment effects aggregated across units.
+#' @return `tau_hat`: Numeric matrix.  The N x T  matrix of raw (not aggregated on lag level) treatment effects of treatment effects.
 #'
 estimation_cohort <- function(Y_avg, W_avg, coh, s2, type, N0 = 1) {
   if (!(type %in% c('did', 'sdid'))) {
@@ -250,7 +233,7 @@ estimation_funcs <- list(
 #'   - `N0`:  Integer. The number of control (never-treated) units.
 #'   - `N`:   Integer. The total number of units.
 #'
-#' @return                 sequential_estimator
+#' @return                   sequential_estimator
 #' @export
 sequential_estimator <- function(
   panel_avg,

@@ -44,7 +44,7 @@ vcov.sequential_estimate <- function(
 
   both_est <- (type == "both")
   N <- dim(panel$Y)[1]
-  W_avg <- prepare_matrices(panel, level = level)$W_avg
+  W_avg <- prepare_wide(panel, level = level)$W_avg
 
   # TODO: Rename variables to make them more intuitive
   tau_lag_b <- array(dim = c(max(rowSums(W_avg[, -1])), B))
@@ -60,13 +60,13 @@ vcov.sequential_estimate <- function(
   panel$Y <- panel$X <- NULL
 
   for (b in 1:B) {
-    #browser()
     wts_g <- rexp(n = N, rate = 1)
     wts <- wts_g/sum(wts_g) * N
     panel_b <- panel
 
     panel_b$Y_wt$popwt <- panel_b$Y_wt$popwt * wts
-    panel_b_agg <- prepare_matrices(panel_b, level, TRUE)
+
+    panel_b_agg <- prepare_wide(panel_b, level, TRUE)
     panel_b_agg$W_avg <- W_avg
     # TODO: Should panel be replaced with more explicit Y, W and coh?
     estimate <- sequential_estimator(

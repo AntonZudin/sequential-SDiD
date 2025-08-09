@@ -20,7 +20,7 @@ estimation_cohort(Y_avg, W_avg, coh, s2, type, N0 = 1)
 \item{N0}{:        Integer. The number of control (never-treated) units.}
 }
 \value{
-\code{tau_lag}: Numeric vector. The max_lag x 1 vector of treatment effects aggregated across units.
+\code{tau_hat}: Numeric matrix.  The N x T  matrix of raw (not aggregated on lag level) treatment effects of treatment effects.
 }
 \description{
 The outcome variable is aggregated on cohort or covariate level.

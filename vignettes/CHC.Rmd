@@ -2,7 +2,7 @@
 title: "Community Health Centers"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{Community Health Centers}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -30,7 +30,7 @@ set.seed(42)
 
 ```{r}
 data(CHC)
-panel <- to_matrices(CHC,
+panel <- to_wide(CHC,
   unit = 1, time = 3, outcome = 2,
   treatment = 4, contr_covs = c(5), treat_covs = c(),
   population = 6
@@ -41,21 +41,26 @@ panel <- to_matrices(CHC,
 s2 <- estimate_s2(panel$Y, panel$W, panel$X$popwt, wls = FALSE)
 
 panel$X$popwt <- panel$X$popwt / 10000
-panel_avg <- prepare_matrices(panel)
+panel_avg <- prepare_wide(panel)
 #s2 <- 5000
 ```
+
 
 ```{r}
 est <- sequential_estimator(panel_avg, "cohort",
                             s2 = s2, "both")
 ```
 
+```{r}
+se <- vcov(est, panel, B = 1000, return_tau_b = TRUE)
+```
+
 ```{r, fig.retina = 3, fig.width=16, fig.height=9, out.height = "100%", out.width = "100%"}
-plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid)
+plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid, save_pdf = TRUE)
 ```
 
 # Simulation
-## 80 \% signal: no interactive FE
+## 80 \% signal: the standard deviation of interactive FE is 4 times than std of FE. 
 ```{r}
 params <- estimate_dgp_chc(
   panel = panel, signal_share = 0.8,
@@ -70,8 +75,8 @@ panel_sim <- list(
 ```
 
 ```{r}
-M <- 1000
-W_avg <- prepare_matrices(panel)$W_avg
+M <- 10
+W_avg <- prepare_wide(panel)$W_avg
 tau_array_sdid <- array(dim = c(max(rowSums(W_avg)), M))
 tau_array_did <- array(dim = c(max(rowSums(W_avg)), M))
 t_stat_sdid <- array(dim = c(max(rowSums(W_avg)), M))
@@ -83,7 +88,7 @@ for (m in 1:M) {
   panel_b$Y <- Y
   s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
   #s2 <- params$sigma_2
-  panel_avg <- prepare_matrices(panel_b, "cohort", boot = TRUE)
+  panel_avg <- prepare_wide(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
   est <- sequential_estimator(panel_avg, "cohort",
@@ -104,7 +109,7 @@ create_tables(
   t_stat_did,
   "CHC",
   0.8,
-  FALSE
+  TRUE
 )
 ```
 
@@ -115,7 +120,8 @@ plot_t_stat(
   type = "sdid",
   sim_name = "CHC",
   signal_share = 0.8,
-  breaks = 50
+  breaks = 50,
+  save_pdf = TRUE
 )
 ```
 
@@ -127,6 +133,7 @@ plot_t_stat(
   sim_name = "CHC",
   signal_share = 0.8,
   breaks = 50,
+  save_pdf = TRUE
 )
 ```
 
@@ -146,8 +153,8 @@ panel_sim <- list(
 ```
 
 ```{r}
-M <- 1000
-W_avg <- prepare_matrices(panel)$W_avg
+M <- 10
+W_avg <- prepare_wide(panel)$W_avg
 tau_array_sdid <- array(dim = c(max(rowSums(W_avg)), M))
 tau_array_did <- array(dim = c(max(rowSums(W_avg)), M))
 t_stat_sdid <- array(dim = c(max(rowSums(W_avg)), M))
@@ -159,7 +166,7 @@ for (m in 1:M) {
   panel_b$Y <- Y
   s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
   #s2 <- params$sigma_2
-  panel_avg <- prepare_matrices(panel_b, "cohort", boot = TRUE)
+  panel_avg <- prepare_wide(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
   est <- sequential_estimator(panel_avg, "cohort",
@@ -180,7 +187,7 @@ create_tables(
   t_stat_did,
   "CHC",
   0.0,
-  FALSE
+  TRUE
 )
 ```
 
@@ -191,7 +198,8 @@ plot_t_stat(
   type = "sdid",
   sim_name = "CHC",
   signal_share = 0,
-  breaks = 50
+  breaks = 50,
+  save_pdf = TRUE
 )
 ```
 
@@ -203,6 +211,7 @@ plot_t_stat(
   sim_name = "CHC",
   signal_share = 0,
   breaks = 50,
+  save_pdf = TRUE
 )
 ```
 
