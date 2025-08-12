@@ -1,0 +1,67 @@
+---
+output: github_document
+---
+
+# sequential-SDiD
+Sequential Synthetic Difference-in-Differences (sequential SDiD) estimator for event studies with staggered treatment adoption.
+
+This package estimates average treatment effect, particularly when the parallel trends assumption fails.
+
+
+## Installation
+
+The package can be installed from github using devtools.
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("AntonZudin/sequential-SDiD")
+```
+
+
+## Usage 
+```{r, setup}
+library(seq.sdid)
+data(CHC)
+```
+The package uses 2 functions to prepare the dataset . 
+
+### 1. `to_wide`
+
+* Converts panel from long to wide format.
+* Creates Y, W and X dataframes with adoption date column being the first one.
+
+
+### 2. `prepare_wide`
+
+* If the level is `cohort`, aggregates on the data on the cohort level.
+* If the level is `unit`, removes the adoption date column. 
+
+```{r}
+panel <- to_wide(CHC,
+  unit = 1, time = 3, outcome = 2,
+  treatment = 4, contr_covs = c(5), treat_covs = c(),
+  population = 6
+)
+
+panel$X$popwt <- panel$X$popwt / 10000
+
+panel_avg <- prepare_wide(panel, level = "cohort")
+```
+
+```{r}
+set.seed(42)
+s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
+est <- sequential_estimator(
+  panel_avg,
+  s2 = s2,
+  type = "sdid")
+est
+
+se <- vcov(est, panel)
+se
+```
+
+
+```{r, fig.retina=2}
+plot(est, se)
+```
+

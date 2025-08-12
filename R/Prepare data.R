@@ -359,7 +359,7 @@ prepare_wide <- function(
 
   return_panel <- list(
     Y_avg = Y_avg, W_avg = W_avg,
-    coh = coh
+    coh = coh, level = level
   )
 
   if (!("Y_wt" %in% names(panel))) return_panel$X <- X

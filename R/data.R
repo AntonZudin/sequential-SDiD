@@ -1,3 +1,25 @@
+#' California proposition 99
+#'
+#' @docType data
+#' @name CA_prop99
+#'
+#'
+#' @format A data frame with 1209 rows and 4 variables:
+#' \describe{
+#'   \item{State}{US state name, character string}
+#'   \item{Year}{Year, integer}
+#'   \item{PacksPerCapita}{per-capita cigarette consumption, numeric}
+#'   \item{treated}{the treatmed indicator 0: control, 1: treated, numeric}
+#' }
+#' @source Abadie, Alberto, Alexis Diamond, and Jens Hainmueller.
+#'  "Synthetic control methods for comparative case studies: Estimating the effect of California’s tobacco control program."
+#'   Journal of the American statistical Association 105, no. 490 (2010): 493-505.
+#'
+#' @usage data(CA_prop99)
+#'
+NULL
+
+
 #' CPS
 #'
 #' @docType data
@@ -18,7 +40,6 @@
 #' @usage data(CPS)
 #'
 NULL
-#"CPS"
 
 #' CHC
 #'
@@ -34,8 +55,10 @@ NULL
 #'   \item{urb_share}{Urban share: urban population percentage in 1960}
 #'   \item{popwt}{Population of the county in 1960}
 #' }
+#' @source Bailey, Martha J., and Andrew Goodman-Bacon.
+#'   "The War on Poverty's experiment in public medicine: Community health centers and the mortality of older Americans."
+#'    American Economic Review 105.3 (2015): 1067-1104.
 #'
 #' @usage data(CHC)
 #'
 NULL
-#"CHC"

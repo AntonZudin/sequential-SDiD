@@ -221,7 +221,7 @@ estimation_funcs <- list(
 #'   - `W_avg`: Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.
 #'   - `coh`:   Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
 #'   - `X`:     Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.
-#' @param level :            Character. The level should be `unit` or `cohort`.
+#' @param level :            Character or NULL. If NULL, the level is taken from panel_avg list. The level should be `unit` or `cohort`.
 #' @param s2 :               Numeric or NULL. The upper bound estimate of noise variance.
 #' @param type :             Character. Type of the estimator should be `sdid`, `did` or `both`.
 #' @param return_s2 :        Bool. If TRUE, returns s2. If s2 is not passed (NULL), s2 is estimated and returned.
@@ -237,11 +237,16 @@ estimation_funcs <- list(
 #' @export
 sequential_estimator <- function(
   panel_avg,
-  level,
+  level = NULL,
   s2 = NULL,
   type = "sdid",
   aggregate_effect = aggregate_inv_did_var
 ) {
+
+  if (is.null(level)){
+    level <- panel_avg$level
+  }
+
   if (!(level %in% c("cohort", "unit"))) {
     stop("The estimation level should be either 'cohort' or 'unit'.")
   }
@@ -285,6 +290,8 @@ sequential_estimator <- function(
   attr(estimate, "type") <- type
   attr(estimate, "level") <- level
   attr(estimate, "s2") <- s2
+  attr(estimate, "agg_func") <- aggregate_effect
+
   estimate
 }
 

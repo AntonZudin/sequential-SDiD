@@ -11,7 +11,7 @@
 #' @param type         Character or NULL. The type should be `did`, `sdid` or `both`.
 #' @param return_tau_b Bool. If TRUE, returns the bootstrap replications.
 #' @return             Numeric vector or List.
-#' @export
+#' @exportS3Method vcov sequential_estimate
 # TODO: Understand how to use ... in R to pass extra args to function.
 # TODO: Think what should I do with the name vcov while returning standard error
 vcov.sequential_estimate <- function(
@@ -24,6 +24,7 @@ vcov.sequential_estimate <- function(
   if (is.null(type)) { type <- attr(object, "type") }
   level <- attr(object, "level")
   s2 <- attr(object, "s2")
+  agg_func <- attr(object, "agg_func")
 
   if (!level %in% c("cohort", "unit")) {
     stop("Level should be either `cohort` or `unit`.")
@@ -70,7 +71,7 @@ vcov.sequential_estimate <- function(
     panel_b_agg$W_avg <- W_avg
     # TODO: Should panel be replaced with more explicit Y, W and coh?
     estimate <- sequential_estimator(
-      panel_b_agg, level, s2, type
+      panel_b_agg, level, s2, type, agg_func
     )
     if (both_est) {
       tau_lag_b[, b] <- estimate[["tau_sdid"]]

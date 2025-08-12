@@ -77,11 +77,12 @@ plot_t_stat <- function(
   }
 
   lags <- c(lags)
-  num_digits <- if (signal_share > 0.5) floor(log10(round(signal_share))) + 1 else 1
+  signal_perc <- signal_share * 100
+  num_digits <- if (signal_perc > 0.5) floor(log10(round(signal_perc))) + 1 else 1
   if (sim_name == "CHC") {
     signal_char <- c(
-      paste0(", ", as.character(signal_share)[1:num_digits], " % signal"),
-      paste0(", ", as.character(signal_share)[1:num_digits], " percent signal")
+      paste0(", ", as.character(signal_perc)[1:num_digits][1], " % signal"),
+      paste0(", ", as.character(signal_perc)[1:num_digits][1], " percent signal")
     )
   } else {
     signal_char <- c("", "")
@@ -167,8 +168,8 @@ create_tables <- function(
   num_digits <- if (signal_perc > 0.5) floor(log10(round(signal_perc))) + 1 else 1
   if (sim_name == "CHC") {
     signal_char <- c(
-      paste0(", ", as.character(signal_share)[1:num_digits], " % signal CHC"),
-      paste0(", ", as.character(signal_share)[1:num_digits], " percent signal")
+      paste0(", ", as.character(signal_perc)[1:num_digits], " % signal CHC"),
+      paste0(", ", as.character(signal_perc)[1:num_digits], " percent signal")
     )
   } else {
     signal_char <- c(", CPS", "")
@@ -186,8 +187,8 @@ create_tables <- function(
     xtable::xtable(perf_table, caption = paste0("RMSE and Bias table", signal_char[1]))
   )
 
-  print()
-  print()
+  print("")
+  print("")
   # Coverage table
   coverage_sdid <- apply(abs(t_stat_sdid) < qnorm(0.975), 1, mean)
   coverage_did <- apply(abs(t_stat_did) < qnorm(0.975), 1, mean)

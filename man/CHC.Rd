@@ -15,6 +15,11 @@ A data frame with 91770 rows and 6 variables.
 \item{popwt}{Population of the county in 1960}
 }
 }
+\source{
+Bailey, Martha J., and Andrew Goodman-Bacon.
+"The War on Poverty's experiment in public medicine: Community health centers and the mortality of older Americans."
+American Economic Review 105.3 (2015): 1067-1104.
+}
 \usage{
 data(CHC)
 }

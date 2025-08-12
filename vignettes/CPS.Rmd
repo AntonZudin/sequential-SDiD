@@ -52,7 +52,8 @@ T <- ncol(panel$W_avg)
 
 ```{r}
 sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
-M <- 10
+
+M <- 1000
 max_treat_periods <- T - sim_setup$a1 + 1
 tau_array_sdid <- array(dim = c(max_treat_periods, M))
 tau_array_did <- array(dim = c(max_treat_periods, M))

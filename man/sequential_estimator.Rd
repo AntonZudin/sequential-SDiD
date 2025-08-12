@@ -6,7 +6,7 @@
 \usage{
 sequential_estimator(
   panel_avg,
-  level,
+  level = NULL,
   s2 = NULL,
   type = "sdid",
   aggregate_effect = aggregate_inv_did_var
@@ -21,7 +21,7 @@ sequential_estimator(
 \item \code{X}:     Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.
 }}
 
-\item{level}{:            Character. The level should be \code{unit} or \code{cohort}.}
+\item{level}{:            Character or NULL. If NULL, the level is taken from panel_avg list. The level should be \code{unit} or \code{cohort}.}
 
 \item{s2}{:               Numeric or NULL. The upper bound estimate of noise variance.}
 
