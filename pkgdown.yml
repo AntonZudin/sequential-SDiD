@@ -1,0 +1,11 @@
+pandoc: 3.1.11
+pkgdown: 2.1.3
+pkgdown_sha: ~
+articles:
+  CHC: CHC.html
+  CPS: CPS.html
+  Preprocessing_CHC: Preprocessing_CHC.html
+last_built: 2025-08-12T12:02Z
+urls:
+  reference: https://antonzudin.github.io/sequential-SDiD/reference
+  article: https://antonzudin.github.io/sequential-SDiD/articles
