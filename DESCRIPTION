@@ -32,3 +32,4 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 License: MIT + file LICENSE
+URL: https://antonzudin.github.io/sequential-SDiD/
