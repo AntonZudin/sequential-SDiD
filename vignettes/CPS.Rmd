@@ -20,6 +20,7 @@ library(xtable)
 set.seed(42)
 library(dplyr)
 library(tidyr)
+install.packages("didimputation")
 library(didimputation)
 ```
 
@@ -55,7 +56,7 @@ panel_sim <- list(
 )
 T <- ncol(panel$W_avg)
 sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
-M <- 1
+M <- 1000
 ```
 
 The state ever-treated status and adoption date depends on the state’s factor loading on the first principal component of the interactive-effects model

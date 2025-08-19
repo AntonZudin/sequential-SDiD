@@ -63,7 +63,7 @@ plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid, save_pdf = TRUE)
 # Simulation
 
 ```{r}
-M <- 1
+M <- 1000
 ```
 
 ## 80 \% signal: the standard deviation of interactive FE is 4 times than std of FE.
