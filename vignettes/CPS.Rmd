@@ -14,15 +14,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE, warning = FALSE}
 library("seq.sdid")
 library(xtable)
-#devtools::load_all()
 set.seed(42)
+library(dplyr)
+library(tidyr)
+library(didimputation)
 ```
 
 ```{r}
-#CPS <- read.csv("data/CPS.csv")
 data(CPS)
 panel <- to_wide(CPS, unit = 1, time = 2,
                      treatment = 'min_wage', outcome = 'log_wage',
@@ -35,12 +36,17 @@ params <- estimate_dgp(
   panel$Y, last_col(panel$W),
   4, TRUE, panel$never_treat
 )
+params$Sigma <- params$Sigma
 pi <- params$pi
+# The difference between the first and the second smallest numbers is significant 
 pi[1] <- as.numeric(sort(pi)[2])
 pi_scaled <- (pi - min(pi)) / (max(pi) - min(pi))
 # Increase the treatment probability
 pi_scaled  <- 0.35 + 0.65*pi_scaled
 params$pi <- pi_scaled
+```
+
+```{r}
 panel_sim <- list(
   Y = NULL,
   W = NULL,
@@ -48,12 +54,13 @@ panel_sim <- list(
   never_treat = "2500"
 )
 T <- ncol(panel$W_avg)
+sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
+M <- 1
 ```
 
-```{r}
-sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
+The state ever-treated status and adoption date depends on the state’s factor loading on the first principal component of the interactive-effects model
 
-M <- 1000
+```{r}
 max_treat_periods <- T - sim_setup$a1 + 1
 tau_array_sdid <- array(dim = c(max_treat_periods, M))
 tau_array_did <- array(dim = c(max_treat_periods, M))
@@ -62,27 +69,53 @@ t_stat_did <- array(dim = c(max_treat_periods, M))
 cohort_array <- array(dim = c(nrow(panel$Y), M))
 
 for (m in 1:M) {
-  sim <- simulate_dgp(params, sim_setup$N1, sim_setup$a1, TRUE)
+  sim <- simulate_dgp(params, sim_setup$N1,sim_setup$a1,
+                      permute_pi = FALSE, as_df =  TRUE)
 
   panel_b <- panel_sim
   panel_b$Y <- sim$Y; panel_b$W <- sim$W
-  #s2 <- estimate_s2(Y, panel_b$W, panel_b$X$popwt)
-  s2 <- params$sigma_2
+  s2 <- estimate_s2(panel_b$Y, panel_b$W)
+  #s2 <- params$sigma_2
   panel_avg <- prepare_wide(panel_b, "unit", boot = FALSE)
+  
+  panel_wide <- panel_b$Y %>%
+    pivot_longer(
+      cols = -adopt_date,
+      names_to = "time",
+      values_to = "outcome"
+    )
+  panel_wide$state <- rep(rownames(panel_b$Y), each = 40)
+  panel_wide$adopt_date <- as.numeric(panel_wide$adopt_date)
+  panel_wide$time <- as.numeric(panel_wide$time)
+  # Never-treated should be either 0 or NULL
+  never_treat_index <- panel_wide$adopt_date == panel_sim$never_treat
+  panel_wide$adopt_date[never_treat_index] <- 0
+  
+  data.table::setDT(panel_wide)
+  panel_wide
+  did_imp <- did_imputation(
+    panel_wide,
+    yname = "outcome",
+    gname = "adopt_date",
+    tname = "time",
+    idname = "state",
+    horizon = TRUE
+  )
 
-  est <- sequential_estimator(panel_avg, "unit",
-                              s2 = s2, "both")
+  est <- sequential_estimator(
+    panel_avg, "unit",
+    s2 = s2, "sdid", aggregate_by_pop)
   se <- vcov(est, panel_b, 100)
-  max_lag <- length(est$tau_sdid)
-  tau_array_sdid[1:max_lag, m] <- est$tau_sdid
-  tau_array_did[1:max_lag, m] <- est$tau_did
-  t_stat_sdid[1:max_lag, m] <- est$tau_sdid / se$se_sdid
-  t_stat_did[1:max_lag, m] <- est$tau_did / se$se_did
+  max_lag <- length(est)
+  tau_array_sdid[1:max_lag, m] <- est[1:max_lag]
+  tau_array_did[1:max_lag, m] <- did_imp$estimate
+  t_stat_sdid[1:max_lag, m] <- est[1:max_lag] / se
+  t_stat_did[1:max_lag, m] <- did_imp$estimate / did_imp$std.error
   cohort_array[, m] <- sim$cohort
 }
 ```
 
-```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
+```{r, fig.retina = 3, fig.width=9, fig.height=6, out.height = "100%", out.width = "100%"}
 plot_t_stat(
   t_stat_array = t_stat_sdid,
   lags = c(0, 4, 7),
@@ -94,7 +127,103 @@ plot_t_stat(
 )
 ```
 
+```{r, fig.retina = 3, fig.width=9, fig.height=6, out.height = "100%", out.width = "100%"}
+plot_t_stat(
+  t_stat_array = t_stat_did,
+  lags = c(0, 4, 7),
+  type = "did",
+  sim_name = "CPS",
+  signal_share = 0,
+  breaks = 50,
+  save_pdf = TRUE
+)
+```
+
+```{r}
+create_tables(
+  tau_array_sdid,
+  tau_array_did,
+  t_stat_sdid,
+  t_stat_did,
+  "CPS",
+  0.0,
+  TRUE
+)
+```
+
 ```{r, fig.retina = 3, fig.width=9, fig.height=9, out.height = "100%", out.width = "100%"}
+plot_cohorts(cohort_array, TRUE, 40, TRUE)
+```
+
+The treatment assignment is random (first principal component is permuted).
+
+```{r}
+max_treat_periods <- T - sim_setup$a1 + 1
+tau_array_sdid <- array(dim = c(max_treat_periods, M))
+tau_array_did <- array(dim = c(max_treat_periods, M))
+t_stat_sdid <- array(dim = c(max_treat_periods, M))
+t_stat_did <- array(dim = c(max_treat_periods, M))
+cohort_array <- array(dim = c(nrow(panel$Y), M))
+
+for (m in 1:M) {
+  sim <- simulate_dgp(params, sim_setup$N1, sim_setup$a1,
+                      permute_pi = TRUE, as_df =  TRUE)
+  panel_b <- panel_sim
+  panel_b$Y <- sim$Y; panel_b$W <- sim$W
+  s2 <- estimate_s2(panel_b$Y, panel_b$W)
+  #s2 <- params$sigma_2
+  panel_avg <- prepare_wide(panel_b, "unit", boot = FALSE)
+  
+  panel_wide <- panel_b$Y %>%
+    pivot_longer(
+      cols = -adopt_date,
+      names_to = "time",
+      values_to = "outcome"
+    )
+  panel_wide$state <- rep(rownames(panel_b$Y), each = 40)
+  panel_wide$adopt_date <- as.numeric(panel_wide$adopt_date)
+  panel_wide$time <- as.numeric(panel_wide$time)
+  # Never-treated should be either 0 or NULL
+  never_treat_index <- panel_wide$adopt_date == panel_sim$never_treat
+  panel_wide$adopt_date[never_treat_index] <- 0
+  
+  data.table::setDT(panel_wide)
+  panel_wide
+  did_imp <- did_imputation(
+    panel_wide,
+    yname = "outcome",
+    gname = "adopt_date",
+    tname = "time",
+    idname = "state",
+    horizon = TRUE
+  )
+
+  est <- sequential_estimator(
+    panel_avg, "unit",
+    s2 = s2, "sdid", aggregate_by_pop)
+  se <- vcov(est, panel_b, 100)
+  max_lag <- length(est)
+  tau_array_sdid[1:max_lag, m] <- est[1:max_lag]
+  tau_array_did[1:max_lag, m] <- did_imp$estimate
+  t_stat_sdid[1:max_lag, m] <- est[1:max_lag] / se
+  t_stat_did[1:max_lag, m] <- did_imp$estimate / did_imp$std.error
+  cohort_array[, m] <- sim$cohort
+}
+```
+
+```{r, fig.retina = 3, fig.width=9, fig.height=6, out.height = "100%", out.width = "100%"}
+plot_t_stat(
+  t_stat_array = t_stat_sdid,
+  lags = c(0, 4, 7),
+  type = "sdid",
+  sim_name = "CPS",
+  signal_share = 0,
+  breaks = 50,
+  save_pdf = TRUE
+)
+```
+
+```{r, fig.retina = 3, fig.width=9, fig.height=6, out.height = "100%", out.width = "100%"}
 plot_t_stat(
   t_stat_array = t_stat_did,
   lags = c(0, 4, 7),

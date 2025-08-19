@@ -12,8 +12,6 @@ estimate_s2(Y, W, pop = NULL, wls = FALSE)
 \item{W}{Dataframe or matrix. The disaggregated wide panel of treatment indicators.}
 
 \item{pop}{Numeric vector or NULL. The population weight vector.}
-
-\item{wls}{Bool. If TRUE, WLS is used to to estimate TWFE.}
 }
 \value{
 \code{s2} Numeric. The estimated upper bound of the noise variance.
@@ -21,10 +19,9 @@ estimate_s2(Y, W, pop = NULL, wls = FALSE)
 \description{
 Removes time and unit fixed effects and computes the variance of residuals.
 
-There are 3 estimate options:
+There are 2 estimate options:
 \enumerate{
-\item OLS without population weigths. Do not pass \code{pop} vector and  set \code{wls} to FALSE.
-\item OLS with population weights. Pass \code{pop} vector and  set \code{wls} to FALSE.
-\item WLS utilizing population weigths. Pass \code{pop} vector and set \code{wls} to TRUE.
+\item OLS without population weigths. Do not pass \code{pop} vector.
+\item WLS utilizing population weigths. Pass \code{pop} vector.
 }
 }

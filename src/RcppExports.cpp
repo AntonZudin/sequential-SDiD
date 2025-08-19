@@ -12,13 +12,13 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // base_estimator
-double base_estimator(arma::mat Y, arma::vec n_j, double s2, std::string type);
+double base_estimator(const arma::mat& Y, const arma::vec& n_j, double s2, std::string type);
 RcppExport SEXP _seq_sdid_base_estimator(SEXP YSEXP, SEXP n_jSEXP, SEXP s2SEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type n_j(n_jSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type n_j(n_jSEXP);
     Rcpp::traits::input_parameter< double >::type s2(s2SEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
     rcpp_result_gen = Rcpp::wrap(base_estimator(Y, n_j, s2, type));

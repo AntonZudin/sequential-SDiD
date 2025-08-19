@@ -15,8 +15,8 @@ using namespace arma;
 
  // [[Rcpp::export]]
  double base_estimator(
-     arma::mat Y,
-     arma::vec n_j,
+     const arma::mat& Y,
+     const arma::vec& n_j,
      double s2,
      std::string type = "sdid"
  ) {
@@ -74,9 +74,10 @@ using namespace arma;
      // This prevents the code from breaking,
      // forcing to use DiD when hessian of the objective function is singular.
      if (arma::rcond(hess_reg) < 2.5e-16) {
+       Rcpp::warning("The hessian for unit weights is near singular. Doing DiD unit weights.");
        gamma_reg = pi;
      } else {
-       arma::vec solution = arma::solve(hess_reg, -grad_reg);
+       arma::vec solution = arma::solve(hess_reg, -grad_reg, solve_opts::likely_sympd);
        gamma_reg = solution.subvec(0, j_c - 1);
      }
 
@@ -104,9 +105,10 @@ using namespace arma;
      hessl_reg.submat(t_c + 1, 0, t_c + 1, t_c - 1) = ones_t.t();
 
      if (arma::rcond(hessl_reg) < 2.5e-16) {
+       Rcpp::warning("The hessian for time weights is near singular. Doing DiD time weights");
        lambda_reg = arma::ones<vec>(t_c) / t_c;
      } else {
-       arma::vec solution = arma::solve(hessl_reg, -gradl_reg);
+       arma::vec solution = arma::solve(hessl_reg, -gradl_reg, solve_opts::likely_sympd);
        lambda_reg = solution.subvec(0, t_c - 1);
      }
    }

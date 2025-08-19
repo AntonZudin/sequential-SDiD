@@ -1,9 +1,10 @@
 #' Weight the estimated effect by cohort weight (population).
 #' @param tau      Numeric matrix. The matrix with estimated effects.
 #' @param W        Binary or boolen matrix. The matrix N x T of treatment indicators.
-#' @param coh      Numeric vector. The N x 1 cohort weight (population) vector. 
+#' @param coh      Numeric vector. The N x 1 cohort weight (population) vector.
 #' @param N0       Integer. The number of control (never treated) units.
 #' @param N        Integer. The total number of units.
+#' @export
 aggregate_by_pop <- function(tau, W, coh, N0, N) {
   tau_avg <- array(0, dim = max(rowSums(W)))
   counter <- array(0, dim = max(rowSums(W)))
@@ -26,9 +27,10 @@ aggregate_by_pop <- function(tau, W, coh, N0, N) {
 #' DiD variance is used instead of SSDiD variance to eliminate potential overfitting.
 #' @param tau      Numeric matrix. The matrix with estimated effects.
 #' @param W        Binary or boolen matrix. The matrix N x T of treatment indicators.
-#' @param coh      Numeric vector. The N x 1 cohort weight (population) vector. 
+#' @param coh      Numeric vector. The N x 1 cohort weight (population) vector.
 #' @param N0       Integer. The number of control (never treated) units.
 #' @param N        Integer. The total number of units.
+#' @export
 # TODO: Should I use pi = share of popwt?
 aggregate_inv_did_var <- function(tau, W, coh, N0, N) {
   tau_avg <- array(0, dim = max(rowSums(W)))

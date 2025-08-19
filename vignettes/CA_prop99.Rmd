@@ -1,0 +1,64 @@
+---
+title: "CA_prop99"
+output: html_document
+---
+
+```{r setup}
+library(seq.sdid)
+
+data(CA_prop99)
+```
+
+```{r}
+panel <- to_wide(
+  CA_prop99,
+  unit = "State", time = "Year",
+  outcome = "PacksPerCapita",
+  treatment = "treated"
+)
+panel$Y["Wyoming", "adopt_date"] <- "1993"; panel$X["Wyoming", "adopt_date"] <- "1993";
+panel$W["Wyoming", "adopt_date"] <- "1993";  panel$W["Wyoming", as.character(1993:2000)] <- 1
+panel_avg <- prepare_wide(panel, "unit")
+```
+
+
+```{r}
+s2 <- estimate_s2(panel$Y, panel$W)
+
+est <- sequential_estimator(
+  panel_avg,
+  "unit",
+  s2,
+  type = "both",
+  aggregate_by_pop
+)
+print(est, 3)
+```
+```{r}
+se <- vcov(est, panel)
+print(se)
+```
+
+
+
+```{r}
+library(didimputation)
+library(data.table)
+data.table::setDT(CA_prop99)
+
+CA_prop99[, "g"] <- 0
+CA_prop99[State == "California", "g"] <- 1989
+CA_prop99[State == "Wyoming", "g"] <- 1993
+
+
+did_imputation(
+  data = CA_prop99, 
+  idname = "State",
+  tname = "Year",
+  yname = "PacksPerCapita",
+  gname = "g",
+  horizon = TRUE
+)
+
+
+```

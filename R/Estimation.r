@@ -215,7 +215,7 @@ estimation_funcs <- list(
 #' Computes the `unit` or `cohort` level sequential synthetic diff-in-diff or diff-in-diff estimate.
 #' @description
 #' Basically, this function is a wrapper which calls either `estimation_cohort` or `estimation_unit` function.
-#' Then it aggregates the
+#' Then the function aggregates the treatment effect by length of the exposure.
 #' @param panel_avg : List. The list should contain:
 #'   - `Y_avg`: Numeric matrix. The N x T matrix of outcomes.
 #'   - `W_avg`: Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.
@@ -300,15 +300,13 @@ sequential_estimator <- function(
 #' @description
 #' Removes time and unit fixed effects and computes the variance of residuals.
 #'
-#' There are 3 estimate options:
-#' 1. OLS without population weigths. Do not pass `pop` vector and  set `wls` to FALSE.
-#' 2. OLS with population weights. Pass `pop` vector and  set `wls` to FALSE.
-#' 3. WLS utilizing population weigths. Pass `pop` vector and set `wls` to TRUE.
+#' There are 2 estimate options:
+#' 1. OLS without population weigths. Do not pass `pop` vector.
+#' 3. WLS utilizing population weigths. Pass `pop` vector.
 #'
 #' @param Y Dataframe or matrix. The disaggregated wide panel of outcomes.
 #' @param W Dataframe or matrix. The disaggregated wide panel of treatment indicators.
 #' @param pop Numeric vector or NULL. The population weight vector.
-#' @param wls Bool. If TRUE, WLS is used to to estimate TWFE.
 #' @return `s2` Numeric. The estimated upper bound of the noise variance.
 #' @export
 #'
@@ -319,8 +317,7 @@ estimate_s2 <- function(Y, W, pop = NULL, wls = FALSE) {
   }
   Y <- remove_adopt_date(Y); W <- remove_adopt_date(W)
 
-  wls <- !is.null(pop) && wls
-  weight <- !is.null(pop) && !wls
+  wls <- !is.null(pop)
 
   n_units <- nrow(Y)
   n_periods <- ncol(Y)
@@ -362,15 +359,12 @@ estimate_s2 <- function(Y, W, pop = NULL, wls = FALSE) {
     model <- fixest::feols(Y ~ 0 | unit + time,
       data = data_untreated
     )
-    if (weight) s2 <- sum(model$residuals^2 * data_untreated$weights) / deg_free
-    else s2 <- model$ssr / deg_free
-
   } else {
     model <- fixest::feols(Y ~ 0 | unit + time,
       data = data_untreated,
       weights = ~weights
     )
-    s2 <- model$ssr / deg_free
   }
+  s2 <- model$ssr / deg_free
   s2
 }

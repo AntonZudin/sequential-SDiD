@@ -5,12 +5,14 @@
 \title{Simulates data from DGPs used in the placebo studies
 of the synthetic difference in differences paper.}
 \usage{
-simulate_dgp(params, N1, a_min, as_df = TRUE)
+simulate_dgp(params, N1, a_min, permute_pi = FALSE, as_df = TRUE)
 }
 \arguments{
 \item{N1}{:         Integer. A cap on the number of treated units.}
 
 \item{a_min}{:      Integer. The number of treated periods.}
+
+\item{permute_pi}{: Bool. If TRUE, pi is permuted, so the treatment status is random.}
 
 \item{as_df}{:      Bool. If TRUE, returns Y and W as dataframes instead of matrices.}
 

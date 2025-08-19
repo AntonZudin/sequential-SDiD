@@ -8,6 +8,13 @@
 \description{
 Estimate treatment effect with staggered treatment adoption. The method uses an iterative imputation procedure on aggregated data, where estimates for early-adopting cohorts are used to construct counterfactuals for later ones.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://antonzudin.github.io/sequential-SDiD/}
+}
+
+}
 \author{
 \strong{Maintainer}: Anton Zudin \email{anton.zudin0@outlook.com}
 

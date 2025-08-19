@@ -12,7 +12,7 @@ This package estimates average treatment effect, particularly when the parallel 
 
 The package can be installed from github using devtools.
 ```{r, eval = FALSE}
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("AntonZudin/sequential-SDiD")
 ```
 
@@ -65,3 +65,7 @@ se
 plot(est, se)
 ```
 
+#### References
+Dmitry Arkhangelsky, Aleksei Samkov.
+<b>Sequential Synthetic Difference in Differences</b>, 2025.
+[<a href="https://arxiv.org/abs/2404.00164">arxiv</a>]

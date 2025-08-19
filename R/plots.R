@@ -153,13 +153,18 @@ create_tables <- function(
   bias_sdid <- apply(tau_array_sdid, 1, FUN = function(x) mean(x))
   bias_did <- apply(tau_array_did, 1, FUN = function(x) mean(x))
 
+  bias_to_sd_sdid <- bias_sdid / apply(tau_array_sdid, 1, FUN = function(x) sd(x))
+  bias_to_sd_did <- bias_did / apply(tau_array_did, 1, FUN = function(x) sd(x))
+
   perf_table <- rbind(
     rmse_sdid, rmse_did, rmse_sdid / rmse_did,
-    bias_sdid, bias_did, bias_sdid / bias_did
+    bias_sdid, bias_did, bias_sdid / bias_did,
+    bias_to_sd_sdid, bias_to_sd_did, bias_to_sd_sdid / bias_to_sd_did
   )
   rownames(perf_table) <- c(
     "SSDiD RMSE", "DiD RMSE", "SSDiD to DiD RMSE ratio",
-    "SSDiD Bias", "DiD Bias", "SSDiD to DiD Bias ratio"
+    "SSDiD Bias", "DiD Bias", "SSDiD to DiD Bias ratio",
+    "SSDiD Bias/SD", "DiD Bias/SD", "SSDiD to DiD Bias/SD"
   )
   colnames(perf_table) <-  as.character(0:(length(rmse_did) - 1))
 
@@ -187,7 +192,7 @@ create_tables <- function(
     xtable::xtable(perf_table, caption = paste0("RMSE and Bias table", signal_char[1]))
   )
 
-  print("")
+  print("\n\n")
   print("")
   # Coverage table
   coverage_sdid <- apply(abs(t_stat_sdid) < qnorm(0.975), 1, mean)
@@ -223,7 +228,6 @@ plot_cohorts <- function(
   T = 40,
   save_pdf = FALSE
 ) {
-  # TODO: Do I need to add stats R package in imports?
   cohorts <- as.vector(cohort_array)
   emp_cdf <- stats::ecdf(cohorts)
   x  <- seq(0, T, length.out = T + 1)
@@ -241,8 +245,8 @@ plot_cohorts <- function(
   abline(h = 1, lty = 2, col = "grey")
   abline(h = emp_cdf(T), lty = 2, col = "grey")
   text(
-    x = -2, y = emp_cdf(T) + 0.01,
-    labels = substr(as.character(emp_cdf(T)), 1, 3),
+    x = -1, y = emp_cdf(T) + 0.01,
+    labels = substr(as.character(emp_cdf(T)), 1, 5),
     pos = 4, col = "black", cex = 1
   )
   if (save_pdf) {
@@ -259,8 +263,8 @@ plot_cohorts <- function(
     abline(h = 1, lty = 2, col = "grey")
     abline(h = emp_cdf(T), lty = 2, col = "grey")
     text(
-      x = -2, y = emp_cdf(T) + 0.01,
-      labels = substr(as.character(emp_cdf(T)), 1, 3),
+      x = -1, y = emp_cdf(T) + 0.01,
+      labels = substr(as.character(emp_cdf(T)), 1, 5),
       pos = 4, col = "black", cex = 1
     )
     dev.off()

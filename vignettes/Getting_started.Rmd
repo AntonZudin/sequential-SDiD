@@ -1,0 +1,65 @@
+---
+title: "Getting started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+## Usage 
+```{r, setup}
+library(seq.sdid)
+data(CHC)
+set.seed(42)
+```
+
+
+First, you need to convert your data from long panel to wide one to estimate the effect. 
+The package uses 2 functions to prepare the dataset. 
+
+### 1. `to_wide`
+- Converts panel from long to wide format.
+- Creates Y, W and X dataframes with adoption date column being the first one.
+  - Y is an N x T outcome dataframe.
+  - W is N x T dataframe with stair-like structure due to staggered adoption.
+  - X is dataframe with auxiliary data like weights and covariates.
+
+
+### 2. `prepare_wide`
+- If the level is `cohort`, aggregates on the data on the cohort level.
+- If the level is `unit`, removes the adoption date column.
+- The Y and W dataframes are converted to matrices, X dataframe remains the same.
+
+```{r}
+panel <- to_wide(CHC,
+  unit = 1, time = 3, outcome = 2,
+  treatment = 4, contr_covs = c(5), treat_covs = c(),
+  population = 6
+)
+
+panel$X$popwt <- panel$X$popwt / 10000
+
+panel_avg <- prepare_wide(panel, level = "cohort")
+```
+
+1. Estimate `s^2` - noise variance. s2 is utilized in determining the regularization parameter: $\eta^2 = s^2/n^{0.9}$. To get upper bound of `s^2`, time and unit fixed effects are estimated on the untreated observations. Then `s^2` is computed as residual sum of squares divided by the degrees of freedom. If the weights are passed, WLS is estimated rather then OLS.   
+2. Estimate the average treatment effect.
+3. Conduct Bayesian bootstrap to obtain standard errors for the estimator. 
+```{r}
+s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
+est <- sequential_estimator(
+  panel_avg,
+  s2 = s2,
+  type = "sdid")
+est
+
+se <- vcov(est, panel)
+se
+```
+
+
+```{r, fig.retina=2}
+plot(est, se)
+```

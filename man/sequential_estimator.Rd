@@ -45,5 +45,5 @@ The function should contain the following arguments:
 }
 \description{
 Basically, this function is a wrapper which calls either \code{estimation_cohort} or \code{estimation_unit} function.
-Then it aggregates the
+Then the function aggregates the treatment effect by length of the exposure.
 }

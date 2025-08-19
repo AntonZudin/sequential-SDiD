@@ -1,4 +1,86 @@
 url: https://antonzudin.github.io/sequential-SDiD/
 template:
   bootstrap: 5
+  params:
+      bootswatch: flatly
+navbar:
+  left:
+    - text: "Getting started"
+      href: articles/Getting_started.html
 
+    - text: "Paper results"
+      menu:
+        - text: "Preprocessing CHC"
+          href: articles/Preprocessing_CHC.html
+        - text: "CHC"
+          href: articles/CHC.html
+        - text: "CPS"
+          href: articles/CPS.html
+    - text: "References"
+      href: reference/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/AntonZudin/sequential-SDiD
+
+reference:
+  - title: Inference
+    contents:
+      - sequential_estimator
+      - estimation_unit
+      - estimation_cohort
+      - estimate_s2
+      - tau_sdid
+      - vcov.sequential_estimate
+
+  - title: Data preparation
+    contents:
+      - to_wide
+      - prepare_wide
+      - aggregate_Y
+
+  - title: CHC simulation
+    contents:
+      - estimate_dgp_chc
+      - simulate_dgp_chc
+
+  - title: CPS simulation
+    contents:
+      - estimate_dgp
+      - simulate_dgp
+      - randomize_treatment
+      - randomize_cohort
+
+  - title: Plots and Tables for simulations
+    contents:
+      - plot_chc_effect
+      - create_tables
+      - plot_t_stat
+      - plot_cohorts
+
+  - title: Aggregation functions
+    contents:
+      - aggregate_by_pop
+      - aggregate_inv_did_var
+
+  - title: Auxiliary functions
+    contents:
+      - decompose_Y
+      - svd_compact
+      - fit_ar2
+      - ar2_correlation_matrix
+      - cohort_to_adopt_date
+      - print.sequential_estimate
+      - plot.sequential_estimate
+      - est_names
+      - estimation_funcs
+      - last_col
+      - penalty
+      - remove_adopt_date
+      - vec_paste0
+
+
+  - title: Data sets
+    contents:
+      - CHC
+      - CPS
+      - CA_prop99

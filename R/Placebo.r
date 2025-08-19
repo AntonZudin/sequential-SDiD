@@ -70,6 +70,7 @@ estimate_dgp <- function(
 #'                           F and M are numeric matrices.
 #' @param N1 :         Integer. A cap on the number of treated units.
 #' @param a_min :      Integer. The number of treated periods.
+#' @param permute_pi : Bool. If TRUE, pi is permuted, so the treatment status is random.
 #' @param as_df :      Bool. If TRUE, returns Y and W as dataframes instead of matrices.
 #'
 #' @return List with the following elements:
@@ -79,15 +80,22 @@ estimate_dgp <- function(
 #'  - `cohorts`: Numeric vector. The number of control units N0, and the number of control periods T0.
 #'         The first N0 rows of Y are for units assigned to control, the remaining rows are for units assigned to treatment.
 #' @export simulate_dgp
-simulate_dgp <- function(params, N1, a_min, as_df = TRUE) {
+simulate_dgp <- function(params, N1, a_min, permute_pi = FALSE,  as_df = TRUE) {
   F <- params$F; M <- params$M
   Sigma <- params$Sigma
   pi <- params$pi
+  if (permute_pi){
+    pi <- sample(pi)
+  }
   never_treat <- params$never_treat
 
   N <- nrow(M); T <- ncol(M)
 
   assignment <- randomize_treatment(pi, N, N1)
+
+  if (permute_pi){
+    pi <- sample(pi)
+  }
   random_cohort <- randomize_cohort(
     assignment, pi,
     T, a_min
@@ -184,7 +192,7 @@ randomize_cohort <- function(assignment_vector, pi, T, a_min) {
   scaled_pi <- (pi - min(pi)) / (max(pi) - min(pi))
   mu_i <- a_min + (T - a_min) * (1 - scaled_pi)
 
-  mu_i <- sample(mu_i) #reshuffle mu_i
+  #mu_i <- sample(mu_i) #reshuffle mu_i
 
   for (unit in 1:N) {
     if (assignment_vector[unit] != 0) {

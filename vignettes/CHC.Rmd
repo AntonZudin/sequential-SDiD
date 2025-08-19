@@ -16,13 +16,13 @@ knitr::opts_chunk$set(
 
 To install `MCPanel` package you need to run the following chunk:
 
-```{r}
+```{r, results = 'hide'}
 install.packages("devtools")
 install.packages("latex2exp")
 devtools::install_github("susanathey/MCPanel")
 ```
 
-```{r setup}
+```{r setup, warning = FALSE}
 library("seq.sdid") 
 library(xtable)
 set.seed(42)
@@ -49,6 +49,7 @@ panel_avg <- prepare_wide(panel)
 ```{r}
 est <- sequential_estimator(panel_avg, "cohort",
                             s2 = s2, "both")
+est
 ```
 
 ```{r}
@@ -60,7 +61,13 @@ plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid, save_pdf = TRUE)
 ```
 
 # Simulation
-## 80 \% signal: the standard deviation of interactive FE is 4 times than std of FE. 
+
+```{r}
+M <- 1
+```
+
+## 80 \% signal: the standard deviation of interactive FE is 4 times than std of FE.
+
 ```{r}
 params <- estimate_dgp_chc(
   panel = panel, signal_share = 0.8,
@@ -75,7 +82,6 @@ panel_sim <- list(
 ```
 
 ```{r}
-M <- 1000
 W_avg <- prepare_wide(panel)$W_avg
 tau_array_sdid <- array(dim = c(max(rowSums(W_avg)), M))
 tau_array_did <- array(dim = c(max(rowSums(W_avg)), M))
@@ -153,7 +159,6 @@ panel_sim <- list(
 ```
 
 ```{r}
-M <- 1000
 W_avg <- prepare_wide(panel)$W_avg
 tau_array_sdid <- array(dim = c(max(rowSums(W_avg)), M))
 tau_array_did <- array(dim = c(max(rowSums(W_avg)), M))

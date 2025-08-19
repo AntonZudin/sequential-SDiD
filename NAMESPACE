@@ -3,6 +3,8 @@
 S3method(plot,sequential_estimate)
 S3method(print,sequential_estimate)
 S3method(vcov,sequential_estimate)
+export(aggregate_by_pop)
+export(aggregate_inv_did_var)
 export(create_tables)
 export(estimate_dgp)
 export(estimate_dgp_chc)
