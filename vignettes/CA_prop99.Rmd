@@ -3,9 +3,11 @@ title: "CA_prop99"
 output: html_document
 ---
 
-```{r setup}
-library(seq.sdid)
+```{r setup, message = FALSE, warning = FALSE}
+install.packages("didimputation")
+library(didimputation)
 
+library(seq.sdid)
 data(CA_prop99)
 ```
 
