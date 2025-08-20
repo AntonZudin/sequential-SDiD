@@ -18,7 +18,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">seq.sdid</a>
 
@@ -31,20 +31,19 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/Getting_started.html">Getting started</a></li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/CHC.html">Community Health Centers</a></li>
-    <li><a class="dropdown-item" href="articles/CPS.html">Current Population Survey</a></li>
-    <li><a class="dropdown-item" href="articles/Preprocessing_CHC.html">Preprocessing CHC</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-paper-results" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Paper results</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-paper-results">
+<li><a class="dropdown-item" href="articles/Preprocessing_CHC.html">Preprocessing CHC</a></li>
+    <li><a class="dropdown-item" href="articles/CHC.html">CHC</a></li>
+    <li><a class="dropdown-item" href="articles/CPS.html">CPS</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">References</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
-</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AntonZudin/sequential-SDiD"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -62,8 +61,8 @@
 </h2>
 <p>The package can be installed from github using devtools.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"AntonZudin/sequential-SDiD"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"AntonZudin/sequential-SDiD"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -108,22 +107,24 @@
 <span>  type <span class="op">=</span> <span class="st">"sdid"</span><span class="op">)</span></span>
 <span><span class="va">est</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## Synthetic DiD:</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="do">##  [1]  -4.7366330  -5.6752393  -6.5541976  -9.4308235 -13.2132950 -13.5642393</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="do">##  [7] -16.0897075 -11.4382592 -13.0642840 -12.8587324 -11.8731736 -13.7330057</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="do">## [13] -12.5923667 -10.7225772 -12.3626838 -15.6106691 -14.1941706 -12.4548575</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="do">## [19]  -9.5632432 -12.3932205  -0.6046544  -2.3971936 -75.6481254 -64.3606602</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="do">## s2: 2754.343</span></span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="do">## -4.74 -5.68 -6.56 -9.44 -13.22 -13.56 -16.10 -11.43 -13.07 -12.85 -11.87 -13.72 -12.59 -10.72 -12.35 -15.61 -14.19 -12.45 -9.56 -12.38 -0.60 -2.39 -75.64 -64.37 </span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="do">## s2: 2728.60</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel</span><span class="op">)</span></span>
 <span><span class="va">se</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">##  [1]  3.439639  3.513936  4.413344  4.442600  5.221117  5.271454  5.954114</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="do">##  [8]  6.274601  6.561208  7.333960  6.966803  9.532407  9.962142 10.251787</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="do">## [15] 10.959019 11.725110 11.843486 12.775326 14.022057 15.215228 14.856568</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="do">## [22] 16.465161 48.925193 54.078878</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">##  [1]  3.442402  3.517237  4.417285  4.447733  5.227896  5.278684  5.962290</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="do">##  [8]  6.283429  6.569504  7.342846  6.974452  9.543372  9.972621 10.263685</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="do">## [15] 10.968570 11.736318 11.854961 12.786417 14.031863 15.222889 14.862728</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="do">## [22] 16.469635 48.961334 54.116311</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">se</span><span class="op">)</span></span></code></pre></div>
-<p><img src="README_files/figure-gfm/unnamed-chunk-4-1.png" width="672"></p>
+<p><img src="reference/figures/unnamed-chunk-4-1.png" width="672"></p>
+<div class="section level4">
+<h4 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h4>
+<p>Dmitry Arkhangelsky, Aleksei Samkov. <b>Sequential Synthetic Difference in Differences</b>, 2025. [<a href="https://arxiv.org/abs/2404.00164" class="external-link">arxiv</a>]</p>
+</div>
 </div>
 </div>
 </div>

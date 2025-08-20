@@ -16,7 +16,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">seq.sdid</a>
 
@@ -29,20 +29,19 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/Getting_started.html">Getting started</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/CHC.html">Community Health Centers</a></li>
-    <li><a class="dropdown-item" href="../articles/CPS.html">Current Population Survey</a></li>
-    <li><a class="dropdown-item" href="../articles/Preprocessing_CHC.html">Preprocessing CHC</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-paper-results" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Paper results</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-paper-results">
+<li><a class="dropdown-item" href="../articles/Preprocessing_CHC.html">Preprocessing CHC</a></li>
+    <li><a class="dropdown-item" href="../articles/CHC.html">CHC</a></li>
+    <li><a class="dropdown-item" href="../articles/CPS.html">CPS</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">References</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AntonZudin/sequential-SDiD"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -71,65 +70,13 @@ chunk:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Installing package into '/home/runner/work/_temp/Library'</span></span>
 <span><span class="co">#&gt; (as 'lib' is unspecified)</span></span>
-<span><span class="co">#&gt; also installing the dependencies 'credentials', 'zip', 'gitcreds', 'ini', 'httpuv', 'sourcetools', 'later', 'promises', 'clipr', 'gert', 'gh', 'rstudioapi', 'shiny', 'htmlwidgets', 'prettyunits', 'xopen', 'brew', 'commonmark', 'stringr', 'cpp11', 'usethis', 'ellipsis', 'miniUI', 'profvis', 'rcmdcheck', 'remotes', 'roxygen2', 'rversions', 'urlchecker'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"latex2exp"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Installing package into '/home/runner/work/_temp/Library'</span></span>
 <span><span class="co">#&gt; (as 'lib' is unspecified)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"susanathey/MCPanel"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Using github PAT from envvar GITHUB_PAT. Use `gitcreds::gitcreds_set()` and unset GITHUB_PAT in .Renviron (or elsewhere) if you want to use the more secure git credential store instead.</span></span>
-<span><span class="co">#&gt; Downloading GitHub repo susanathey/MCPanel@HEAD</span></span>
-<span><span class="co">#&gt; iterators (NA -&gt; 1.0.14   ) [CRAN]</span></span>
-<span><span class="co">#&gt; RcppEigen (NA -&gt; 0.3.4.0.2) [CRAN]</span></span>
-<span><span class="co">#&gt; shape     (NA -&gt; 1.4.6.1  ) [CRAN]</span></span>
-<span><span class="co">#&gt; foreach   (NA -&gt; 1.5.2    ) [CRAN]</span></span>
-<span><span class="co">#&gt; glmnet    (NA -&gt; 4.1-10   ) [CRAN]</span></span>
-<span><span class="co">#&gt; Installing 5 packages: iterators, RcppEigen, shape, foreach, glmnet</span></span>
-<span><span class="co">#&gt; Installing packages into '/home/runner/work/_temp/Library'</span></span>
-<span><span class="co">#&gt; (as 'lib' is unspecified)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB;">R CMD build</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; * checking for file ‘/tmp/RtmpqjrbgY/remotes1f2110bc1f48/susanathey-MCPanel-6b2706f/DESCRIPTION’ ... OK</span></span>
-<span><span class="co">#&gt; * preparing ‘MCPanel’:</span></span>
-<span><span class="co">#&gt; * checking DESCRIPTION meta-information ... OK</span></span>
-<span><span class="co">#&gt; * cleaning src</span></span>
-<span><span class="co">#&gt; * excluding invalid files</span></span>
-<span><span class="co">#&gt; Subdirectory 'R' contains invalid file names:</span></span>
-<span><span class="co">#&gt;   ‘Makevars’</span></span>
-<span><span class="co">#&gt; * checking for LF line-endings in source and make files and shell scripts</span></span>
-<span><span class="co">#&gt; * checking for empty or unneeded directories</span></span>
-<span><span class="co">#&gt; Omitted ‘LazyData’ from DESCRIPTION</span></span>
-<span><span class="co">#&gt; * building ‘MCPanel_0.0.tar.gz’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/california/california_data_N_38_T_31_numruns_10_num_treated_35_simultaneuous_0.png’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/california/california_data_N_38_T_31_numruns_10_num_treated_35_simultaneuous_0.rds’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/california/california_data_N_38_T_31_numruns_10_num_treated_8_simultaneuous_1.png’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/california/california_data_N_38_T_31_numruns_10_num_treated_8_simultaneuous_1.rds’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/stock/stock_data_N_1000_T_5_numruns_5_num_treated_500_simultaneuous_0.png’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/stock/stock_data_N_1000_T_5_numruns_5_num_treated_500_simultaneuous_0.rds’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/stock/stock_data_N_5_T_1000_numruns_20_num_treated_3_simultaneuous_0.png’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/stock/stock_data_N_5_T_1000_numruns_20_num_treated_3_simultaneuous_0.rds’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/stock/stock_data_N_70_T_70_numruns_5_num_treated_35_simultaneuous_0.png’</span></span>
-<span><span class="co">#&gt; Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :</span></span>
-<span><span class="co">#&gt;   storing paths of more than 100 bytes is not portable:</span></span>
-<span><span class="co">#&gt;   ‘MCPanel/tests/examples_from_paper/stock/stock_data_N_70_T_70_numruns_5_num_treated_35_simultaneuous_0.rds’</span></span>
-<span><span class="co">#&gt; Installing package into '/home/runner/work/_temp/Library'</span></span>
-<span><span class="co">#&gt; (as 'lib' is unspecified)</span></span></code></pre></div>
+<span><span class="co">#&gt; Skipping install of 'MCPanel' from a github remote, the SHA1 (6b2706fd) has not changed since last install.</span></span>
+<span><span class="co">#&gt;   Use `force = TRUE` to force installation</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://antonzudin.github.io/sequential-SDiD/">"seq.sdid"</a></span><span class="op">)</span> </span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://xtable.r-forge.r-project.org/" class="external-link">xtable</a></span><span class="op">)</span></span>
@@ -149,7 +96,15 @@ chunk:</p>
 <span><span class="co">#s2 &lt;- 5000</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span><span class="va">panel_avg</span>, <span class="st">"cohort"</span>,</span>
-<span>                            s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"both"</span><span class="op">)</span></span></code></pre></div>
+<span>                            s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="va">est</span></span>
+<span><span class="co">#&gt; Synthetic DiD:</span></span>
+<span><span class="co">#&gt; -4.74 -5.68 -6.56 -9.44 -13.22 -13.56 -16.10 -11.43 -13.07 -12.85 -11.87 -13.72 -12.59 -10.72 -12.35 -15.61 -14.19 -12.45 -9.56 -12.38 -0.60 -2.39 -75.64 -64.37 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; DiD:</span></span>
+<span><span class="co">#&gt; -6.30 -7.88 -7.41 -9.41 -10.61 -11.58 -10.59 -10.30 -9.62 -10.06 -7.15 -9.11 -8.04 -5.35 -7.68 -10.99 -10.33 -6.77 -5.13 -9.25 -0.27 5.13 -45.90 -30.14 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; s2: 2728.60</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel</span>, B <span class="op">=</span> <span class="fl">1000</span>, return_tau_b <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -160,11 +115,13 @@ chunk:</p>
 <div class="section level2">
 <h2 id="simulation">Simulation<a class="anchor" aria-label="anchor" href="#simulation"></a>
 </h2>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="signal-the-standard-deviation-of-interactive-fe-is-4-times-than-std-of-fe-">80 % signal: the standard deviation of interactive FE is 4 times
 than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-deviation-of-interactive-fe-is-4-times-than-std-of-fe-"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dgp_chc.html">estimate_dgp_chc</a></span><span class="op">(</span></span>
 <span>  panel <span class="op">=</span> <span class="va">panel</span>, signal_share <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  scale <span class="op">=</span> <span class="fl">4</span>, rank <span class="op">=</span> <span class="fl">5</span></span>
@@ -175,9 +132,8 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  X <span class="op">=</span> <span class="va">params</span><span class="op">$</span><span class="va">X</span>,</span>
 <span>  never_treat <span class="op">=</span> <span class="st">"2500"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span>
-<span><span class="va">W_avg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel</span><span class="op">)</span><span class="op">$</span><span class="va">W_avg</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">W_avg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel</span><span class="op">)</span><span class="op">$</span><span class="va">W_avg</span></span>
 <span><span class="va">tau_array_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">W_avg</span><span class="op">)</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tau_array_did</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">W_avg</span><span class="op">)</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">t_stat_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">W_avg</span><span class="op">)</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
@@ -200,7 +156,7 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  <span class="va">t_stat_sdid</span><span class="op">[</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_sdid</span> <span class="op">/</span> <span class="va">se</span><span class="op">$</span><span class="va">se_sdid</span></span>
 <span>  <span class="va">t_stat_did</span><span class="op">[</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_did</span> <span class="op">/</span> <span class="va">se</span><span class="op">$</span><span class="va">se_did</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_tables.html">create_tables</a></span><span class="op">(</span></span>
 <span>  <span class="va">tau_array_sdid</span>,</span>
 <span>  <span class="va">tau_array_did</span>,</span>
@@ -211,7 +167,7 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Tue Aug 12 13:18:40 2025</span></span>
+<span><span class="co">#&gt; % Tue Aug 19 23:50:52 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrrrrr}</span></span>
@@ -220,31 +176,34 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt; SSDiD RMSE &amp; 0.02 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.06 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.08 &amp; 0.09 &amp; 0.09 &amp; 0.10 &amp; 0.10 &amp; 0.10 &amp; 0.12 &amp; 0.13 &amp; 0.12 &amp; 0.13 &amp; 0.14 &amp; 0.41 &amp; 0.38 \\ </span></span>
 <span><span class="co">#&gt;   DiD RMSE &amp; 0.04 &amp; 0.03 &amp; 0.04 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.04 &amp; 0.04 &amp; 0.03 &amp; 0.04 &amp; 0.02 &amp; 0.03 &amp; 0.02 &amp; 0.04 &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.02 &amp; 0.02 &amp; 0.03 &amp; 0.03 &amp; 0.13 &amp; 0.10 \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 0.58 &amp; 0.94 &amp; 1.10 &amp; 1.80 &amp; 1.98 &amp; 2.63 &amp; 2.23 &amp; 1.40 &amp; 1.32 &amp; 1.85 &amp; 1.71 &amp; 3.70 &amp; 3.35 &amp; 3.98 &amp; 2.60 &amp; 3.13 &amp; 3.54 &amp; 4.47 &amp; 5.19 &amp; 4.90 &amp; 5.10 &amp; 4.44 &amp; 3.16 &amp; 3.78 \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 0.58 &amp; 0.94 &amp; 1.10 &amp; 1.80 &amp; 1.99 &amp; 2.63 &amp; 2.23 &amp; 1.40 &amp; 1.32 &amp; 1.85 &amp; 1.71 &amp; 3.70 &amp; 3.35 &amp; 3.98 &amp; 2.60 &amp; 3.14 &amp; 3.55 &amp; 4.47 &amp; 5.19 &amp; 4.90 &amp; 5.11 &amp; 4.45 &amp; 3.16 &amp; 3.78 \\ </span></span>
 <span><span class="co">#&gt;   SSDiD Bias &amp; 0.00 &amp; 0.01 &amp; 0.01 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.01 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.03 &amp; 0.04 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.01 &amp; 0.03 \\ </span></span>
 <span><span class="co">#&gt;   DiD Bias &amp; -0.04 &amp; -0.03 &amp; -0.04 &amp; -0.02 &amp; -0.02 &amp; -0.02 &amp; -0.02 &amp; -0.03 &amp; -0.04 &amp; -0.03 &amp; -0.03 &amp; -0.02 &amp; -0.02 &amp; -0.02 &amp; -0.03 &amp; -0.03 &amp; -0.02 &amp; -0.02 &amp; -0.02 &amp; -0.01 &amp; -0.01 &amp; -0.01 &amp; -0.10 &amp; -0.06 \\ </span></span>
 <span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; -0.04 &amp; -0.24 &amp; -0.24 &amp; -0.79 &amp; -0.91 &amp; -1.08 &amp; -1.03 &amp; -0.44 &amp; -0.42 &amp; -0.59 &amp; -0.43 &amp; -1.29 &amp; -1.06 &amp; -1.44 &amp; -0.66 &amp; -0.64 &amp; -0.77 &amp; -1.37 &amp; -2.26 &amp; -1.92 &amp; -2.62 &amp; -1.60 &amp; -0.09 &amp; -0.56 \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias/SD &amp; 0.06 &amp; 0.25 &amp; 0.22 &amp; 0.44 &amp; 0.46 &amp; 0.40 &amp; 0.46 &amp; 0.32 &amp; 0.33 &amp; 0.32 &amp; 0.25 &amp; 0.29 &amp; 0.28 &amp; 0.28 &amp; 0.24 &amp; 0.18 &amp; 0.19 &amp; 0.22 &amp; 0.29 &amp; 0.19 &amp; 0.16 &amp; 0.14 &amp; 0.02 &amp; 0.09 \\ </span></span>
+<span><span class="co">#&gt;   DiD Bias/SD &amp; -4.20 &amp; -3.15 &amp; -4.02 &amp; -2.30 &amp; -2.26 &amp; -2.17 &amp; -2.19 &amp; -3.60 &amp; -4.17 &amp; -2.92 &amp; -3.15 &amp; -1.32 &amp; -1.54 &amp; -1.15 &amp; -2.24 &amp; -1.77 &amp; -1.57 &amp; -1.00 &amp; -0.82 &amp; -0.55 &amp; -0.32 &amp; -0.43 &amp; -1.27 &amp; -0.77 \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; -0.01 &amp; -0.08 &amp; -0.05 &amp; -0.19 &amp; -0.20 &amp; -0.18 &amp; -0.21 &amp; -0.09 &amp; -0.08 &amp; -0.11 &amp; -0.08 &amp; -0.22 &amp; -0.18 &amp; -0.25 &amp; -0.11 &amp; -0.10 &amp; -0.12 &amp; -0.22 &amp; -0.35 &amp; -0.35 &amp; -0.50 &amp; -0.33 &amp; -0.02 &amp; -0.12 \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{RMSE and Bias table, 80 % signal CHC} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span>
-<span><span class="co">#&gt; [1] ""</span></span>
+<span><span class="co">#&gt; [1] "\n\n"</span></span>
 <span><span class="co">#&gt; [1] ""</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Tue Aug 12 13:18:40 2025</span></span>
+<span><span class="co">#&gt; % Tue Aug 19 23:50:52 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrrrrr}</span></span>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 &amp; 21 &amp; 22 &amp; 23 \\ </span></span>
 <span><span class="co">#&gt;   \hline</span></span>
-<span><span class="co">#&gt; SSDiD &amp; 0.98 &amp; 0.98 &amp; 0.97 &amp; 0.97 &amp; 0.97 &amp; 0.97 &amp; 0.96 &amp; 0.97 &amp; 0.98 &amp; 0.97 &amp; 0.98 &amp; 0.97 &amp; 0.98 &amp; 0.97 &amp; 0.97 &amp; 0.97 &amp; 0.98 &amp; 0.98 &amp; 0.98 &amp; 0.98 &amp; 0.97 &amp; 0.97 &amp; 0.96 &amp; 0.95 \\ </span></span>
+<span><span class="co">#&gt; SSDiD &amp; 0.98 &amp; 0.98 &amp; 0.97 &amp; 0.97 &amp; 0.97 &amp; 0.97 &amp; 0.96 &amp; 0.97 &amp; 0.98 &amp; 0.97 &amp; 0.98 &amp; 0.98 &amp; 0.98 &amp; 0.97 &amp; 0.97 &amp; 0.97 &amp; 0.98 &amp; 0.98 &amp; 0.98 &amp; 0.98 &amp; 0.97 &amp; 0.97 &amp; 0.96 &amp; 0.95 \\ </span></span>
 <span><span class="co">#&gt;   DiD &amp; 0.07 &amp; 0.36 &amp; 0.14 &amp; 0.69 &amp; 0.77 &amp; 0.83 &amp; 0.80 &amp; 0.29 &amp; 0.20 &amp; 0.56 &amp; 0.45 &amp; 0.93 &amp; 0.86 &amp; 0.93 &amp; 0.70 &amp; 0.78 &amp; 0.88 &amp; 0.92 &amp; 0.95 &amp; 0.96 &amp; 0.96 &amp; 0.94 &amp; 0.66 &amp; 0.81 \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{Coverage table of estimators, 80 % signal CHC} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
 <span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_sdid</span>,</span>
 <span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
@@ -254,8 +213,8 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="CHC_files/figure-html/unnamed-chunk-11-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-11-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-11-3.png" width="100%" height="100%"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p><img src="CHC_files/figure-html/unnamed-chunk-12-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-12-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-12-3.png" width="100%" height="100%"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
 <span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_did</span>,</span>
 <span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
@@ -265,12 +224,12 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="CHC_files/figure-html/unnamed-chunk-12-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-12-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-12-3.png" width="100%" height="100%"></p>
+<p><img src="CHC_files/figure-html/unnamed-chunk-13-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-13-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-13-3.png" width="100%" height="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="signal-no-interactive-fe">0 % signal: no interactive FE<a class="anchor" aria-label="anchor" href="#signal-no-interactive-fe"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dgp_chc.html">estimate_dgp_chc</a></span><span class="op">(</span></span>
 <span>  panel <span class="op">=</span> <span class="va">panel</span>, signal_share <span class="op">=</span> <span class="fl">0.0</span>,</span>
 <span>  scale <span class="op">=</span> <span class="fl">4</span>, rank <span class="op">=</span> <span class="fl">5</span></span>
@@ -281,9 +240,8 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  X <span class="op">=</span> <span class="va">params</span><span class="op">$</span><span class="va">X</span>,</span>
 <span>  never_treat <span class="op">=</span> <span class="st">"2500"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span>
-<span><span class="va">W_avg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel</span><span class="op">)</span><span class="op">$</span><span class="va">W_avg</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">W_avg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel</span><span class="op">)</span><span class="op">$</span><span class="va">W_avg</span></span>
 <span><span class="va">tau_array_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">W_avg</span><span class="op">)</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tau_array_did</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">W_avg</span><span class="op">)</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">t_stat_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">W_avg</span><span class="op">)</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
@@ -306,7 +264,7 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  <span class="va">t_stat_sdid</span><span class="op">[</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_sdid</span> <span class="op">/</span> <span class="va">se</span><span class="op">$</span><span class="va">se_sdid</span></span>
 <span>  <span class="va">t_stat_did</span><span class="op">[</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_did</span> <span class="op">/</span> <span class="va">se</span><span class="op">$</span><span class="va">se_did</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_tables.html">create_tables</a></span><span class="op">(</span></span>
 <span>  <span class="va">tau_array_sdid</span>,</span>
 <span>  <span class="va">tau_array_did</span>,</span>
@@ -317,7 +275,7 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Tue Aug 12 14:34:07 2025</span></span>
+<span><span class="co">#&gt; % Wed Aug 20 01:07:34 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrrrrr}</span></span>
@@ -329,15 +287,18 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 1.74 &amp; 1.66 &amp; 1.72 &amp; 1.76 &amp; 1.81 &amp; 1.87 &amp; 1.80 &amp; 1.65 &amp; 1.69 &amp; 1.63 &amp; 1.46 &amp; 1.52 &amp; 1.42 &amp; 1.42 &amp; 1.40 &amp; 1.49 &amp; 1.43 &amp; 1.45 &amp; 1.46 &amp; 1.55 &amp; 1.44 &amp; 1.41 &amp; 1.32 &amp; 1.32 \\ </span></span>
 <span><span class="co">#&gt;   SSDiD Bias &amp; -0.01 &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; -0.01 &amp; -0.00 &amp; 0.01 &amp; -0.00 &amp; -0.00 &amp; -0.01 &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.01 &amp; -0.02 \\ </span></span>
 <span><span class="co">#&gt;   DiD Bias &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; 0.01 &amp; 0.01 \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; 1.42 &amp; 2.62 &amp; 2.46 &amp; 1.88 &amp; 1.09 &amp; 0.68 &amp; 2.67 &amp; 0.24 &amp; 2.10 &amp; 1.56 &amp; 0.62 &amp; 2.62 &amp; 2.34 &amp; 0.45 &amp; -0.12 &amp; 1.93 &amp; 1.29 &amp; -77.73 &amp; -0.31 &amp; 0.22 &amp; -6.36 &amp; 0.59 &amp; 1.14 &amp; -1.08 \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; 1.42 &amp; 2.62 &amp; 2.46 &amp; 1.88 &amp; 1.09 &amp; 0.68 &amp; 2.67 &amp; 0.23 &amp; 2.10 &amp; 1.56 &amp; 0.62 &amp; 2.62 &amp; 2.34 &amp; 0.45 &amp; -0.12 &amp; 1.93 &amp; 1.29 &amp; -77.72 &amp; -0.31 &amp; 0.22 &amp; -6.36 &amp; 0.59 &amp; 1.14 &amp; -1.08 \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias/SD &amp; -0.07 &amp; -0.06 &amp; 0.02 &amp; -0.01 &amp; -0.02 &amp; -0.01 &amp; -0.07 &amp; -0.00 &amp; 0.07 &amp; -0.03 &amp; -0.01 &amp; -0.09 &amp; -0.04 &amp; 0.00 &amp; -0.00 &amp; 0.03 &amp; -0.01 &amp; -0.02 &amp; -0.01 &amp; 0.00 &amp; 0.02 &amp; -0.01 &amp; 0.02 &amp; -0.03 \\ </span></span>
+<span><span class="co">#&gt;   DiD Bias/SD &amp; -0.08 &amp; -0.04 &amp; 0.01 &amp; -0.00 &amp; -0.03 &amp; -0.02 &amp; -0.05 &amp; -0.03 &amp; 0.06 &amp; -0.03 &amp; -0.02 &amp; -0.05 &amp; -0.02 &amp; 0.01 &amp; 0.01 &amp; 0.02 &amp; -0.01 &amp; 0.00 &amp; 0.05 &amp; 0.02 &amp; -0.00 &amp; -0.02 &amp; 0.03 &amp; 0.04 \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; 0.82 &amp; 1.58 &amp; 1.43 &amp; 1.07 &amp; 0.60 &amp; 0.36 &amp; 1.48 &amp; 0.14 &amp; 1.25 &amp; 0.96 &amp; 0.42 &amp; 1.73 &amp; 1.65 &amp; 0.32 &amp; -0.08 &amp; 1.30 &amp; 0.90 &amp; -53.47 &amp; -0.22 &amp; 0.14 &amp; -4.41 &amp; 0.42 &amp; 0.87 &amp; -0.82 \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{RMSE and Bias table, 0 % signal CHC} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span>
-<span><span class="co">#&gt; [1] ""</span></span>
+<span><span class="co">#&gt; [1] "\n\n"</span></span>
 <span><span class="co">#&gt; [1] ""</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Tue Aug 12 14:34:07 2025</span></span>
+<span><span class="co">#&gt; % Wed Aug 20 01:07:34 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrrrrr}</span></span>
@@ -350,7 +311,7 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{Coverage table of estimators, 0 % signal CHC} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
 <span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_sdid</span>,</span>
 <span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
@@ -360,8 +321,8 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="CHC_files/figure-html/unnamed-chunk-16-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-16-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-16-3.png" width="100%" height="100%"></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<p><img src="CHC_files/figure-html/unnamed-chunk-17-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-17-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-17-3.png" width="100%" height="100%"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
 <span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_did</span>,</span>
 <span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
@@ -371,7 +332,7 @@ than std of FE.<a class="anchor" aria-label="anchor" href="#signal-the-standard-
 <span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="CHC_files/figure-html/unnamed-chunk-17-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-17-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-17-3.png" width="100%" height="100%"></p>
+<p><img src="CHC_files/figure-html/unnamed-chunk-18-1.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-18-2.png" width="100%" height="100%"><img src="CHC_files/figure-html/unnamed-chunk-18-3.png" width="100%" height="100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

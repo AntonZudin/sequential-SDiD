@@ -16,7 +16,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">seq.sdid</a>
 
@@ -29,20 +29,19 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/Getting_started.html">Getting started</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/CHC.html">Community Health Centers</a></li>
-    <li><a class="dropdown-item" href="../articles/CPS.html">Current Population Survey</a></li>
-    <li><a class="dropdown-item" href="../articles/Preprocessing_CHC.html">Preprocessing CHC</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-paper-results" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Paper results</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-paper-results">
+<li><a class="dropdown-item" href="../articles/Preprocessing_CHC.html">Preprocessing CHC</a></li>
+    <li><a class="dropdown-item" href="../articles/CHC.html">CHC</a></li>
+    <li><a class="dropdown-item" href="../articles/CPS.html">CPS</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">References</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AntonZudin/sequential-SDiD"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -68,11 +67,13 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://antonzudin.github.io/sequential-SDiD/">"seq.sdid"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://xtable.r-forge.r-project.org/" class="external-link">xtable</a></span><span class="op">)</span></span>
-<span><span class="co">#devtools::load_all()</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"didimputation"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">didimputation</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#CPS &lt;- read.csv("data/CPS.csv")</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">CPS</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">CPS</span><span class="op">)</span></span>
 <span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_wide.html">to_wide</a></span><span class="op">(</span><span class="va">CPS</span>, unit <span class="op">=</span> <span class="fl">1</span>, time <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                     treatment <span class="op">=</span> <span class="st">'min_wage'</span>, outcome <span class="op">=</span> <span class="st">'log_wage'</span>,</span>
 <span>                     never_treat <span class="op">=</span> <span class="st">"2500"</span><span class="op">)</span></span>
@@ -82,24 +83,29 @@
 <span>  <span class="va">panel</span><span class="op">$</span><span class="va">Y</span>, <span class="fu"><a href="../reference/last_col.html">last_col</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">W</span><span class="op">)</span>,</span>
 <span>  <span class="fl">4</span>, <span class="cn">TRUE</span>, <span class="va">panel</span><span class="op">$</span><span class="va">never_treat</span></span>
 <span><span class="op">)</span></span>
+<span><span class="va">params</span><span class="op">$</span><span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">Sigma</span></span>
 <span><span class="va">pi</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">pi</span></span>
+<span><span class="co"># The difference between the first and the second smallest numbers is significant </span></span>
 <span><span class="va">pi</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">pi_scaled</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">pi</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Increase the treatment probability</span></span>
 <span><span class="va">pi_scaled</span>  <span class="op">&lt;-</span> <span class="fl">0.35</span> <span class="op">+</span> <span class="fl">0.65</span><span class="op">*</span><span class="va">pi_scaled</span></span>
-<span><span class="va">params</span><span class="op">$</span><span class="va">pi</span> <span class="op">&lt;-</span> <span class="va">pi_scaled</span></span>
-<span><span class="va">panel_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span><span class="va">params</span><span class="op">$</span><span class="va">pi</span> <span class="op">&lt;-</span> <span class="va">pi_scaled</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">panel_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  Y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  W <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">X</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">adopt_date</span><span class="op">)</span>,</span>
 <span>  never_treat <span class="op">=</span> <span class="st">"2500"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">W_avg</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sim_setup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rank <span class="op">=</span> <span class="fl">4</span>, N1 <span class="op">=</span> <span class="fl">45</span>, a1 <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span>
-<span><span class="va">max_treat_periods</span> <span class="op">&lt;-</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span><span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">W_avg</span><span class="op">)</span></span>
+<span><span class="va">sim_setup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rank <span class="op">=</span> <span class="fl">4</span>, N1 <span class="op">=</span> <span class="fl">45</span>, a1 <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></code></pre></div>
+<p>The state ever-treated status and adoption date depends on the
+state’s factor loading on the first principal component of the
+interactive-effects model</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">max_treat_periods</span> <span class="op">&lt;-</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span> <span class="op">+</span> <span class="fl">1</span></span>
 <span><span class="va">tau_array_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tau_array_did</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">t_stat_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
@@ -107,25 +113,51 @@
 <span><span class="va">cohort_array</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">M</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_dgp.html">simulate_dgp</a></span><span class="op">(</span><span class="va">params</span>, <span class="va">sim_setup</span><span class="op">$</span><span class="va">N1</span>, <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_dgp.html">simulate_dgp</a></span><span class="op">(</span><span class="va">params</span>, <span class="va">sim_setup</span><span class="op">$</span><span class="va">N1</span>,<span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span>,</span>
+<span>                      permute_pi <span class="op">=</span> <span class="cn">FALSE</span>, as_df <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">panel_b</span> <span class="op">&lt;-</span> <span class="va">panel_sim</span></span>
 <span>  <span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">Y</span>; <span class="va">panel_b</span><span class="op">$</span><span class="va">W</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">W</span></span>
-<span>  <span class="co">#s2 &lt;- estimate_s2(Y, panel_b$W, panel_b$X$popwt)</span></span>
-<span>  <span class="va">s2</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">sigma_2</span></span>
+<span>  <span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_s2.html">estimate_s2</a></span><span class="op">(</span><span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span>, <span class="va">panel_b</span><span class="op">$</span><span class="va">W</span><span class="op">)</span></span>
+<span>  <span class="co">#s2 &lt;- params$sigma_2</span></span>
 <span>  <span class="va">panel_avg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel_b</span>, <span class="st">"unit"</span>, boot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">panel_wide</span> <span class="op">&lt;-</span> <span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
+<span>      cols <span class="op">=</span> <span class="op">-</span><span class="va">adopt_date</span>,</span>
+<span>      names_to <span class="op">=</span> <span class="st">"time"</span>,</span>
+<span>      values_to <span class="op">=</span> <span class="st">"outcome"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span><span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">$</span><span class="va">time</span><span class="op">)</span></span>
+<span>  <span class="co"># Never-treated should be either 0 or NULL</span></span>
+<span>  <span class="va">never_treat_index</span> <span class="op">&lt;-</span> <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span> <span class="op">==</span> <span class="va">panel_sim</span><span class="op">$</span><span class="va">never_treat</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span><span class="op">[</span><span class="va">never_treat_index</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  </span>
+<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span></span>
+<span>  <span class="va">did_imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/didimputation/man/did_imputation.html" class="external-link">did_imputation</a></span><span class="op">(</span></span>
+<span>    <span class="va">panel_wide</span>,</span>
+<span>    yname <span class="op">=</span> <span class="st">"outcome"</span>,</span>
+<span>    gname <span class="op">=</span> <span class="st">"adopt_date"</span>,</span>
+<span>    tname <span class="op">=</span> <span class="st">"time"</span>,</span>
+<span>    idname <span class="op">=</span> <span class="st">"state"</span>,</span>
+<span>    horizon <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span><span class="va">panel_avg</span>, <span class="st">"unit"</span>,</span>
-<span>                              s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"both"</span><span class="op">)</span></span>
+<span>  <span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span></span>
+<span>    <span class="va">panel_avg</span>, <span class="st">"unit"</span>,</span>
+<span>    s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"sdid"</span>, <span class="va">aggregate_by_pop</span><span class="op">)</span></span>
 <span>  <span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel_b</span>, <span class="fl">100</span><span class="op">)</span></span>
-<span>  <span class="va">max_lag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">est</span><span class="op">$</span><span class="va">tau_sdid</span><span class="op">)</span></span>
-<span>  <span class="va">tau_array_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_sdid</span></span>
-<span>  <span class="va">tau_array_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_did</span></span>
-<span>  <span class="va">t_stat_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_sdid</span> <span class="op">/</span> <span class="va">se</span><span class="op">$</span><span class="va">se_sdid</span></span>
-<span>  <span class="va">t_stat_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">$</span><span class="va">tau_did</span> <span class="op">/</span> <span class="va">se</span><span class="op">$</span><span class="va">se_did</span></span>
+<span>  <span class="va">max_lag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span></span>
+<span>  <span class="va">tau_array_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span><span class="op">]</span></span>
+<span>  <span class="va">tau_array_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">estimate</span></span>
+<span>  <span class="va">t_stat_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span><span class="op">]</span> <span class="op">/</span> <span class="va">se</span></span>
+<span>  <span class="va">t_stat_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">estimate</span> <span class="op">/</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">std.error</span></span>
 <span>  <span class="va">cohort_array</span><span class="op">[</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">cohort</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
 <span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_sdid</span>,</span>
 <span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
@@ -135,8 +167,8 @@
 <span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="CPS_files/figure-html/unnamed-chunk-5-1.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-5-2.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-5-3.png" width="100%" height="100%"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p><img src="CPS_files/figure-html/unnamed-chunk-6-1.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-6-2.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-6-3.png" width="100%" height="100%"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
 <span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_did</span>,</span>
 <span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
@@ -146,8 +178,8 @@
 <span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="CPS_files/figure-html/unnamed-chunk-6-1.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-6-2.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-6-3.png" width="100%" height="100%"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p><img src="CPS_files/figure-html/unnamed-chunk-7-1.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-7-2.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-7-3.png" width="100%" height="100%"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_tables.html">create_tables</a></span><span class="op">(</span></span>
 <span>  <span class="va">tau_array_sdid</span>,</span>
 <span>  <span class="va">tau_array_did</span>,</span>
@@ -158,42 +190,173 @@
 <span>  <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Tue Aug 12 16:00:57 2025</span></span>
+<span><span class="co">#&gt; % Wed Aug 20 02:26:36 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
 <span><span class="co">#&gt;   \hline</span></span>
-<span><span class="co">#&gt; SSDiD RMSE &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   DiD RMSE &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.08 &amp; 0.08 &amp; 0.09 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp; 0.12 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 0.78 &amp; 0.76 &amp; 0.76 &amp; 0.75 &amp; 0.71 &amp; 0.75 &amp; 0.75 &amp; 0.77 &amp; 0.76 &amp; 0.75 &amp; 0.77 &amp; 0.80 &amp; 0.89 &amp; 0.89 &amp; 0.93 &amp; 0.91 &amp; 0.98 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD Bias &amp; 0.00 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.01 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   DiD Bias &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.08 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; 0.12 &amp; 0.14 &amp; 0.13 &amp; 0.17 &amp; 0.11 &amp; 0.18 &amp; 0.18 &amp; 0.19 &amp; 0.19 &amp; 0.21 &amp; 0.21 &amp; 0.16 &amp; 0.26 &amp; 0.27 &amp; 0.29 &amp; 0.27 &amp; 0.31 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt; SSDiD RMSE &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp; 0.13 &amp; 0.15 &amp; 0.16 &amp; 0.18 &amp; 0.19 &amp; 0.21 &amp; 0.23 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD RMSE &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.10 &amp; 0.10 &amp; 0.11 &amp; 0.12 &amp; 0.13 &amp; 0.14 &amp; 0.15 &amp; 0.17 &amp; 0.19 &amp; 0.21 &amp; 0.23 &amp; 0.26 &amp; 0.28 &amp; 0.29 &amp; 0.31 &amp; 0.33 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 0.54 &amp; 0.53 &amp; 0.51 &amp; 0.51 &amp; 0.51 &amp; 0.54 &amp; 0.54 &amp; 0.56 &amp; 0.58 &amp; 0.59 &amp; 0.58 &amp; 0.59 &amp; 0.61 &amp; 0.63 &amp; 0.64 &amp; 0.63 &amp; 0.65 &amp; 0.66 &amp; 0.66 &amp; 0.71 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias &amp; 0.01 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.11 &amp; 0.12 &amp; 0.14 &amp; 0.16 &amp; 0.16 &amp; 0.17 &amp; 0.18 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD Bias &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp; 0.11 &amp; 0.13 &amp; 0.14 &amp; 0.15 &amp; 0.16 &amp; 0.18 &amp; 0.21 &amp; 0.23 &amp; 0.26 &amp; 0.28 &amp; 0.29 &amp; 0.31 &amp; 0.32 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; 0.17 &amp; 0.24 &amp; 0.24 &amp; 0.30 &amp; 0.32 &amp; 0.36 &amp; 0.38 &amp; 0.40 &amp; 0.44 &amp; 0.43 &amp; 0.44 &amp; 0.46 &amp; 0.48 &amp; 0.52 &amp; 0.53 &amp; 0.54 &amp; 0.57 &amp; 0.56 &amp; 0.55 &amp; 0.56 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias/SD &amp; 0.31 &amp; 0.46 &amp; 0.52 &amp; 0.66 &amp; 0.77 &amp; 0.84 &amp; 0.92 &amp; 0.97 &amp; 1.08 &amp; 1.05 &amp; 1.11 &amp; 1.15 &amp; 1.22 &amp; 1.36 &amp; 1.46 &amp; 1.64 &amp; 1.70 &amp; 1.57 &amp; 1.41 &amp; 1.23 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD Bias/SD &amp; 2.56 &amp; 2.94 &amp; 3.30 &amp; 3.56 &amp; 3.89 &amp; 4.03 &amp; 4.04 &amp; 4.19 &amp; 4.64 &amp; 4.84 &amp; 4.98 &amp; 5.10 &amp; 5.36 &amp; 5.58 &amp; 5.90 &amp; 6.02 &amp; 6.27 &amp; 5.97 &amp; 5.58 &amp; 4.72 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; 0.12 &amp; 0.16 &amp; 0.16 &amp; 0.19 &amp; 0.20 &amp; 0.21 &amp; 0.23 &amp; 0.23 &amp; 0.23 &amp; 0.22 &amp; 0.22 &amp; 0.23 &amp; 0.23 &amp; 0.24 &amp; 0.25 &amp; 0.27 &amp; 0.27 &amp; 0.26 &amp; 0.25 &amp; 0.26 &amp;  \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{RMSE and Bias table, CPS} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span>
-<span><span class="co">#&gt; [1] ""</span></span>
+<span><span class="co">#&gt; [1] "\n\n"</span></span>
 <span><span class="co">#&gt; [1] ""</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Tue Aug 12 16:00:57 2025</span></span>
+<span><span class="co">#&gt; % Wed Aug 20 02:26:36 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
 <span><span class="co">#&gt;   \hline</span></span>
-<span><span class="co">#&gt; SSDiD &amp; 0.90 &amp; 0.89 &amp; 0.90 &amp; 0.88 &amp; 0.89 &amp; 0.88 &amp; 0.86 &amp; 0.86 &amp; 0.86 &amp; 0.86 &amp; 0.86 &amp; 0.88 &amp; 0.86 &amp; 0.86 &amp; 0.85 &amp; 0.87 &amp; 0.83 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   DiD &amp; 0.72 &amp; 0.69 &amp; 0.68 &amp; 0.65 &amp; 0.68 &amp; 0.68 &amp; 0.68 &amp; 0.67 &amp; 0.69 &amp; 0.68 &amp; 0.68 &amp; 0.68 &amp; 0.70 &amp; 0.72 &amp; 0.71 &amp; 0.69 &amp; 0.71 &amp;  &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt; SSDiD &amp; 0.91 &amp; 0.88 &amp; 0.86 &amp; 0.83 &amp; 0.80 &amp; 0.72 &amp; 0.71 &amp; 0.72 &amp; 0.66 &amp; 0.65 &amp; 0.64 &amp; 0.61 &amp; 0.58 &amp; 0.53 &amp; 0.48 &amp; 0.45 &amp; 0.39 &amp; 0.43 &amp; 0.47 &amp; 0.46 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD &amp; 0.29 &amp; 0.20 &amp; 0.15 &amp; 0.09 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.04 &amp; 0.03 &amp; 0.02 &amp; 0.01 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.01 &amp;  \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{Coverage table of estimators, CPS} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cohorts.html">plot_cohorts</a></span><span class="op">(</span><span class="va">cohort_array</span>, <span class="cn">TRUE</span>, <span class="fl">40</span>, <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="CPS_files/figure-html/unnamed-chunk-8-1.png" width="100%" height="100%"></p>
+<p><img src="CPS_files/figure-html/unnamed-chunk-9-1.png" width="100%" height="100%"></p>
+<pre><code><span><span class="co">#&gt; agg_png </span></span>
+<span><span class="co">#&gt;       2</span></span></code></pre>
+<p>The treatment assignment is random (first principal component is
+permuted).</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">max_treat_periods</span> <span class="op">&lt;-</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span><span class="va">tau_array_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tau_array_did</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">t_stat_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">t_stat_did</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cohort_array</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">M</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_dgp.html">simulate_dgp</a></span><span class="op">(</span><span class="va">params</span>, <span class="va">sim_setup</span><span class="op">$</span><span class="va">N1</span>, <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span>,</span>
+<span>                      permute_pi <span class="op">=</span> <span class="cn">TRUE</span>, as_df <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">panel_b</span> <span class="op">&lt;-</span> <span class="va">panel_sim</span></span>
+<span>  <span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">Y</span>; <span class="va">panel_b</span><span class="op">$</span><span class="va">W</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">W</span></span>
+<span>  <span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_s2.html">estimate_s2</a></span><span class="op">(</span><span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span>, <span class="va">panel_b</span><span class="op">$</span><span class="va">W</span><span class="op">)</span></span>
+<span>  <span class="co">#s2 &lt;- params$sigma_2</span></span>
+<span>  <span class="va">panel_avg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel_b</span>, <span class="st">"unit"</span>, boot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">panel_wide</span> <span class="op">&lt;-</span> <span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
+<span>      cols <span class="op">=</span> <span class="op">-</span><span class="va">adopt_date</span>,</span>
+<span>      names_to <span class="op">=</span> <span class="st">"time"</span>,</span>
+<span>      values_to <span class="op">=</span> <span class="st">"outcome"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span><span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">$</span><span class="va">time</span><span class="op">)</span></span>
+<span>  <span class="co"># Never-treated should be either 0 or NULL</span></span>
+<span>  <span class="va">never_treat_index</span> <span class="op">&lt;-</span> <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span> <span class="op">==</span> <span class="va">panel_sim</span><span class="op">$</span><span class="va">never_treat</span></span>
+<span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span><span class="op">[</span><span class="va">never_treat_index</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  </span>
+<span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">)</span></span>
+<span>  <span class="va">panel_wide</span></span>
+<span>  <span class="va">did_imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/didimputation/man/did_imputation.html" class="external-link">did_imputation</a></span><span class="op">(</span></span>
+<span>    <span class="va">panel_wide</span>,</span>
+<span>    yname <span class="op">=</span> <span class="st">"outcome"</span>,</span>
+<span>    gname <span class="op">=</span> <span class="st">"adopt_date"</span>,</span>
+<span>    tname <span class="op">=</span> <span class="st">"time"</span>,</span>
+<span>    idname <span class="op">=</span> <span class="st">"state"</span>,</span>
+<span>    horizon <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span></span>
+<span>    <span class="va">panel_avg</span>, <span class="st">"unit"</span>,</span>
+<span>    s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"sdid"</span>, <span class="va">aggregate_by_pop</span><span class="op">)</span></span>
+<span>  <span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel_b</span>, <span class="fl">100</span><span class="op">)</span></span>
+<span>  <span class="va">max_lag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span></span>
+<span>  <span class="va">tau_array_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span><span class="op">]</span></span>
+<span>  <span class="va">tau_array_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">estimate</span></span>
+<span>  <span class="va">t_stat_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span><span class="op">]</span> <span class="op">/</span> <span class="va">se</span></span>
+<span>  <span class="va">t_stat_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">estimate</span> <span class="op">/</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">std.error</span></span>
+<span>  <span class="va">cohort_array</span><span class="op">[</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">cohort</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
+<span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_sdid</span>,</span>
+<span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"sdid"</span>,</span>
+<span>  sim_name <span class="op">=</span> <span class="st">"CPS"</span>,</span>
+<span>  signal_share <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="CPS_files/figure-html/unnamed-chunk-11-1.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-11-2.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-11-3.png" width="100%" height="100%"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_t_stat.html">plot_t_stat</a></span><span class="op">(</span></span>
+<span>  t_stat_array <span class="op">=</span> <span class="va">t_stat_did</span>,</span>
+<span>  lags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"did"</span>,</span>
+<span>  sim_name <span class="op">=</span> <span class="st">"CPS"</span>,</span>
+<span>  signal_share <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  save_pdf <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="CPS_files/figure-html/unnamed-chunk-12-1.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-12-2.png" width="100%" height="100%"><img src="CPS_files/figure-html/unnamed-chunk-12-3.png" width="100%" height="100%"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_tables.html">create_tables</a></span><span class="op">(</span></span>
+<span>  <span class="va">tau_array_sdid</span>,</span>
+<span>  <span class="va">tau_array_did</span>,</span>
+<span>  <span class="va">t_stat_sdid</span>,</span>
+<span>  <span class="va">t_stat_did</span>,</span>
+<span>  <span class="st">"CPS"</span>,</span>
+<span>  <span class="fl">0.0</span>,</span>
+<span>  <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
+<span><span class="co">#&gt; % Wed Aug 20 03:41:11 2025</span></span>
+<span><span class="co">#&gt; \begin{table}[ht]</span></span>
+<span><span class="co">#&gt; \centering</span></span>
+<span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
+<span><span class="co">#&gt;   \hline</span></span>
+<span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
+<span><span class="co">#&gt;   \hline</span></span>
+<span><span class="co">#&gt; SSDiD RMSE &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.09 &amp; 0.11 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD RMSE &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 1.13 &amp; 1.15 &amp; 1.14 &amp; 1.11 &amp; 1.11 &amp; 1.06 &amp; 1.11 &amp; 1.08 &amp; 1.10 &amp; 1.13 &amp; 1.16 &amp; 1.17 &amp; 1.17 &amp; 1.15 &amp; 1.18 &amp; 1.17 &amp; 1.11 &amp; 1.11 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD Bias &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; -5.94 &amp; 0.76 &amp; -0.17 &amp; -0.06 &amp; 0.04 &amp; -3.16 &amp; 0.95 &amp; 1.29 &amp; 1.54 &amp; 1.31 &amp; 1.04 &amp; 2.30 &amp; 0.13 &amp; 1.12 &amp; 6.95 &amp; 0.74 &amp; 3.35 &amp; 3.15 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias/SD &amp; -0.01 &amp; 0.04 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; 0.02 &amp; 0.04 &amp; 0.05 &amp; 0.02 &amp; 0.05 &amp; 0.05 &amp; 0.03 &amp; 0.00 &amp; 0.02 &amp; 0.05 &amp; 0.01 &amp; -0.04 &amp; 0.02 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD Bias/SD &amp; 0.00 &amp; 0.06 &amp; 0.01 &amp; 0.04 &amp; 0.03 &amp; -0.01 &amp; 0.04 &amp; 0.04 &amp; 0.01 &amp; 0.04 &amp; 0.06 &amp; 0.01 &amp; 0.01 &amp; 0.02 &amp; 0.01 &amp; 0.01 &amp; -0.01 &amp; 0.01 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; -5.26 &amp; 0.66 &amp; -0.15 &amp; -0.05 &amp; 0.04 &amp; -2.98 &amp; 0.85 &amp; 1.20 &amp; 1.41 &amp; 1.16 &amp; 0.90 &amp; 1.96 &amp; 0.11 &amp; 0.98 &amp; 5.90 &amp; 0.64 &amp; 3.02 &amp; 2.84 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;    \hline</span></span>
+<span><span class="co">#&gt; \end{tabular}</span></span>
+<span><span class="co">#&gt; \caption{RMSE and Bias table, CPS} </span></span>
+<span><span class="co">#&gt; \end{table}</span></span>
+<span><span class="co">#&gt; [1] "\n\n"</span></span>
+<span><span class="co">#&gt; [1] ""</span></span>
+<span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
+<span><span class="co">#&gt; % Wed Aug 20 03:41:11 2025</span></span>
+<span><span class="co">#&gt; \begin{table}[ht]</span></span>
+<span><span class="co">#&gt; \centering</span></span>
+<span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
+<span><span class="co">#&gt;   \hline</span></span>
+<span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
+<span><span class="co">#&gt;   \hline</span></span>
+<span><span class="co">#&gt; SSDiD &amp; 0.93 &amp; 0.91 &amp; 0.91 &amp; 0.91 &amp; 0.89 &amp; 0.89 &amp; 0.88 &amp; 0.89 &amp; 0.89 &amp; 0.87 &amp; 0.87 &amp; 0.87 &amp; 0.89 &amp; 0.88 &amp; 0.87 &amp; 0.86 &amp; 0.89 &amp; 0.84 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   DiD &amp; 0.89 &amp; 0.90 &amp; 0.89 &amp; 0.88 &amp; 0.88 &amp; 0.88 &amp; 0.88 &amp; 0.90 &amp; 0.88 &amp; 0.88 &amp; 0.88 &amp; 0.86 &amp; 0.85 &amp; 0.82 &amp; 0.83 &amp; 0.81 &amp; 0.80 &amp; 0.75 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;    \hline</span></span>
+<span><span class="co">#&gt; \end{tabular}</span></span>
+<span><span class="co">#&gt; \caption{Coverage table of estimators, CPS} </span></span>
+<span><span class="co">#&gt; \end{table}</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cohorts.html">plot_cohorts</a></span><span class="op">(</span><span class="va">cohort_array</span>, <span class="cn">TRUE</span>, <span class="fl">40</span>, <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="CPS_files/figure-html/unnamed-chunk-14-1.png" width="100%" height="100%"></p>
 <pre><code><span><span class="co">#&gt; agg_png </span></span>
 <span><span class="co">#&gt;       2</span></span></code></pre>
   </main>
