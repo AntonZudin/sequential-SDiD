@@ -14,10 +14,11 @@ using namespace arma;
  }
 
  // [[Rcpp::export]]
- double base_estimator(
+Rcpp::NumericVector base_estimator(
      const arma::mat& Y,
      const arma::vec& n_j,
-     double s2,
+     double penalty, // eta^2
+     double s2 = -1.0, // Substitute for NULL
      std::string type = "sdid"
  ) {
    int j_c = Y.n_rows - 1;
@@ -29,6 +30,11 @@ using namespace arma;
    }
    if (type != "did" && type != "sdid") {
      Rcpp::stop("The 'type' argument should be either 'sdid' or 'did'");
+   }
+
+   // s2 should be either -1.0 (NULL) or positive
+   if (!(s2 == -1.0 || s2 > 0)) {
+     Rcpp::stop("s2 should be either NULL (-1.0) or positive");
    }
 
    double N = arma::sum(n_j.subvec(0, j_c - 1));
@@ -46,12 +52,11 @@ using namespace arma;
      lambda_reg = arma::ones<vec>(t_c) / t_c;
      gamma_reg = pi;
    } else {
-     double pen = penalty(N);
      arma::vec ones_t = arma::ones<vec>(t_c);
      arma::vec ones_j = arma::ones<vec>(j_c);
 
      // Gamma - unit weights
-     arma::mat Sigma_tc = diagmat(s2 / pi);
+     arma::mat Sigma_tc = diagmat(penalty / pi); // It is not exactly a cov matix
      arma::vec grad_gamma1 = 2 * (Y_c * (-Y_j0));
      double grad_gamma2 = 2 * arma::sum(-Y_j0);
 
@@ -60,7 +65,7 @@ using namespace arma;
      grad_reg(j_c) = grad_gamma2;
      grad_reg(j_c + 1) = -1;
 
-     arma::mat block_1 = 2 * Y_c * Y_c.t() + 2 * pen * Sigma_tc;
+     arma::mat block_1 = 2 * Y_c * Y_c.t() + 2 * Sigma_tc;
      arma::vec block_2 = 2 * (Y_c * ones_t);
 
      arma::mat hess_reg = arma::zeros(j_c + 2, j_c + 2);
@@ -82,7 +87,7 @@ using namespace arma;
      }
 
      // Lambda - time weights
-     double diag_val_jc = (1.0 / j_c) * s2 * arma::sum(1.0 / pi);
+     double diag_val_jc = penalty * (1.0 / j_c) * arma::sum(1.0 / pi);
      arma::mat Sigma_jc = diag_val_jc * arma::eye(t_c, t_c);
 
      arma::vec grad_lambda_1 = 2 * (Y_c.t() * (-Y_t0));
@@ -93,7 +98,7 @@ using namespace arma;
      gradl_reg(t_c) = grad_lambda_2;
      gradl_reg(t_c + 1) = -1;
 
-     arma::mat blockl_1 = 2 * Y_c.t() * Y_c + 2 * pen * Sigma_jc;
+     arma::mat blockl_1 = 2 * Y_c.t() * Y_c + 2 * Sigma_jc;
      arma::vec blockl_2 = 2 * (Y_c.t() * ones_j);
 
      arma::mat hessl_reg = arma::zeros(t_c + 2, t_c + 2);
@@ -117,5 +122,18 @@ using namespace arma;
    double term2 = arma::dot(Y_t0, gamma_reg) - arma::as_scalar(gamma_reg.t() * Y_c * lambda_reg);
    double tau = term1 - term2;
 
-   return tau;
+   Rcpp::NumericVector result = Rcpp::NumericVector(2);
+
+   if (s2 > 0) {
+     double est_variance = s2 *
+       (1/ pi(j_c) + arma::sum(gamma_reg / pi.subvec(0, j_c - 1))) *
+       (1 + arma::sum(lambda_reg));
+     result[0] = tau;
+     result[1] = est_variance;
+   } else {
+     result[0] = tau;
+     result[1] = -1.0;
+   }
+
+   return result;
  }

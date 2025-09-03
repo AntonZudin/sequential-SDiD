@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, message = FALSE, warning = FALSE}
-install.packages("didimputation")
+#install.packages("didimputation")
 library(didimputation)
 
 library(seq.sdid)

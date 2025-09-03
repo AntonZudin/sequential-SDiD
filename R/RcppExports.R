@@ -4,7 +4,7 @@
 #' Penalty for SSDiD
 NULL
 
-base_estimator <- function(Y, n_j, s2, type = "sdid") {
-    .Call(`_seq_sdid_base_estimator`, Y, n_j, s2, type)
+base_estimator <- function(Y, n_j, penalty, s2 = -1.0, type = "sdid") {
+    .Call(`_seq_sdid_base_estimator`, Y, n_j, penalty, s2, type)
 }
 

@@ -193,7 +193,6 @@ to_wide <- function(
   W <- W[unit_order, ]
   X <- X[unit_order, , drop = FALSE]
 
-  #time_cols <- colnames(Y)
   treat_periods <- matrix(rowSums(W[, ]))
   periods <- colnames(W)
 
@@ -336,14 +335,6 @@ prepare_wide <- function(
   coh <- Y_avg$popwt
   ad_date <- Y_avg$adopt_date
   Y_avg <- as.matrix(subset(Y_avg, select = -c(Group, popwt, adopt_date)))
-
-
-  # TODO: Understand why we reverse everything
-
-  #coh <- rev(Y_avg$popwt)
-  #ad_date <- rev(Y_avg$adopt_date)
-  #Y_avg <- subset(Y_avg, select = -c(Group, popwt, adopt_date))
-  #Y_avg <- apply(Y_avg, 2, rev)
 
 
   if (!boot) {

@@ -21,6 +21,7 @@ devtools::install_github("AntonZudin/sequential-SDiD")
 ``` r
 library(seq.sdid)
 data(CHC)
+set.seed(42)
 ```
 
 The package uses 2 functions to prepare the dataset .
@@ -49,7 +50,6 @@ panel_avg <- prepare_wide(panel, level = "cohort")
 ```
 
 ``` r
-set.seed(42)
 s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
 est <- sequential_estimator(
   panel_avg,
@@ -65,19 +65,16 @@ est
 
 ``` r
 se <- vcov(est, panel)
-se
+cat(sprintf("%1.2f", se), "\n")
 ```
 
-    ##  [1]  3.442402  3.517237  4.417285  4.447733  5.227896  5.278684  5.962290
-    ##  [8]  6.283429  6.569504  7.342846  6.974452  9.543372  9.972621 10.263685
-    ## [15] 10.968570 11.736318 11.854961 12.786417 14.031863 15.222889 14.862728
-    ## [22] 16.469635 48.961334 54.116311
+    ## 3.44 3.52 4.42 4.45 5.23 5.28 5.96 6.28 6.57 7.34 6.97 9.54 9.97 10.26 10.97 11.74 11.85 12.79 14.03 15.22 14.86 16.47 48.96 54.12
 
 ``` r
-plot(est, se)
+plot(est, se, 11, error_bar_width = 0.2)
 ```
 
-<img src="man/figures/unnamed-chunk-4-1.png" width="672" />
+<img src="man/figures/unnamed-chunk-5-1.png" width="672" />
 
 #### References
 

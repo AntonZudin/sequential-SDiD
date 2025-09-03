@@ -92,7 +92,7 @@ tau_sdid <- function(Y, n_j, s2, type = "sdid") {
     if (rcond(hess_reg) < 2.5e-16) gamma_reg <- pi
     else gamma_reg <- solve(hess_reg, -grad_reg)[1:j_c]
 
-    diag_val_jc <- (1/j_c) * s2 * sum(1/pi)
+    diag_val_jc <- s2 * (1/j_c) * sum(1/pi)
     Sigma_jc <- diag(diag_val_jc, nrow = t_c)
 
     grad_lambda_1 <- 2*crossprod(Y_c, -Y_t0)

@@ -21,6 +21,7 @@ devtools::install_github("AntonZudin/sequential-SDiD")
 ```{r, setup}
 library(seq.sdid)
 data(CHC)
+set.seed(42)
 ```
 The package uses 2 functions to prepare the dataset . 
 
@@ -48,21 +49,22 @@ panel_avg <- prepare_wide(panel, level = "cohort")
 ```
 
 ```{r}
-set.seed(42)
 s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
 est <- sequential_estimator(
   panel_avg,
   s2 = s2,
   type = "sdid")
 est
+```
 
+```{r}
 se <- vcov(est, panel)
-se
+cat(sprintf("%1.2f", se), "\n")
 ```
 
 
 ```{r, fig.retina=2}
-plot(est, se)
+plot(est, se, 11, error_bar_width = 0.2)
 ```
 
 #### References
