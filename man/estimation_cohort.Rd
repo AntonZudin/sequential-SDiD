@@ -4,20 +4,31 @@
 \alias{estimation_cohort}
 \title{Computes the \code{cohort} level sequential synthetic diff-in-diff or diff-in-diff estimate.}
 \usage{
-estimation_cohort(Y_avg, W_avg, coh, s2, type, N0 = 1)
+estimation_cohort(
+  Y_avg,
+  W_avg,
+  coh_weights,
+  penalty_func = default_penalty,
+  s2 = NULL,
+  type = "sdid",
+  compute_var = FALSE,
+  N0 = 1
+)
 }
 \arguments{
-\item{Y_avg}{:     Numeric matrix. The NxT aggregated matrix of outcomes.}
+\item{Y_avg}{:       Numeric matrix. The N x T aggregated matrix of outcomes.}
 
-\item{W_avg}{:     Binary or boolean matrix. The N x T matrix of treatment indicators.}
+\item{W_avg}{:       Binary or boolean matrix. The N x T matrix of treatment indicators.}
 
-\item{coh}{:       Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).}
+\item{coh_weights}{: Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).}
 
-\item{s2}{:        Numeric. The upper bound estimate of noise variance.}
+\item{s2}{:          Numeric. The upper bound estimate of noise variance.}
 
-\item{type}{:      Character. Type of the estimator should be \code{sdid} or \code{did}.}
+\item{type}{:        Character. Type of the estimator should be \code{sdid} or \code{did}.}
 
-\item{N0}{:        Integer. The number of control (never-treated) units.}
+\item{N0}{:          Integer. The number of control (never-treated) units.}
+
+\item{compute_var:}{Bool. If TRUE, computes the asymptotic variance of the base estimator in homoscedasticity case.}
 }
 \value{
 \code{tau_hat}: Numeric matrix.  The N x T  matrix of raw (not aggregated on lag level) treatment effects of treatment effects.

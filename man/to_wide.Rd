@@ -10,7 +10,7 @@ to_wide(
   time = 2,
   outcome = 3,
   treatment = 4,
-  population = NULL,
+  weights = NULL,
   contr_covs = c(),
   treat_covs = c(),
   never_treat = "2500",
@@ -28,7 +28,7 @@ to_wide(
 
 \item{treatment}{Numeric or character. The column number or index that corresponds to the treatment indicator.}
 
-\item{population}{Numeric, character or NULL. If not NULL, the column number or index that corresponds to the population identifier.}
+\item{weights}{Numeric, character or NULL. If not NULL, the column number or index that corresponds to the weights identifier.}
 
 \item{contr_covs}{Numeric or character vector. If the length of the vector is not 0, the vector coresponds to the covariates for control (never-treated) units.}
 
@@ -41,7 +41,7 @@ to_wide(
 \itemize{
 \item \code{Y}:  Dataframe. This is a wide panel dataframe of outcomes with adoption date column being the first one.
 \item \code{W}:  Dataframe. This is a wide panel dataframe of treatment indicators with adoption date column being the first one.
-\item \code{X}:  Dataframe. This is a dataframe with auxiliary data like adoption date, population weights and covariates.
+\item \code{X}:  Dataframe. This is a dataframe with auxiliary data like adoption date, weights and covariates.
 }
 }
 \description{

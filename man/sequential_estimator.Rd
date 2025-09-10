@@ -9,16 +9,18 @@ sequential_estimator(
   level = NULL,
   s2 = NULL,
   type = "sdid",
-  aggregate_effect = aggregate_inv_did_var
+  penalty_func = default_penalty,
+  aggregate_effect = aggregate_inv_did_var,
+  compute_var = FALSE
 )
 }
 \arguments{
-\item{panel_avg}{: List. The list should contain:
+\item{panel_avg}{:        List. The list should contain:
 \itemize{
-\item \code{Y_avg}: Numeric matrix. The N x T matrix of outcomes.
-\item \code{W_avg}: Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.
-\item \code{coh}:   Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
-\item \code{X}:     Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.
+\item \code{Y_avg}:       Numeric matrix. The N x T matrix of outcomes.
+\item \code{W_avg}:       Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.
+\item \code{coh_weights}: Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
+\item \code{X}:           Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.
 }}
 
 \item{level}{:            Character or NULL. If NULL, the level is taken from panel_avg list. The level should be \code{unit} or \code{cohort}.}
@@ -30,17 +32,27 @@ sequential_estimator(
 \item{aggregate_effect}{: Function. The function aggregates the treatment effect for every lag by weighting the effect for every cohort.
 The function should contain the following arguments:
 \itemize{
-\item \code{tau}: Numeric matrix or array.
-\item \code{W}:   Numeric matrix.
-\item \code{coh}: Numeric vector.
-\item \code{N0}:  Integer. The number of control (never-treated) units.
-\item \code{N}:   Integer. The total number of units.
+\item \code{tau}:         Numeric matrix or array.
+\item \code{W}:           Numeric matrix.
+\item \code{coh_weights}: Numeric vector.
+\item \code{N0}:          Integer. The number of control (never-treated) units.
+\item \code{N}:           Integer. The total number of units.
+}}
+
+\item{compute_var}{:     Bool. If TRUE, computes the asymptotic variance of the base_estimator when the noise is homoscedastic and there is no autocorrelation.
+This parameter should be set to TRUE if aggregate_effect function utilizes the asymptotic variance.}
+
+\item{penalty_func:}{Function. You can create your own one and pass it as a parameter.
+The function should have the following arguments:
+\itemize{
+\item \code{s2} :          Numeric or NULL. The estimated noise variance.
+\item \code{N}  :          Numeric.
 }}
 
 \item{return_s2}{:        Bool. If TRUE, returns s2. If s2 is not passed (NULL), s2 is estimated and returned.}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{              sequential_estimator
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             sequential_estimator
 }\if{html}{\out{</div>}}
 }
 \description{

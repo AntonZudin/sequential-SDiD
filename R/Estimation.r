@@ -1,11 +1,3 @@
-#' Penalty for SSDiD
-#' @description
-#' The regularization term `\eta`^2 for SSDiD estimator without s2.
-#' @param N     Numeric.
-#' @param deg   Numeric. The default value of 0.9 is proposed in the paper in Remark 3.2.
-#' @return      Numeric. The penalty term without s2.
-penalty <- function(N, deg = 0.9) N^(-deg)
-
 #' Remove `adopt_date` column from a dataframe (Y or W).
 #' @description
 #' If the argument is a matrix, none of the columns are dropped.
@@ -36,7 +28,7 @@ last_col = function(X) {
 #' The R implementation of `base_estimator` algorithm.
 #' The bottom right cell is the only cell being treated (W_it = 1).
 #' @param Y :    Numeric matrix. A submatrix of outcomes with one treated obs in the bottom right corner.
-#' @param n_j :  Numeric vector. The vector of cohort weights (the number of units in cohorts or the cohort population).
+#' @param n_j :  Numeric vector. The vector of cohort weights (the number of units in cohorts or the cohort weights (usually just cohort population)).
 #' @param s2 :   Numeric. The upper bound estimate of noise variance.
 #' @param type : Character. Type of the estimator should be `sdid` or `did`.
 #'
@@ -119,33 +111,56 @@ tau_sdid <- function(Y, n_j, s2, type = "sdid") {
 #' Computes the `cohort` level sequential synthetic diff-in-diff or diff-in-diff estimate.
 #' @description
 #' The outcome variable is aggregated on cohort or covariate level.
-#' @param Y_avg :     Numeric matrix. The NxT aggregated matrix of outcomes.
-#' @param W_avg :     Binary or boolean matrix. The N x T matrix of treatment indicators.
-#' @param coh :       Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
-#' @param s2 :        Numeric. The upper bound estimate of noise variance.
-#' @param type :      Character. Type of the estimator should be `sdid` or `did`.
-#' @param N0 :        Integer. The number of control (never-treated) units.
+#' @param Y_avg :       Numeric matrix. The N x T aggregated matrix of outcomes.
+#' @param W_avg :       Binary or boolean matrix. The N x T matrix of treatment indicators.
+#' @param coh_weights : Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
+#' @param s2 :          Numeric. The upper bound estimate of noise variance.
+#' @param type :        Character. Type of the estimator should be `sdid` or `did`.
+#' @param compute_var:  Bool. If TRUE, computes the asymptotic variance of the base estimator in homoscedasticity case.
+#' @param N0 :          Integer. The number of control (never-treated) units.
 #'
 #' @return `tau_hat`: Numeric matrix.  The N x T  matrix of raw (not aggregated on lag level) treatment effects of treatment effects.
 #'
-estimation_cohort <- function(Y_avg, W_avg, coh, s2, type, N0 = 1) {
+estimation_cohort <- function(
+  Y_avg,
+  W_avg,
+  coh_weights,
+  penalty_func = default_penalty,
+  s2 = NULL,
+  type = "sdid",
+  compute_var = FALSE,
+  N0 = 1
+) {
   if (!(type %in% c('did', 'sdid'))) {
 	  stop("The 'type' argument should be either 'sdid' or 'did'")
   }
 
   tau_hat <- matrix(0, nrow = nrow(W_avg), ncol = ncol(W_avg))
+  if (compute_var) {
+    var_hat <- matrix(0, nrow = nrow(W_avg), ncol = ncol(W_avg))
+  } else {
+    var_hat <- NULL
+  }
+
+  if (is.null(s2)) s2 <- -1.0
 
   for (t in 1:ncol(W_avg)) {
     for (j in (N0 + 1):nrow(W_avg)) {
       if (W_avg[j, t] == 1) {
-        tau_est <- base_estimator(Y_avg[1:j, 1:t], coh[1:j],
-                            s2 = s2, type = type)
-        tau_hat[j, t] <- tau_est
-        Y_avg[j, t] <- Y_avg[j, t] - tau_est
+        # TODO: Decide how N should be calculated
+        N <- sum(coh_weights[1:j])
+        pen <- penalty_func(s2, N)
+        tau_est <- base_estimator(
+          Y_avg[1:j, 1:t], coh_weights[1:j], sum(coh_weights),
+          penalty = pen, s2 = s2, type = type
+        )
+        tau_hat[j, t] <- tau_est[1]
+        Y_avg[j, t] <- Y_avg[j, t] - tau_est[1]
+        if (compute_var) var_hat[j, t] <- tau_est[2]
       }
     }
   }
-  tau_hat
+  list(tau = tau_hat, var = var_hat)
 }
 
 
@@ -153,52 +168,74 @@ estimation_cohort <- function(Y_avg, W_avg, coh, s2, type, N0 = 1) {
 #' @description
 #' The outcome variable is not aggregated or the data was initially preaggregated on a high level.
 #' @importFrom dplyr %>% group_by summarize arrange row_number desc
-#' @param Y_avg :     Numeric matrix. The NxT matrix of outcomes.
-#' @param W_avg :     Binary or boolean matrix. The NxT matrix of treatment indicators.
-#' @param coh :       Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
-#' @param s2 :        Numeric. The upper bound estimate of noise variance.
-#' @param type :      Character. Type of the estimator should be `sdid` or `did`.
-#' @param N0 :        Integer. The number of control (never-treated) units.
+#' @param Y_avg :       Numeric matrix. The NxT matrix of outcomes.
+#' @param W_avg :       Binary or boolean matrix. The NxT matrix of treatment indicators.
+#' @param coh_weights : Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
+#' @param s2 :          Numeric. The upper bound estimate of noise variance.
+#' @param type :        Character. Type of the estimator should be `sdid` or `did`.
+#' @param N0 :          Integer. The number of control (never-treated) units.
 #'
 #' @return `tau_lag`: Numeric vector. The max_lag x 1 vector of treatment effects aggregated across units.
 #'
-estimation_unit <- function(Y, W, coh, s2, type, N0 = 1) {
+estimation_unit <- function(
+    Y,
+    W,
+    coh_weights,
+    penalty_func = default_penalty,
+    s2 = NULL,
+    type = "sdid",
+    compute_var = FALSE,
+    N0 = 1
+) {
   # TODO: Rename the variables to comprehend better their purpose
   if (!(type %in% c('did', 'sdid'))) {
 	  stop("The 'type' argument should be either 'sdid' or 'did'")
   }
 
-  N <- nrow(Y); T <- ncol(Y)
-  tau_hat <- matrix(0, nrow = N, ncol = T)
+  N_units <- nrow(Y); T <- ncol(Y)
+  tau_hat <- matrix(0, nrow = N_units, ncol = T)
+  if (compute_var) {
+    var_hat <- matrix(0, nrow = N_units, ncol = T)
+  } else {
+    var_hat <- NULL
+  }
+
+  if (is.null(s2)) s2 <- -1.0
+
   adopt_date <- T + 1 - rowSums(W)
-  # TODO: Fix the bug that `dplyr` does not load
   cohort_df <- data.frame(adopt_date = adopt_date) %>%
     group_by(adopt_date) %>%
     summarize(n = dplyr::n()) %>%
     arrange(desc(row_number()))
 
   for (t in 1:T) {
-    treat_mask <- cohort_df$adopt_date <= t
+    treat_mask <- (cohort_df$adopt_date <= t)
     n_coh_tr <- sum(treat_mask)
     if (n_coh_tr == 0) next
 
     cohorts <- cohort_df[treat_mask, ]
-    j_c <- N - sum(cohorts$n)
+    j_c <- N_units - sum(cohorts$n)
     cont_idx <- 1:j_c
     # Process each cohort in descending order
     for (c in 1:n_coh_tr) {
       size_tr_coh <- cohorts$n[[c]]
       for (j in 1:size_tr_coh) {
         idx <- c(cont_idx, j_c + j)
-        tau_est <- base_estimator(Y[idx, 1:t], coh[idx],
-                            s2 = s2, type = type)
-        tau_hat[j_c + j, t] <- tau_est
-        Y[j_c + j, t] <- Y[j_c + j, t] - tau_est
+        # TODO: Decide how N should be calculated
+        N <- sum(coh_weights[idx])
+        pen <- penalty_func(s2, N)
+        tau_est <- base_estimator(
+          Y[idx, 1:t], coh_weights[idx], sum(coh_weights),
+          penalty = pen, s2 = s2, type = type
+        )
+        tau_hat[j_c + j, t] <- tau_est[1]
+        Y[j_c + j, t] <- Y[j_c + j, t] - tau_est[1]
+        if (compute_var) var_hat[j_c + j, t] <- tau_est[2]
       }
       j_c <- j_c + size_tr_coh
     }
   }
-  tau_hat
+  list(tau = tau_hat, var = var_hat)
 }
 
 #' `unit` and `cohort` level estimation functions.
@@ -216,31 +253,40 @@ estimation_funcs <- list(
 #' @description
 #' Basically, this function is a wrapper which calls either `estimation_cohort` or `estimation_unit` function.
 #' Then the function aggregates the treatment effect by length of the exposure.
-#' @param panel_avg : List. The list should contain:
-#'   - `Y_avg`: Numeric matrix. The N x T matrix of outcomes.
-#'   - `W_avg`: Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.
-#'   - `coh`:   Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
-#'   - `X`:     Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.
+#' @param panel_avg :        List. The list should contain:
+#'   - `Y_avg`:       Numeric matrix. The N x T matrix of outcomes.
+#'   - `W_avg`:       Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.
+#'   - `coh_weights`: Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
+#'   - `X`:           Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.
 #' @param level :            Character or NULL. If NULL, the level is taken from panel_avg list. The level should be `unit` or `cohort`.
 #' @param s2 :               Numeric or NULL. The upper bound estimate of noise variance.
 #' @param type :             Character. Type of the estimator should be `sdid`, `did` or `both`.
+#' @param penalty_func:      Function. You can create your own one and pass it as a parameter.
+#'                           The function should have the following arguments:
+#'  - `s2` :          Numeric or NULL. The estimated noise variance.
+#'  - `N`  :          Numeric.
 #' @param return_s2 :        Bool. If TRUE, returns s2. If s2 is not passed (NULL), s2 is estimated and returned.
 #' @param aggregate_effect : Function. The function aggregates the treatment effect for every lag by weighting the effect for every cohort.
 #'                           The function should contain the following arguments:
-#'   - `tau`: Numeric matrix or array.
-#'   - `W`:   Numeric matrix.
-#'   - `coh`: Numeric vector.
-#'   - `N0`:  Integer. The number of control (never-treated) units.
-#'   - `N`:   Integer. The total number of units.
+#'   - `tau`:         Numeric matrix or array.
+#'   - `W`:           Numeric matrix.
+#'   - `coh_weights`: Numeric vector.
+#'   - `N0`:          Integer. The number of control (never-treated) units.
+#'   - `N`:           Integer. The total number of units.
 #'
-#' @return                   sequential_estimator
+#' @param compute_var :     Bool. If TRUE, computes the asymptotic variance of the base_estimator when the noise is homoscedastic and there is no autocorrelation.
+#'                          This parameter should be set to TRUE if aggregate_effect function utilizes the asymptotic variance.
+#'
+#' @return                  sequential_estimator
 #' @export
 sequential_estimator <- function(
   panel_avg,
   level = NULL,
   s2 = NULL,
   type = "sdid",
-  aggregate_effect = aggregate_inv_did_var
+  penalty_func = default_penalty,
+  aggregate_effect = aggregate_inv_did_var,
+  compute_var = FALSE
 ) {
 
   if (is.null(level)){
@@ -257,7 +303,7 @@ sequential_estimator <- function(
 
   Y <- panel_avg$Y_avg; W <- panel_avg$W_avg
   N <- nrow(panel_avg$Y_avg)
-  coh <- panel_avg$coh
+  coh_weights <- panel_avg$coh_weights
 
   # TODO: Check whether N0 calculation should be removed
   if (!is.null(panel_avg$N0)) {
@@ -269,28 +315,35 @@ sequential_estimator <- function(
   if (is.null(s2)) s2 <- estimate_s2(Y, W)
 
   if (type == "both") {
-    tau_hat_sdid <- estimation_funcs[[level]](Y, W, coh,
-                      s2, "sdid", N0)
-    tau_hat_did <- estimation_funcs[[level]](Y, W, coh,
-                    s2, "did", N0)
-    tau_sdid <- aggregate_effect(tau = tau_hat_sdid, W = W, coh = coh,
-                                 N0 = N0, N = N)
-    tau_did <- aggregate_effect(tau = tau_hat_did, W = W, coh = coh,
-                                N0 = N0, N = N)
+    result_sdid <- estimation_funcs[[level]](Y, W, coh_weights,
+                      penalty_func, s2, "sdid", compute_var, N0)
+    result_did <- estimation_funcs[[level]](Y, W, coh_weights,
+                      penalty_func, s2, "did", compute_var, N0)
+    tau_sdid <- aggregate_effect(
+      tau = result_sdid$tau, var = result_sdid$var, W = W,
+      coh_weights = coh_weights, N0 = N0, N = N
+    )
+    tau_did <- aggregate_effect(
+      tau = result_did$tau, var = result_did$var, W = W,
+      coh_weights = coh_weights, N0 = N0, N = N
+    )
     estimate <- list(tau_sdid = tau_sdid, tau_did = tau_did)
   } else {
-    # TODO: Change to correct version
-    tau_hat <- estimation_funcs[[level]](Y, W, coh,
-                  s2, type, N0)
-    estimate <- aggregate_effect(tau = tau_hat, W = W, coh = coh,
-                                 N0 = N0, N = N)
+    result <- estimation_funcs[[level]](Y, W, coh_weights,
+                penalty_func, s2, type, compute_var, N0)
+    estimate <- aggregate_effect(
+      tau = result$tau, var = result$var, W = W,
+      coh_weights = coh_weights, N0 = N0, N = N
+    )
   }
 
   class(estimate) <- "sequential_estimate"
   attr(estimate, "type") <- type
   attr(estimate, "level") <- level
   attr(estimate, "s2") <- s2
+  attr(estimate, "penalty_func") <- penalty_func
   attr(estimate, "agg_func") <- aggregate_effect
+  attr(estimate, "compute_var") <- compute_var
 
   estimate
 }
@@ -301,17 +354,17 @@ sequential_estimator <- function(
 #' Removes time and unit fixed effects and computes the variance of residuals.
 #'
 #' There are 2 estimate options:
-#' 1. OLS without population weigths. Do not pass `pop` vector.
-#' 3. WLS utilizing population weigths. Pass `pop` vector.
+#' 1. OLS without population weights. Do not pass `pop` vector.
+#' 2. WLS utilizing population weights. Pass `pop` vector.
 #'
-#' @param Y Dataframe or matrix. The disaggregated wide panel of outcomes.
-#' @param W Dataframe or matrix. The disaggregated wide panel of treatment indicators.
-#' @param pop Numeric vector or NULL. The population weight vector.
+#' @param Y     Dataframe or matrix. The disaggregated wide panel of outcomes.
+#' @param W     Dataframe or matrix. The disaggregated wide panel of treatment indicators.
+#' @param pop   Numeric vector or NULL. The population weight vector.
+#'
 #' @return `s2` Numeric. The estimated upper bound of the noise variance.
 #' @export
 #'
-# TODO: Should I add an explicit argument for weighting
-estimate_s2 <- function(Y, W, pop = NULL, wls = FALSE) {
+estimate_s2 <- function(Y, W, pop = NULL) {
   if (!requireNamespace("fixest", quietly = TRUE)) {
       stop("Please install the 'fixest' package: install.packages('fixest')")
   }

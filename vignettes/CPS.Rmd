@@ -20,7 +20,7 @@ library(xtable)
 set.seed(42)
 library(dplyr)
 library(tidyr)
-install.packages("didimputation")
+#install.packages("didimputation")
 library(didimputation)
 ```
 
@@ -39,7 +39,7 @@ params <- estimate_dgp(
 )
 params$Sigma <- params$Sigma
 pi <- params$pi
-# The difference between the first and the second smallest numbers is significant 
+# The difference between the first and the second smallest numbers is significant.
 pi[1] <- as.numeric(sort(pi)[2])
 pi_scaled <- (pi - min(pi)) / (max(pi) - min(pi))
 # Increase the treatment probability
@@ -72,7 +72,6 @@ cohort_array <- array(dim = c(nrow(panel$Y), M))
 for (m in 1:M) {
   sim <- simulate_dgp(params, sim_setup$N1,sim_setup$a1,
                       permute_pi = FALSE, as_df =  TRUE)
-
   panel_b <- panel_sim
   panel_b$Y <- sim$Y; panel_b$W <- sim$W
   s2 <- estimate_s2(panel_b$Y, panel_b$W)
@@ -93,7 +92,6 @@ for (m in 1:M) {
   panel_wide$adopt_date[never_treat_index] <- 0
   
   data.table::setDT(panel_wide)
-  panel_wide
   did_imp <- did_imputation(
     panel_wide,
     yname = "outcome",
@@ -105,7 +103,9 @@ for (m in 1:M) {
 
   est <- sequential_estimator(
     panel_avg, "unit",
-    s2 = s2, "sdid", aggregate_by_pop)
+    s2 = s2, "sdid",
+    aggregate_effect = aggregate_inv_var,
+    compute_var = TRUE)
   se <- vcov(est, panel_b, 100)
   max_lag <- length(est)
   tau_array_sdid[1:max_lag, m] <- est[1:max_lag]
@@ -201,7 +201,9 @@ for (m in 1:M) {
 
   est <- sequential_estimator(
     panel_avg, "unit",
-    s2 = s2, "sdid", aggregate_by_pop)
+    s2 = s2, "sdid",
+    aggregate_effect = aggregate_inv_var,
+    compute_var = TRUE)
   se <- vcov(est, panel_b, 100)
   max_lag <- length(est)
   tau_array_sdid[1:max_lag, m] <- est[1:max_lag]

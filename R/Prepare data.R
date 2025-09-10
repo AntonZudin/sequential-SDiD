@@ -87,27 +87,27 @@ svd_compact <- function(A) {
 #' @param time        Numeric or character. The column number or index that corresponds to the time identifier
 #' @param outcome     Numeric or character. The column number or index that corresponds to the outcome identifier.
 #' @param treatment   Numeric or character. The column number or index that corresponds to the treatment indicator.
-#' @param population  Numeric, character or NULL. If not NULL, the column number or index that corresponds to the population identifier.
+#' @param weights     Numeric, character or NULL. If not NULL, the column number or index that corresponds to the weights identifier.
 #' @param contr_covs  Numeric or character vector. If the length of the vector is not 0, the vector coresponds to the covariates for control (never-treated) units.
 #' @param treat_covs  Numeric or character vector. If the length of the vector is not 0, the vector coresponds to the covariates for ever treated units.
 #' @param never_treat Character. The time index that indicates never-treated units.
 #' @return `panel`    List. The list contains:
 #'   - `Y`:  Dataframe. This is a wide panel dataframe of outcomes with adoption date column being the first one.
 #'   - `W`:  Dataframe. This is a wide panel dataframe of treatment indicators with adoption date column being the first one.
-#'   - `X`:  Dataframe. This is a dataframe with auxiliary data like adoption date, population weights and covariates.
+#'   - `X`:  Dataframe. This is a dataframe with auxiliary data like adoption date, weights and covariates.
 #' @export
 to_wide <- function(
     panel,
-    unit = 1, time = 2, outcome = 3, treatment = 4, population = NULL,
+    unit = 1, time = 2, outcome = 3, treatment = 4, weights = NULL,
     contr_covs = c(), treat_covs = c(), never_treat = "2500", sort = TRUE
 ) {
-  if (is.null(population)) {
+  if (is.null(weights)) {
     panel$popwt <- rep(1, nrow(panel))
-    population  <- "popwt"
+    weights  <- "popwt"
   }
 
   keep <- c(unit, time, outcome, treatment,
-            population, contr_covs, treat_covs)
+            weights, contr_covs, treat_covs)
 
   contr_covs <- c(contr_covs); treat_covs <- c(treat_covs)
 
@@ -135,12 +135,12 @@ to_wide <- function(
   time <- index_to_name(time)
   outcome <- index_to_name(outcome)
   treatment <- index_to_name(treatment)
-  population <- index_to_name(population)
+  weights <- index_to_name(weights)
   contr_covs <- unlist(sapply(contr_covs, index_to_name))
   treat_covs <- unlist(sapply(treat_covs, index_to_name))
 
   keep <- c(unit, time, outcome, treatment,
-            population, contr_covs, treat_covs)
+            weights, contr_covs, treat_covs)
 
   panel <- panel[keep]
   if (!is.data.frame(panel)){
@@ -180,7 +180,7 @@ to_wide <- function(
   unique_unit_id <- seq(1, num.units * num.years, num.years)
 
   X <- panel[unique_unit_id,
-             c(population, contr_covs, treat_covs),
+             c(weights, contr_covs, treat_covs),
              drop = FALSE]
   names(X) <- c("popwt",
                 vec_paste0("contr_cov_", length(contr_covs)),
@@ -221,19 +221,19 @@ to_wide <- function(
 #' @description
 #' The function prepares the data for sequential_estimator.
 #' For "unit" level the function removes adoption date column in Y and W. Y and W can be both matrices without `adopt_date` column.
-#' For "cohort" level the function aggregates the outcome and population variable by adoption date and covariates.
+#' For "cohort" level the function aggregates the outcome and weights variable by adoption date and covariates.
 #' @param panel List. The list should contain:
 #' - `Y`    Dataframe or numeric matrix. This is a wide panel dataframe of outcomes with adoption date column being the first one. `Y` can be a matrix when the estimation is conducted on the `unit` level.
-#' - `X`    Dataframe. This is a dataframe with auxiliary data like adoption date, population weights and covariates.
+#' - `X`    Dataframe. This is a dataframe with auxiliary data like adoption date, weights and covariates.
 #' or
 #' - `Y_wt` Dataframe. This is Y dataframe with merged X dataframe. It contains
 #' - `W`    Dataframe, numeric matrix or NULL. This is a wide panel dataframe of treatment indicators with adoption date column being the first one. NULL can be passed when boot is TRUE. Numeric matrix can be passed when the estimation is conducted on the `unit` level.
 #' @param level Character. The level should be `unit` or `cohort`. The data is not being aggregated when the level is "unit".
 #' @param boot Bool. If TRUE, W_avg matrix is not calculated to speed up the bootstraping for standard error estimation.
 #' @return `panel_avg` List. The list contains:
-#'   -`Y_avg`:  Numeric matrix. The N x T matrix of outcomes.
-#'   -`W_avg`:  Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stairlike structure with treated cells being in the bottom.
-#'   -`coh`:    Numeric vector. The N x 1 cohort weights vector (the number of units in cohorts or the cohort population).
+#'   -`Y_avg`:          Numeric matrix. The N x T matrix of outcomes.
+#'   -`W_avg`:          Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stairlike structure with treated cells being in the bottom.
+#'   -`coh_weights`:    Numeric vector. The N x 1 cohort weights vector (the number of units in cohorts or the cohort weights).
 #' @export
 prepare_wide <- function(
     panel,
@@ -266,19 +266,19 @@ prepare_wide <- function(
 
   if (level == "unit") {
     if ("Y_wt" %in% names(panel)) {
-      # Y_wt is utilized for Y_avg and coh
+      # Y_wt is utilized for Y_avg and coh_weights
       Y_wt <- panel$Y_wt
       exclude_cols <- c("adopt_date", "popwt") # No covariates
       time_cols <- colnames(Y_wt)[!(colnames(Y_wt) %in% exclude_cols)]
       panel$Y_avg <- as.matrix(Y_wt[, time_cols])
-      panel$coh <- panel$Y_wt$popwt
+      panel$coh_weights <- panel$Y_wt$popwt
       if (!boot) {
         panel$W_avg <- as.matrix(subset(panel$W, select = -adopt_date))
         panel$W <- NULL
       }
       panel$Y_wt <- NULL
     } else {
-      # Y and X are used for Y_avg and coh
+      # Y and X are used for Y_avg and coh_weights
       if ("adopt_date" %in% colnames(panel$Y)) {
         panel$Y_avg <- as.matrix(subset(panel$Y, select = -adopt_date))
         if (!boot) {
@@ -287,7 +287,7 @@ prepare_wide <- function(
       } else {
         panel$Y_avg <- panel$Y; if (!boot) panel$W_avg <- panel$W
       }
-      panel$coh <- panel$X$popwt
+      panel$coh_weights <- panel$X$popwt
       panel$Y <- NULL; panel$W <- NULL
     }
     return(panel)
@@ -332,7 +332,7 @@ prepare_wide <- function(
   Y_avg <- rbind(Y_avg_c, Y_avg_tr)
   Y_avg[, time_cols] <- Y_avg[, time_cols] / Y_avg$popwt
   rownames(Y_avg) <- Y_avg$Group
-  coh <- Y_avg$popwt
+  coh_weights <- Y_avg$popwt
   ad_date <- Y_avg$adopt_date
   Y_avg <- as.matrix(subset(Y_avg, select = -c(Group, popwt, adopt_date)))
 
@@ -350,7 +350,7 @@ prepare_wide <- function(
 
   return_panel <- list(
     Y_avg = Y_avg, W_avg = W_avg,
-    coh = coh, level = level
+    coh_weights = coh_weights, level = level
   )
 
   if (!("Y_wt" %in% names(panel))) return_panel$X <- X

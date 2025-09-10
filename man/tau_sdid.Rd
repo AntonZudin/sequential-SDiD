@@ -9,7 +9,7 @@ tau_sdid(Y, n_j, s2, type = "sdid")
 \arguments{
 \item{Y}{:    Numeric matrix. A submatrix of outcomes with one treated obs in the bottom right corner.}
 
-\item{n_j}{:  Numeric vector. The vector of cohort weights (the number of units in cohorts or the cohort population).}
+\item{n_j}{:  Numeric vector. The vector of cohort weights (the number of units in cohorts or the cohort weights (usually just cohort population)).}
 
 \item{s2}{:   Numeric. The upper bound estimate of noise variance.}
 

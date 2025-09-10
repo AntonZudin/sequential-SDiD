@@ -7,12 +7,14 @@
 \method{plot}{sequential_estimate}(
   object,
   se,
+  lags_show = NULL,
   sig_level = 0.95,
   color = "#e87d72",
   ylim = NULL,
   xlab = NULL,
   ylab = NULL,
   title = "",
+  error_bar_width = 0.1,
   xgap = 1,
   legend = TRUE,
   ref_line = 0,
@@ -25,7 +27,11 @@
 
 \item{se}{:        List or numeric vector.}
 
+\item{lags_show}{Integer or NULL. The number of lags to show.  If NULL, all lags are shown.}
+
 \item{sig_level}{: Numeric. Significance level for the confidence interval.}
+
+\item{color}{:     String. The color to use for the plot.}
 }
 \description{
 Plot average estimated effect.

@@ -25,6 +25,8 @@ vcov.sequential_estimate <- function(
   level <- attr(object, "level")
   s2 <- attr(object, "s2")
   agg_func <- attr(object, "agg_func")
+  penalty_func <- attr(object, "penalty_func")
+  compute_var <- attr(object, "compute_var")
 
   if (!level %in% c("cohort", "unit")) {
     stop("Level should be either `cohort` or `unit`.")
@@ -69,9 +71,10 @@ vcov.sequential_estimate <- function(
 
     panel_b_agg <- prepare_wide(panel_b, level, TRUE)
     panel_b_agg$W_avg <- W_avg
-    # TODO: Should panel be replaced with more explicit Y, W and coh?
+    # TODO: Should panel be replaced with more explicit Y, W and coh_weights?
     estimate <- sequential_estimator(
-      panel_b_agg, level, s2, type, agg_func
+      panel_b_agg, level, s2, type,
+      penalty_func, agg_func, compute_var
     )
     if (both_est) {
       tau_lag_b[, b] <- estimate[["tau_sdid"]]

@@ -12,23 +12,24 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // base_estimator
-Rcpp::NumericVector base_estimator(const arma::mat& Y, const arma::vec& n_j, double penalty, double s2, std::string type);
-RcppExport SEXP _seq_sdid_base_estimator(SEXP YSEXP, SEXP n_jSEXP, SEXP penaltySEXP, SEXP s2SEXP, SEXP typeSEXP) {
+Rcpp::NumericVector base_estimator(const arma::mat& Y, const arma::vec& coh_weights, double coh_weight_sum, double penalty, double s2, std::string type);
+RcppExport SEXP _seq_sdid_base_estimator(SEXP YSEXP, SEXP coh_weightsSEXP, SEXP coh_weight_sumSEXP, SEXP penaltySEXP, SEXP s2SEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type n_j(n_jSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type coh_weights(coh_weightsSEXP);
+    Rcpp::traits::input_parameter< double >::type coh_weight_sum(coh_weight_sumSEXP);
     Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
     Rcpp::traits::input_parameter< double >::type s2(s2SEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(base_estimator(Y, n_j, penalty, s2, type));
+    rcpp_result_gen = Rcpp::wrap(base_estimator(Y, coh_weights, coh_weight_sum, penalty, s2, type));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_seq_sdid_base_estimator", (DL_FUNC) &_seq_sdid_base_estimator, 5},
+    {"_seq_sdid_base_estimator", (DL_FUNC) &_seq_sdid_base_estimator, 6},
     {NULL, NULL, 0}
 };
 

@@ -5,18 +5,21 @@
 \title{Weight the estimated effect inversely proportional to DiD variance.
 DiD variance is used instead of SSDiD variance to eliminate potential overfitting.}
 \usage{
-aggregate_inv_did_var(tau, W, coh, N0, N)
+aggregate_inv_did_var(tau, var, W, coh_weights, N0, N)
 }
 \arguments{
 \item{tau}{Numeric matrix. The matrix with estimated effects.}
 
 \item{W}{Binary or boolen matrix. The matrix N x T of treatment indicators.}
 
-\item{coh}{Numeric vector. The N x 1 cohort weight (population) vector.}
-
-\item{N0}{Integer. The number of control (never treated) units.}
+\item{N0}{Integer. The number of control (never-treated) units.}
 
 \item{N}{Integer. The total number of units.}
+
+\item{coh_weigths}{Numeric vector. The N x 1 cohort weight vector.}
+}
+\value{
+\code{tau_lag}   Numeric vector. The lag aggregated treatment effect vector.
 }
 \description{
 Weight the estimated effect inversely proportional to DiD variance.

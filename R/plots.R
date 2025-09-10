@@ -193,7 +193,6 @@ create_tables <- function(
   )
 
   print("\n\n")
-  print("")
   # Coverage table
   coverage_sdid <- apply(abs(t_stat_sdid) < qnorm(0.975), 1, mean)
   coverage_did <- apply(abs(t_stat_did) < qnorm(0.975), 1, mean)

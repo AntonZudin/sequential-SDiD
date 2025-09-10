@@ -4,7 +4,7 @@
 \alias{estimate_s2}
 \title{Estimates the upper bound of the noise variance.}
 \usage{
-estimate_s2(Y, W, pop = NULL, wls = FALSE)
+estimate_s2(Y, W, pop = NULL)
 }
 \arguments{
 \item{Y}{Dataframe or matrix. The disaggregated wide panel of outcomes.}
@@ -21,7 +21,7 @@ Removes time and unit fixed effects and computes the variance of residuals.
 
 There are 2 estimate options:
 \enumerate{
-\item OLS without population weigths. Do not pass \code{pop} vector.
-\item WLS utilizing population weigths. Pass \code{pop} vector.
+\item OLS without population weights. Do not pass \code{pop} vector.
+\item WLS utilizing population weights. Pass \code{pop} vector.
 }
 }

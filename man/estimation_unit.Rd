@@ -4,20 +4,29 @@
 \alias{estimation_unit}
 \title{Computes the \code{unit} level sequential synthetic diff-in-diff or diff-in-diff estimate.}
 \usage{
-estimation_unit(Y, W, coh, s2, type, N0 = 1)
+estimation_unit(
+  Y,
+  W,
+  coh_weights,
+  penalty_func = default_penalty,
+  s2 = NULL,
+  type = "sdid",
+  compute_var = FALSE,
+  N0 = 1
+)
 }
 \arguments{
-\item{coh}{:       Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).}
+\item{coh_weights}{: Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).}
 
-\item{s2}{:        Numeric. The upper bound estimate of noise variance.}
+\item{s2}{:          Numeric. The upper bound estimate of noise variance.}
 
-\item{type}{:      Character. Type of the estimator should be \code{sdid} or \code{did}.}
+\item{type}{:        Character. Type of the estimator should be \code{sdid} or \code{did}.}
 
-\item{N0}{:        Integer. The number of control (never-treated) units.}
+\item{N0}{:          Integer. The number of control (never-treated) units.}
 
-\item{Y_avg}{:     Numeric matrix. The NxT matrix of outcomes.}
+\item{Y_avg}{:       Numeric matrix. The NxT matrix of outcomes.}
 
-\item{W_avg}{:     Binary or boolean matrix. The NxT matrix of treatment indicators.}
+\item{W_avg}{:       Binary or boolean matrix. The NxT matrix of treatment indicators.}
 }
 \value{
 \code{tau_lag}: Numeric vector. The max_lag x 1 vector of treatment effects aggregated across units.
