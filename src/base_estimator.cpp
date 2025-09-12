@@ -26,6 +26,7 @@ using namespace arma;
 //' @param penalty :      double.
 //' @param s2 :           double or -1.0. The upper bound estimate of noise variance.
 //' @param type :         std::string. Type of the estimator should be `sdid` or `did`.
+//' @param fast:          bool. If true, fast matrix inversion is conducted.
 //'
 //' @return               NumericVector size of 2. The first element is the treatment effect,
 //'                                         the second one is the asymptotic variance.
@@ -36,7 +37,8 @@ Rcpp::NumericVector base_estimator(
      double coh_weight_sum,
      double penalty, // eta^2
      double s2 = -1.0, // -1.0 is a substitute for NULL
-     std::string type = "sdid"
+     std::string type = "sdid",
+     bool fast = false
  ) {
    int j_c = Y.n_rows - 1;
    int t_c = Y.n_cols - 1;
@@ -102,7 +104,13 @@ Rcpp::NumericVector base_estimator(
        Rcpp::warning("The hessian for unit weights is near singular. Doing DiD unit weights.");
        gamma_weights = adjusted_pi;
      } else {
-       arma::vec solution = arma::solve(gamma_hess, -gamma_grad, solve_opts::likely_sympd);
+       arma::vec solution;
+
+       if (fast) {
+          solution = arma::solve(gamma_hess, -gamma_grad, solve_opts::fast);
+       } else {
+          solution = arma::solve(gamma_hess, -gamma_grad, solve_opts::likely_sympd);
+       }
        gamma_weights = solution.subvec(0, j_c - 1);
      }
 
@@ -133,7 +141,14 @@ Rcpp::NumericVector base_estimator(
        Rcpp::warning("The hessian for time weights is near singular. Doing DiD time weights");
        lambda_weights = arma::ones<vec>(t_c) / t_c;
      } else {
-       arma::vec solution = arma::solve(lambda_hess, -lambda_grad, solve_opts::likely_sympd);
+       arma::vec solution;
+
+       if (fast) {
+          solution = arma::solve(lambda_hess, -lambda_grad, solve_opts::fast);
+       } else {
+          solution = arma::solve(lambda_hess, -lambda_grad, solve_opts::likely_sympd);
+       }
+
        lambda_weights = solution.subvec(0, t_c - 1);
      }
    }

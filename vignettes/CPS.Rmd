@@ -56,7 +56,8 @@ panel_sim <- list(
 )
 T <- ncol(panel$W_avg)
 sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
-M <- 1000
+M <- 100
+library(profvis)
 ```
 
 The state ever-treated status and adoption date depends on the state’s factor loading on the first principal component of the interactive-effects model
@@ -105,8 +106,12 @@ for (m in 1:M) {
     panel_avg, "unit",
     s2 = s2, "sdid",
     aggregate_effect = aggregate_inv_var,
-    compute_var = TRUE)
-  se <- vcov(est, panel_b, 100)
+    compute_var = TRUE, fast_mat_inv = TRUE)
+  start <- Sys.time()
+  for (i in 1:3){
+    (se <- vcov(est, panel_b, 1000))
+  }
+  Sys.time() - start
   max_lag <- length(est)
   tau_array_sdid[1:max_lag, m] <- est[1:max_lag]
   tau_array_did[1:max_lag, m] <- did_imp$estimate

@@ -14,10 +14,11 @@ NULL
 #' @param penalty :      double.
 #' @param s2 :           double or -1.0. The upper bound estimate of noise variance.
 #' @param type :         std::string. Type of the estimator should be `sdid` or `did`.
+#' @param fast:          bool. If true, fast matrix inversion is conducted.
 #'
 #' @return               NumericVector size of 2. The first element is the treatment effect,
 #'                                         the second one is the asymptotic variance.
-base_estimator <- function(Y, coh_weights, coh_weight_sum, penalty, s2 = -1.0, type = "sdid") {
-    .Call(`_seq_sdid_base_estimator`, Y, coh_weights, coh_weight_sum, penalty, s2, type)
+base_estimator <- function(Y, coh_weights, coh_weight_sum, penalty, s2 = -1.0, type = "sdid", fast = FALSE) {
+    .Call(`_seq_sdid_base_estimator`, Y, coh_weights, coh_weight_sum, penalty, s2, type, fast)
 }
 

@@ -111,13 +111,14 @@ tau_sdid <- function(Y, n_j, s2, type = "sdid") {
 #' Computes the `cohort` level sequential synthetic diff-in-diff or diff-in-diff estimate.
 #' @description
 #' The outcome variable is aggregated on cohort or covariate level.
-#' @param Y_avg :       Numeric matrix. The N x T aggregated matrix of outcomes.
-#' @param W_avg :       Binary or boolean matrix. The N x T matrix of treatment indicators.
-#' @param coh_weights : Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
-#' @param s2 :          Numeric. The upper bound estimate of noise variance.
-#' @param type :        Character. Type of the estimator should be `sdid` or `did`.
-#' @param compute_var:  Bool. If TRUE, computes the asymptotic variance of the base estimator in homoscedasticity case.
-#' @param N0 :          Integer. The number of control (never-treated) units.
+#' @param Y_avg :        Numeric matrix. The N x T aggregated matrix of outcomes.
+#' @param W_avg :        Binary or boolean matrix. The N x T matrix of treatment indicators.
+#' @param coh_weights :  Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).
+#' @param s2 :           Numeric. The upper bound estimate of noise variance.
+#' @param type :         Character. Type of the estimator should be `sdid` or `did`.
+#' @param compute_var:   Bool. If TRUE, computes the asymptotic variance of the base estimator in homoscedasticity case.
+#' @param N0 :           Integer. The number of control (never-treated) units.
+#' @param fast_mat_inv : Bool. If TRUE, .
 #'
 #' @return `tau_hat`: Numeric matrix.  The N x T  matrix of raw (not aggregated on lag level) treatment effects of treatment effects.
 #'
@@ -129,7 +130,8 @@ estimation_cohort <- function(
   s2 = NULL,
   type = "sdid",
   compute_var = FALSE,
-  N0 = 1
+  N0 = 1,
+  fast_mat_inv = FALSE
 ) {
   if (!(type %in% c('did', 'sdid'))) {
 	  stop("The 'type' argument should be either 'sdid' or 'did'")
@@ -152,7 +154,7 @@ estimation_cohort <- function(
         pen <- penalty_func(s2, N)
         tau_est <- base_estimator(
           Y_avg[1:j, 1:t], coh_weights[1:j], sum(coh_weights),
-          penalty = pen, s2 = s2, type = type
+          penalty = pen, s2 = s2, type = type, fast = fast_mat_inv
         )
         tau_hat[j, t] <- tau_est[1]
         Y_avg[j, t] <- Y_avg[j, t] - tau_est[1]
@@ -174,6 +176,7 @@ estimation_cohort <- function(
 #' @param s2 :          Numeric. The upper bound estimate of noise variance.
 #' @param type :        Character. Type of the estimator should be `sdid` or `did`.
 #' @param N0 :          Integer. The number of control (never-treated) units.
+#' @param fast_mat_inv: Bool.
 #'
 #' @return `tau_lag`: Numeric vector. The max_lag x 1 vector of treatment effects aggregated across units.
 #'
@@ -185,7 +188,8 @@ estimation_unit <- function(
     s2 = NULL,
     type = "sdid",
     compute_var = FALSE,
-    N0 = 1
+    N0 = 1,
+    fast_mat_inv = FALSE
 ) {
   # TODO: Rename the variables to comprehend better their purpose
   if (!(type %in% c('did', 'sdid'))) {
@@ -226,7 +230,7 @@ estimation_unit <- function(
         pen <- penalty_func(s2, N)
         tau_est <- base_estimator(
           Y[idx, 1:t], coh_weights[idx], sum(coh_weights),
-          penalty = pen, s2 = s2, type = type
+          penalty = pen, s2 = s2, type = type, fast = fast_mat_inv
         )
         tau_hat[j_c + j, t] <- tau_est[1]
         Y[j_c + j, t] <- Y[j_c + j, t] - tau_est[1]
@@ -276,6 +280,7 @@ estimation_funcs <- list(
 #'
 #' @param compute_var :     Bool. If TRUE, computes the asymptotic variance of the base_estimator when the noise is homoscedastic and there is no autocorrelation.
 #'                          This parameter should be set to TRUE if aggregate_effect function utilizes the asymptotic variance.
+#' @param fast_mat_inv :    Bool. If TRUE, matrix equation (H * w = - g) is solved with solve_opts::fast flag in Armadillo.
 #'
 #' @return                  sequential_estimator
 #' @export
@@ -286,7 +291,8 @@ sequential_estimator <- function(
   type = "sdid",
   penalty_func = default_penalty,
   aggregate_effect = aggregate_inv_did_var,
-  compute_var = FALSE
+  compute_var = FALSE,
+  fast_mat_inv = FALSE
 ) {
 
   if (is.null(level)){
@@ -344,6 +350,7 @@ sequential_estimator <- function(
   attr(estimate, "penalty_func") <- penalty_func
   attr(estimate, "agg_func") <- aggregate_effect
   attr(estimate, "compute_var") <- compute_var
+  attr(estimate, "fast_mat_inv") <- fast_mat_inv
 
   estimate
 }
