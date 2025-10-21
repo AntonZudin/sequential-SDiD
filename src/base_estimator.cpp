@@ -107,7 +107,7 @@ Rcpp::NumericVector base_estimator(
        arma::vec solution;
 
        if (fast) {
-          solution = arma::solve(gamma_hess, -gamma_grad, solve_opts::fast);
+          solution = arma::solve(gamma_hess, -gamma_grad, solve_opts::fast + solve_opts::likely_sympd);
        } else {
           solution = arma::solve(gamma_hess, -gamma_grad, solve_opts::likely_sympd);
        }
@@ -144,7 +144,7 @@ Rcpp::NumericVector base_estimator(
        arma::vec solution;
 
        if (fast) {
-          solution = arma::solve(lambda_hess, -lambda_grad, solve_opts::fast);
+          solution = arma::solve(lambda_hess, -lambda_grad, solve_opts::fast + solve_opts::likely_sympd);
        } else {
           solution = arma::solve(lambda_hess, -lambda_grad, solve_opts::likely_sympd);
        }
@@ -160,8 +160,9 @@ Rcpp::NumericVector base_estimator(
    Rcpp::NumericVector result(2);
 
    if (s2 > 0.0) {
-     // TODO: Make sure that I use the correct pi
-     double est_variance = s2 *
+     // Variance is not multiplied by s2 since it is only used in weighting
+     // and s2 is identical for all elements
+     double est_variance =
        (1.0 /pi(j_c) + arma::sum(arma::pow(gamma_weights.subvec(0, j_c - 1), 2) / pi.subvec(0, j_c - 1))) *
        (1.0 + arma::sum(arma::pow(lambda_weights.subvec(0, t_c - 1), 2)));
      result[0] = tau;

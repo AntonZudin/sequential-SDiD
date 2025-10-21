@@ -4,12 +4,14 @@
 \alias{print.sequential_estimate}
 \title{Print a sequential_estimate object}
 \usage{
-\method{print}{sequential_estimate}(x, digits = 2, ...)
+\method{print}{sequential_estimate}(x, digits = 2, n_lags = NULL, ...)
 }
 \arguments{
 \item{x}{: The sequential_estimate object to print.}
 
 \item{digits}{: Integer. The number of digits to print after the dot.}
+
+\item{n_lags}{: Integer. The number of lags to print out.}
 
 \item{...}{: Additional arguments (for compatibility with generic \code{print}).}
 }

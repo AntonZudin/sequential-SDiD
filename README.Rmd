@@ -40,7 +40,7 @@ The package uses 2 functions to prepare the dataset .
 panel <- to_wide(CHC,
   unit = 1, time = 3, outcome = 2,
   treatment = 4, contr_covs = c(5), treat_covs = c(),
-  population = 6
+  weights = 6
 )
 
 panel$X$popwt <- panel$X$popwt / 10000
@@ -48,23 +48,37 @@ panel$X$popwt <- panel$X$popwt / 10000
 panel_avg <- prepare_wide(panel, level = "cohort")
 ```
 
+Estimate the noise variance on the untreated part of the panel.
 ```{r}
 s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
+```
+
+
+```{r}
 est <- sequential_estimator(
   panel_avg,
   s2 = s2,
-  type = "sdid")
-est
+  type = "both",
+  aggregate_effect = aggregate_inv_did_var)
+print(est, n_lags = 11)
 ```
 
+Estimate standard error with Bayesian bootstrap.
 ```{r}
-se <- vcov(est, panel)
-cat(sprintf("%1.2f", se), "\n")
+se <- vcov(est, panel, B = 1000)
+cat("St. error of SDiD estimator:", "\n")
+cat(sprintf("%1.2f", se$se_sdid[1:11]), "\n\n")
+cat("St. error of DiD estimator:", "\n")
+cat(sprintf("%1.2f", se$se_did[1:11]), "\n")
 ```
 
 
-```{r, fig.retina=2}
-plot(est, se, 11, error_bar_width = 0.2)
+```{r, fig.retina=2, out.height = "100%", out.width = "100%"}
+plot(
+  est, se, 11,
+  error_bar_width = 0.4, xlab = "Lags",
+  legend_position = "right"
+)
 ```
 
 #### References

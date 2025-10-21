@@ -4,7 +4,15 @@
 \alias{base_estimator}
 \title{Computes the base synthetic diff-in-diff or diff-in-diff estimate.}
 \usage{
-base_estimator(Y, coh_weights, penalty, s2 = -1, type = "sdid")
+base_estimator(
+  Y,
+  coh_weights,
+  coh_weight_sum,
+  penalty,
+  s2 = -1,
+  type = "sdid",
+  fast = FALSE
+)
 }
 \arguments{
 \item{Y}{:            Numeric arma::mat. A submatrix of outcomes with one treated obs in the bottom right corner.}
@@ -17,6 +25,8 @@ the cohort weights, usually just cohort population.}
 \item{s2}{:           double or -1.0. The upper bound estimate of noise variance.}
 
 \item{type}{:         std::string. Type of the estimator should be \code{sdid} or \code{did}.}
+
+\item{fast:}{bool. If true, fast matrix inversion is conducted.}
 }
 \value{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{          NumericVector size of 2. The first element is the treatment effect,

@@ -20,17 +20,36 @@ library(xtable)
 set.seed(42)
 library(dplyr)
 library(tidyr)
-#install.packages("didimputation")
+install.packages("didimputation")
 library(didimputation)
 ```
 
 ```{r}
 data(CPS)
 panel <- to_wide(CPS, unit = 1, time = 2,
-                     treatment = 'min_wage', outcome = 'log_wage',
-                     never_treat = "2500")
+                 treatment = 'min_wage', outcome = 'log_wage',
+                 never_treat = "2500")
 panel <- prepare_wide(panel, "unit")
 ```
+
+
+This simulation is an adjusted version of the Current Population Survey Placebo Studies (section 3.1) in Arkhangelsky et al. (2021) [https://doi.org/10.1257/aer.20190159].
+
+The differences are:
+
+ - Two-stage procedure to assign adoption date
+ 
+   1. Assign "ever-treated" with prob. $\pi_i$
+   
+   2. The adoption date for chosen "ever-treated" units on the first stage is $[\mathcal{N}(\tilde{\mu}, 1)]$, where $\tilde{\mu}$ is smaller for units with larger $\mu$.
+   
+ - For $\pi_i$ use scaled first principal component of the interactive-effects model instead of fitted values of logit.
+ 
+We use `didimputation` package in this simulation for reference. ``did'' type of estimator coincides with didimputation if we weight estimated effects by cohort population. 
+
+`didimputation` implements DiD proposed in Borusyak et al. (2024)[https://doi.org/10.1093/restud/rdae007].
+
+
 
 ```{r}
 params <- estimate_dgp(
@@ -56,12 +75,10 @@ panel_sim <- list(
 )
 T <- ncol(panel$W_avg)
 sim_setup <- list(rank = 4, N1 = 45, a1 = 20)
-M <- 100
-library(profvis)
+M <- 1000
 ```
 
-The state ever-treated status and adoption date depends on the state’s factor loading on the first principal component of the interactive-effects model
-
+### The state ever-treated status and adoption date depends on the state’s factor loading on the first principal component of the interactive-effects model.
 ```{r}
 max_treat_periods <- T - sim_setup$a1 + 1
 tau_array_sdid <- array(dim = c(max_treat_periods, M))
@@ -101,17 +118,13 @@ for (m in 1:M) {
     idname = "state",
     horizon = TRUE
   )
-
+  
   est <- sequential_estimator(
     panel_avg, "unit",
     s2 = s2, "sdid",
-    aggregate_effect = aggregate_inv_var,
-    compute_var = TRUE, fast_mat_inv = TRUE)
-  start <- Sys.time()
-  for (i in 1:3){
-    (se <- vcov(est, panel_b, 1000))
-  }
-  Sys.time() - start
+    aggregate_effect = aggregate_inv_did_var)
+  se <- vcov(est, panel_b, 100)
+  
   max_lag <- length(est)
   tau_array_sdid[1:max_lag, m] <- est[1:max_lag]
   tau_array_did[1:max_lag, m] <- did_imp$estimate
@@ -161,8 +174,7 @@ create_tables(
 plot_cohorts(cohort_array, TRUE, 40, TRUE)
 ```
 
-The treatment assignment is random (first principal component is permuted).
-
+### The treatment assignment is random (first principal component is permuted).
 ```{r}
 max_treat_periods <- T - sim_setup$a1 + 1
 tau_array_sdid <- array(dim = c(max_treat_periods, M))
@@ -207,8 +219,7 @@ for (m in 1:M) {
   est <- sequential_estimator(
     panel_avg, "unit",
     s2 = s2, "sdid",
-    aggregate_effect = aggregate_inv_var,
-    compute_var = TRUE)
+    aggregate_effect = aggregate_inv_did_var)
   se <- vcov(est, panel_b, 100)
   max_lag <- length(est)
   tau_array_sdid[1:max_lag, m] <- est[1:max_lag]

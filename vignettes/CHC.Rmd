@@ -17,9 +17,9 @@ knitr::opts_chunk$set(
 To install `MCPanel` package you need to run the following chunk:
 
 ```{r, results = 'hide'}
-#install.packages("devtools")
-#install.packages("latex2exp")
-#devtools::install_github("susanathey/MCPanel")
+install.packages("devtools")
+install.packages("latex2exp")
+devtools::install_github("susanathey/MCPanel")
 ```
 
 ```{r setup, warning = FALSE}
@@ -46,26 +46,25 @@ panel_avg <- prepare_wide(panel)
 ```
 
 ```{r}
-est <- sequential_estimator(panel_avg, "cohort",
-                            s2 = s2, "both",
-                            aggregate_effect = aggregate_inv_var,
-                            compute_var = TRUE)
+est <- sequential_estimator(
+  panel_avg, "cohort",
+  s2 = s2, "both",
+  aggregate_effect = aggregate_inv_var,
+  compute_var = TRUE, fast_mat_inv = FALSE
+)
 est
 ```
 
 ```{r}
-set.seed(42)
 se <- vcov(est, panel, B = 1000, return_tau_b = TRUE)
-se$se$se_sdid
-cat("\n")
-se$se$se_did
 ```
+
 
 ```{r, fig.retina = 3, fig.width=16, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid, save_pdf = TRUE)
 ```
 
-# Simulation
+# Simulations
 
 ```{r}
 M <- 1000
@@ -102,10 +101,12 @@ for (m in 1:M) {
   panel_avg <- prepare_wide(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
-  est <- sequential_estimator(panel_avg, "cohort",
-                              s2 = s2, "both",
-                              aggregate_effect = aggregate_inv_var,
-                              compute_var = TRUE)
+  est <- sequential_estimator(
+    panel_avg, "cohort",
+    s2 = s2, "both",
+    aggregate_effect = aggregate_inv_did_var,
+    compute_var = TRUE
+  )
   se <- vcov(est, panel_b, 100)
   tau_array_sdid[, m] <- est$tau_sdid
   tau_array_did[, m] <- est$tau_did
@@ -181,10 +182,12 @@ for (m in 1:M) {
   panel_avg <- prepare_wide(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
-  est <- sequential_estimator(panel_avg, "cohort",
-                              s2 = s2, "both",
-                              aggregate_effect = aggregate_inv_var,
-                              compute_var = TRUE)
+  est <- sequential_estimator(
+    panel_avg, "cohort",
+    s2 = s2, "both",
+    aggregate_effect = aggregate_inv_did_var,
+    compute_var = TRUE
+  )
   se <- vcov(est, panel_b, 100)
   tau_array_sdid[, m] <- est$tau_sdid
   tau_array_did[, m] <- est$tau_did

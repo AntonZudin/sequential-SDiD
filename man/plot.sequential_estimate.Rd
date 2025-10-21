@@ -8,30 +8,35 @@
   object,
   se,
   lags_show = NULL,
-  sig_level = 0.95,
-  color = "#e87d72",
+  sig_level = 0.05,
+  color = c("#e87d72", "#56bcc2"),
   ylim = NULL,
-  xlab = NULL,
+  xlab = "Lags",
   ylab = NULL,
-  title = "",
+  plot_title = "",
   error_bar_width = 0.1,
+  point_size = 1.2,
   xgap = 1,
   legend = TRUE,
   ref_line = 0,
   theming = TRUE,
+  title_font_size = 16,
+  legend_position = "bottom",
   ...
 )
 }
 \arguments{
-\item{object}{:    \code{sequential_estimate} class object.}
+\item{object}{:          \code{sequential_estimate} class object.}
 
-\item{se}{:        List or numeric vector.}
+\item{se}{:              List or numeric vector.}
 
 \item{lags_show}{Integer or NULL. The number of lags to show.  If NULL, all lags are shown.}
 
-\item{sig_level}{: Numeric. Significance level for the confidence interval.}
+\item{sig_level}{:       Numeric. Significance level for the confidence interval.}
 
-\item{color}{:     String. The color to use for the plot.}
+\item{color}{:           String. The color to use for the plot.}
+
+\item{title_font_size}{: Integer. The font size of the title.}
 }
 \description{
 Plot average estimated effect.

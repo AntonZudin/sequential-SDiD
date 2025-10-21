@@ -279,7 +279,7 @@ estimation_funcs <- list(
 #'   - `N`:           Integer. The total number of units.
 #'
 #' @param compute_var :     Bool. If TRUE, computes the asymptotic variance of the base_estimator when the noise is homoscedastic and there is no autocorrelation.
-#'                          This parameter should be set to TRUE if aggregate_effect function utilizes the asymptotic variance.
+#'                          This parameter should be set to TRUE if aggregate_effect function utilizes the asymptotic variance (only aggregate_inv_var).
 #' @param fast_mat_inv :    Bool. If TRUE, matrix equation (H * w = - g) is solved with solve_opts::fast flag in Armadillo.
 #'
 #' @return                  sequential_estimator
@@ -322,9 +322,9 @@ sequential_estimator <- function(
 
   if (type == "both") {
     result_sdid <- estimation_funcs[[level]](Y, W, coh_weights,
-                      penalty_func, s2, "sdid", compute_var, N0)
+                      penalty_func, s2, "sdid", compute_var, N0, fast_mat_inv)
     result_did <- estimation_funcs[[level]](Y, W, coh_weights,
-                      penalty_func, s2, "did", compute_var, N0)
+                      penalty_func, s2, "did", compute_var, N0, fast_mat_inv)
     tau_sdid <- aggregate_effect(
       tau = result_sdid$tau, var = result_sdid$var, W = W,
       coh_weights = coh_weights, N0 = N0, N = N
@@ -336,7 +336,7 @@ sequential_estimator <- function(
     estimate <- list(tau_sdid = tau_sdid, tau_did = tau_did)
   } else {
     result <- estimation_funcs[[level]](Y, W, coh_weights,
-                penalty_func, s2, type, compute_var, N0)
+                penalty_func, s2, type, compute_var, N0, fast_mat_inv)
     estimate <- aggregate_effect(
       tau = result$tau, var = result$var, W = W,
       coh_weights = coh_weights, N0 = N0, N = N
