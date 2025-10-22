@@ -5,8 +5,8 @@
 \title{Computes the \code{cohort} level sequential synthetic diff-in-diff or diff-in-diff estimate.}
 \usage{
 estimation_cohort(
-  Y_avg,
-  W_avg,
+  Y,
+  W,
   coh_weights,
   penalty_func = default_penalty,
   s2 = NULL,
@@ -17,10 +17,6 @@ estimation_cohort(
 )
 }
 \arguments{
-\item{Y_avg}{:        Numeric matrix. The N x T aggregated matrix of outcomes.}
-
-\item{W_avg}{:        Binary or boolean matrix. The N x T matrix of treatment indicators.}
-
 \item{coh_weights}{:  Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).}
 
 \item{s2}{:           Numeric. The upper bound estimate of noise variance.}
@@ -30,6 +26,10 @@ estimation_cohort(
 \item{N0}{:           Integer. The number of control (never-treated) units.}
 
 \item{fast_mat_inv}{: Bool. If TRUE, .}
+
+\item{Y_avg}{:        Numeric matrix. The N x T aggregated matrix of outcomes.}
+
+\item{W_avg}{:        Binary or boolean matrix. The N x T matrix of treatment indicators.}
 
 \item{compute_var:}{Bool. If TRUE, computes the asymptotic variance of the base estimator in homoscedasticity case.}
 }

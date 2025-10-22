@@ -3,7 +3,7 @@
 \name{decompose_Y}
 \alias{decompose_Y}
 \title{Decompose Y into components F, M, and E.
-also computes a set of 'unit factors': the first \link{rank} left singular vectors from SVD(Y)}
+Also computes a set of 'unit factors': the first \link{rank} left singular vectors from SVD(Y).}
 \usage{
 decompose_Y(Y, rank)
 }
@@ -17,5 +17,5 @@ a list with elements F, M, E, and unit_factors
 }
 \description{
 Decompose Y into components F, M, and E.
-also computes a set of 'unit factors': the first \link{rank} left singular vectors from SVD(Y)
+Also computes a set of 'unit factors': the first \link{rank} left singular vectors from SVD(Y).
 }

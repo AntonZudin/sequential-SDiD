@@ -6,6 +6,7 @@ est_names <- list(
 )
 
 #' Print a sequential_estimate object
+#'
 #' @param x : The sequential_estimate object to print.
 #' @param digits : Integer. The number of digits to print after the dot.
 #' @param n_lags : Integer. The number of lags to print out.

@@ -1,4 +1,4 @@
-#' Default regularization function for SSDiD
+#' Default regularization function for SSDiD.
 #' @description
 #' The regularization term `\eta`^2 for SSDiD estimator proposed for usage in the SSDiD paper.
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation_plots.R
 \name{plot_cohorts}
 \alias{plot_cohorts}
-\title{Plot the empirical CDF of simuated adoption dates}
+\title{Plot the empirical CDF of simuated adoption dates.}
 \usage{
 plot_cohorts(cohort_array, smoothed, T = 40, save_pdf = FALSE)
 }
@@ -16,5 +16,5 @@ plot_cohorts(cohort_array, smoothed, T = 40, save_pdf = FALSE)
 \item{save_pdf}{Bool. If TRUE, saves pdf beside generating a plot.}
 }
 \description{
-Plot the empirical CDF of simuated adoption dates
+Plot the empirical CDF of simuated adoption dates.
 }

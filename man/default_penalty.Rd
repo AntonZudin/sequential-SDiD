@@ -2,7 +2,7 @@
 % Please edit documentation in R/penalty.R
 \name{default_penalty}
 \alias{default_penalty}
-\title{Default regularization function for SSDiD}
+\title{Default regularization function for SSDiD.}
 \usage{
 default_penalty(s2, N)
 }

@@ -1,4 +1,5 @@
 #' Creates 2 tables: RMSE & Bias table and coverage table.
+#'
 #' @param tau_array_sdid Numeric array. The max_lag x M array contains `sdid` estimates from M simulations.
 #' @param tau_array_did  Numeric array. The max_lag x M array contains `did` estimates from M simulations.
 #' @param t_stat_sdid    Numeric array. The max_lag x M array contains t-statistic of `sdid` estimate from M simulations.

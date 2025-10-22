@@ -9,8 +9,8 @@ sequential_estimator(
   level = NULL,
   s2 = NULL,
   type = "sdid",
-  penalty_func = default_penalty,
   aggregate_effect = aggregate_inv_did_var,
+  penalty_func = default_penalty,
   compute_var = FALSE,
   fast_mat_inv = FALSE
 )
@@ -51,8 +51,6 @@ The function should have the following arguments:
 \item \code{s2} :          Numeric or NULL. The estimated noise variance.
 \item \code{N}  :          Numeric.
 }}
-
-\item{return_s2}{:        Bool. If TRUE, returns s2. If s2 is not passed (NULL), s2 is estimated and returned.}
 }
 \value{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{             sequential_estimator

@@ -4,19 +4,9 @@
 
 using namespace arma;
 
-//' Penalty for SSDiD
- //' @description
- //' The regulazation term eta^2 for SSDiD estimator without s2.
- //' @param N    Double.
- //' @param deg  Double. The default value of 0.9 is proposed in the paper in Remark 3.2.
- //' @return     Numeric. The penalty term without s2.
- double penalty(double N, double pen = 0.9) {
-   return std::pow(N, -pen);
- }
-
-
 
 //' Computes the base synthetic diff-in-diff or diff-in-diff estimate.
+//' @name base_estimator
 //' @description
 //' The armadillo implementation of `base_estimator` algorithm.
 //' The bottom right cell is the only cell being treated: W_it = 1.
@@ -34,7 +24,6 @@ using namespace arma;
 Rcpp::NumericVector base_estimator(
      const arma::mat& Y,
      const arma::vec& coh_weights,
-     double coh_weight_sum,
      double penalty, // eta^2
      double s2 = -1.0, // -1.0 is a substitute for NULL
      std::string type = "sdid",

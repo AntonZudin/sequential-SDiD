@@ -47,10 +47,11 @@ panel_avg <- prepare_wide(panel)
 
 ```{r}
 est <- sequential_estimator(
-  panel_avg, "cohort",
-  s2 = s2, "both",
-  aggregate_effect = aggregate_inv_var,
-  compute_var = TRUE, fast_mat_inv = FALSE
+  panel_avg = panel_avg,
+  level = "cohort",
+  s2 = s2,
+  type = "both",
+  aggregate_effect = aggregate_inv_did_var
 )
 est
 ```

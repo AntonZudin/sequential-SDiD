@@ -3,6 +3,7 @@
 #' Creates a character vector containing strings of the following type "{base_string}{i}",
 #' where `i` is a number between 1 and `len`.
 #' If `len` argument is not positive, a vector of zero length is returned.
+#'
 #' @param base_string : Character. The base character that is used in concatenation.
 #' @param len :         Integer. The length of the output vector.
 #'
@@ -57,6 +58,7 @@ aggregate_Y <- function(Y, covs, time_cols) {
 }
 
 #' SVD decomposition of a matrix.
+#'
 #' @param A Numeric matrix. SVD is applied on this matrix.
 #' @return  List. The list contains:
 #'   - `u`:  Numeric matrix. The left singular vectors of matrix A.
@@ -81,7 +83,9 @@ svd_compact <- function(A) {
 #       then you need to have "contr_cov_" and "treat_cov_"
 # TODO: ?Sort unsorted dataframe, so that later treated units are later
 
+
 #' Converts a data set into wide panels.
+#'
 #' @param panel       Dataframe. The dataframe is utilized to
 #' @param unit        Numeric or character. The column number or index that corresponds to the unit identifier.
 #' @param time        Numeric or character. The column number or index that corresponds to the time identifier
@@ -216,12 +220,14 @@ to_wide <- function(
        never_treat = never_treat)
 }
 
+
 # TODO: Check when Y and W can be a matrix
 #' Aggregate panel to `cohort` level or prepare for the `unit` level.
 #' @description
 #' The function prepares the data for sequential_estimator.
 #' For "unit" level the function removes adoption date column in Y and W. Y and W can be both matrices without `adopt_date` column.
 #' For "cohort" level the function aggregates the outcome and weights variable by adoption date and covariates.
+#'
 #' @param panel List. The list should contain:
 #' - `Y`    Dataframe or numeric matrix. This is a wide panel dataframe of outcomes with adoption date column being the first one. `Y` can be a matrix when the estimation is conducted on the `unit` level.
 #' - `X`    Dataframe. This is a dataframe with auxiliary data like adoption date, weights and covariates.

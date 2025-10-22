@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimation.r
 \name{estimation_unit}
 \alias{estimation_unit}
-\title{Computes the \code{unit} level sequential synthetic diff-in-diff or diff-in-diff estimate.}
+\title{#' Computes the \code{unit} level sequential synthetic diff-in-diff or diff-in-diff estimate.}
 \usage{
 estimation_unit(
   Y,
@@ -17,6 +17,10 @@ estimation_unit(
 )
 }
 \arguments{
+\item{Y}{:           Numeric matrix. The NxT matrix of outcomes.}
+
+\item{W}{:           Binary or boolean matrix. The NxT matrix of treatment indicators.}
+
 \item{coh_weights}{: Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).}
 
 \item{s2}{:          Numeric. The upper bound estimate of noise variance.}
@@ -24,10 +28,6 @@ estimation_unit(
 \item{type}{:        Character. Type of the estimator should be \code{sdid} or \code{did}.}
 
 \item{N0}{:          Integer. The number of control (never-treated) units.}
-
-\item{Y_avg}{:       Numeric matrix. The NxT matrix of outcomes.}
-
-\item{W_avg}{:       Binary or boolean matrix. The NxT matrix of treatment indicators.}
 
 \item{fast_mat_inv:}{Bool.}
 }

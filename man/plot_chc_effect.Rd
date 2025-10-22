@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation_plots.R
 \name{plot_chc_effect}
 \alias{plot_chc_effect}
-\title{Plot Figure 1 with effect of CHC on mortality}
+\title{Plot Figure 1 with effect of CHC on mortality.}
 \usage{
 plot_chc_effect(tau_sdid, tau_b_sdid, save_pdf = FALSE, path = "")
 }
@@ -16,5 +16,5 @@ plot_chc_effect(tau_sdid, tau_b_sdid, save_pdf = FALSE, path = "")
 \item{path}{Character.}
 }
 \description{
-Plot Figure 1 with effect of CHC on mortality
+Plot Figure 1 with effect of CHC on mortality.
 }

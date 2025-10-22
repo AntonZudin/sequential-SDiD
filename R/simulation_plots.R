@@ -1,4 +1,5 @@
-#' Plot Figure 1 with effect of CHC on mortality
+#' Plot Figure 1 with effect of CHC on mortality.
+#'
 #' @param tau_sdid   Numeric vector. The vector contains treatment effect.
 #' @param tau_b_sdid Numeric array. The bootstrapped tau array utilized for CI.
 #' @param save_pdf   Bool. If TRUE, saves pdf beside generating a plot.
@@ -42,8 +43,11 @@ plot_chc_effect <- function(
     }
 }
 
+
 #' Generate t-statistic plot that compares the emperical t-statistic distribution with the standard normal distribution.
+#' @description
 #' There is should be no treatment effect since the matrix completion was used on the untreated part of our dataset.
+#'
 #' @param t_stat_array Numeric array. The array containing t-statistic for all lags.
 #' @param lags         Integer or integer vector. Lag number: starts with 0 which stands for the first element of the estimate vector.
 #' @param type         Character. The type of the estimator: "sdid" or "did".
@@ -123,7 +127,9 @@ plot_t_stat <- function(
   }
 }
 
-#' Plot the empirical CDF of simuated adoption dates
+
+#' Plot the empirical CDF of simuated adoption dates.
+#'
 #' @param cohort_array  Numeric array. The array N x M contains adoption dates in M simulations.
 #' @param smoothed      Bool. If TRUE, plots smoothed ECDF.
 #' @param T             Integer. The total number of time periods.

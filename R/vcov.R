@@ -12,7 +12,6 @@
 #' @param return_tau_b Bool. If TRUE, returns the bootstrap replications.
 #' @return             Numeric vector or List.
 #' @exportS3Method vcov sequential_estimate
-# TODO: Understand how to use ... in R to pass extra args to function.
 # TODO: Think what should I do with the name vcov while returning standard error
 vcov.sequential_estimate <- function(
   object,
@@ -74,8 +73,14 @@ vcov.sequential_estimate <- function(
     panel_b_agg$W_avg <- W_avg
     # TODO: Should panel be replaced with more explicit Y, W and coh_weights?
     estimate <- sequential_estimator(
-      panel_b_agg, level, s2, type,
-      penalty_func, agg_func, compute_var, fast_mat_inv
+      panel_avg = panel_b_agg,
+	  level = level,
+	  s2 = s2,
+	  type = type,
+      aggregate_effect = agg_func,
+	  penalty_func = penalty_func,
+	  compute_var = compute_var,
+	  fast_mat_inv = fast_mat_inv
     )
     if (both_est) {
       tau_lag_b[, b] <- estimate[["tau_sdid"]]
@@ -99,30 +104,4 @@ vcov.sequential_estimate <- function(
     result <- list(se = result, tau_b = tau_lag_b)
   }
   return(result)
-
-  # TODO: Decide how to implement the return of se better
-  # Add standard errors
-  #se_est <- apply(tau_lag_b, 1, sd)
-  #if (both_est) {
-  #  se_did <- apply(tau_lag_b_2, 1, sd)
-  #  se_est <- list(
-  #    se_sdid = se_est,
-  #    se_did = se_did
-  #  )
-  #}
-  #attr(object, "se") <- se_est
-
-  # Add bootstrapped tau
-  #if (return_tau_b) {
-  #  tau_b <- tau_lag_b
-  #  if (both_est) {
-  #    tau_b <- list(
-  #      tau_b_sdid = tau_b,
-  #      tau_b_did = tau_lag_b_2
-  #    )
-  #  }
-  #  attr(object, "tau_b") <- tau_b
-  #}
-
-  #return(object)
 }

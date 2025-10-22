@@ -28,8 +28,9 @@ reference:
       - sequential_estimator
       - estimation_unit
       - estimation_cohort
-      - estimate_s2
       - tau_sdid
+      - base_estimator
+      - estimate_s2
       - vcov.sequential_estimate
 
   - title: Data preparation
@@ -59,8 +60,9 @@ reference:
 
   - title: Aggregation functions
     contents:
-      - aggregate_by_pop
+      - aggregate_by_weight
       - aggregate_inv_did_var
+      - aggregate_inv_var
 
   - title: Auxiliary functions
     contents:
@@ -74,7 +76,7 @@ reference:
       - est_names
       - estimation_funcs
       - last_col
-      - penalty
+      - default_penalty
       - remove_adopt_date
       - vec_paste0
 

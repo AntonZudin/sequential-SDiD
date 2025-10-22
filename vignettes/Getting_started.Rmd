@@ -50,7 +50,7 @@ s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
 
 You can change default cohort weights (sum of weights of units in the cohort). 
 To weight the estimated effects by the provided weights,
-you need to set aggregate_by_pop function for aggregate_effect parameter. 
+you need to set aggregate_by_weight function for aggregate_effect parameter. 
 ```{r}
 panel_avg$coh_weights
 ```

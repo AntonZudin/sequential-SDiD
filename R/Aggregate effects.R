@@ -1,4 +1,6 @@
+
 #' Weight the estimated effect by cohort weight (population).
+#'
 #' @param tau          Numeric matrix. The matrix with estimated effects.
 #' @param W            Binary or boolen matrix. The matrix N x T of treatment indicators.
 #' @param coh_weigths  Numeric vector. The N x 1 cohort weight (population) vector.
@@ -7,7 +9,7 @@
 #'
 #' @return `tau_lag`   Numeric vector. The lag aggregated treatment effect vector.
 #' @export
-aggregate_by_pop <- function(tau, var, W, coh_weights, N0, N) {
+aggregate_by_weight <- function(tau, var, W, coh_weights, N0, N) {
   tau_avg <- array(0, dim = max(rowSums(W)))
   counter <- array(0, dim = max(rowSums(W)))
 
@@ -25,8 +27,10 @@ aggregate_by_pop <- function(tau, var, W, coh_weights, N0, N) {
   tau_lag
 }
 
+
 #' Weight the estimated effect inversely proportional to DiD variance.
 #' DiD variance is used instead of SSDiD variance to eliminate potential overfitting.
+#'
 #' @param tau          Numeric matrix. The matrix with estimated effects.
 #' @param W            Binary or boolen matrix. The matrix N x T of treatment indicators.
 #' @param coh_weigths  Numeric vector. The N x 1 cohort weight vector.
@@ -56,6 +60,7 @@ aggregate_inv_did_var <- function(tau, var, W, coh_weights, N0, N) {
 
 
 #' Weight the estimated effect inversely proportional to asymptotic variance.
+#'
 #' @param tau          Numeric matrix. The matrix with estimated effects.
 #' @param W            Binary or boolen matrix. The matrix N x T of treatment indicators.
 #' @param coh_weigths  Numeric vector. The N x 1 cohort weight vector.

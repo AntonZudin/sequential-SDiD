@@ -4,15 +4,7 @@
 \alias{base_estimator}
 \title{Computes the base synthetic diff-in-diff or diff-in-diff estimate.}
 \usage{
-base_estimator(
-  Y,
-  coh_weights,
-  coh_weight_sum,
-  penalty,
-  s2 = -1,
-  type = "sdid",
-  fast = FALSE
-)
+base_estimator(Y, coh_weights, penalty, s2 = -1, type = "sdid", fast = FALSE)
 }
 \arguments{
 \item{Y}{:            Numeric arma::mat. A submatrix of outcomes with one treated obs in the bottom right corner.}

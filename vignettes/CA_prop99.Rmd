@@ -4,6 +4,7 @@ output: html_document
 ---
 
 ```{r setup, message = FALSE, warning = FALSE}
+set.seed(42)
 #install.packages("didimputation")
 library(didimputation)
 
@@ -18,8 +19,6 @@ panel <- to_wide(
   outcome = "PacksPerCapita",
   treatment = "treated"
 )
-panel$Y["Wyoming", "adopt_date"] <- "1993"; panel$X["Wyoming", "adopt_date"] <- "1993";
-panel$W["Wyoming", "adopt_date"] <- "1993";  panel$W["Wyoming", as.character(1993:2000)] <- 1
 panel_avg <- prepare_wide(panel, "unit")
 ```
 
@@ -28,19 +27,27 @@ panel_avg <- prepare_wide(panel, "unit")
 s2 <- estimate_s2(panel$Y, panel$W)
 
 est <- sequential_estimator(
-  panel_avg,
-  "unit",
-  s2,
+  panel_avg = panel_avg,
+  level = "unit",
+  s2 = s2,
   type = "both",
-  aggregate_by_pop
+  aggregate_effect = aggregate_by_weight
 )
 print(est, 3)
 ```
+
 ```{r}
-se <- vcov(est, panel)
+se <- vcov(est, panel, B = 1000)
 print(se)
 ```
 
+```{r}
+plot(
+  est, se, NULL,
+  error_bar_width = 0.4, xlab = "Lags",
+  legend_position = "right"
+)
+```
 
 
 ```{r}

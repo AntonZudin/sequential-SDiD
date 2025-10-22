@@ -1,4 +1,5 @@
 #' Plot average estimated effect.
+#'
 #' @import ggplot2
 #' @param object :          `sequential_estimate` class object.
 #' @param se :              List or numeric vector.
