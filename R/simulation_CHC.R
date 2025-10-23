@@ -51,7 +51,9 @@ estimate_dgp_chc <- function(panel, signal_share = 0.0, scale = 4, rank = 5) {
        sigma_2 = sigma_2, N = nrow(L_sim), T = T)
 }
 
+
 #' Simulate the CHC DGP by sampling the noise.
+#'
 #' @importFrom mvtnorm rmvnorm
 #' @param params List.  The list should contain:
 #'    - `L`        Dataframe. The dataframe contains interactive fixed effects.

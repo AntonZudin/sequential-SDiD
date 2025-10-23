@@ -43,7 +43,7 @@ test_that("cohort level from Y and X without covariates works fine", {
   expect_true(is.matrix(panel_avg$W_avg))
   expect_equal(panel_avg$Y_avg, Y_correct)
   expect_equal(panel_avg$W_avg, W_correct)
-  expect_equal(panel_avg$coh, coh_correct)
+  expect_equal(panel_avg$coh_weights, coh_correct)
 })
 
 test_that("cohort level from Y_wt without covariates works fine", {
@@ -96,7 +96,7 @@ test_that("cohort level from Y_wt without covariates works fine", {
   expect_true(is.matrix(panel_avg$W_avg))
   expect_equal(panel_avg$Y_avg, Y_correct)
   expect_equal(panel_avg$W_avg, W_correct)
-  expect_equal(panel_avg$coh, coh_correct)
+  expect_equal(panel_avg$coh_weights, coh_correct)
 })
 
 test_that("cohort level from Y and X with control covariate works fine", {
@@ -179,8 +179,8 @@ test_that("cohort level from Y and X with control covariate works fine", {
           identical(panel_avg$W_avg, W_correct_2)))
   )
   expect_true(
-    any(c(identical(panel_avg$coh, coh_correct_1),
-          identical(panel_avg$coh, coh_correct_2)))
+    any(c(identical(panel_avg$coh_weights, coh_correct_1),
+          identical(panel_avg$coh_weights, coh_correct_2)))
   )
 })
 
@@ -267,8 +267,8 @@ test_that("cohort level from Y_wt with control covariate works fine", {
   )
   #coh
   expect_true(
-    any(c(identical(panel_avg$coh, coh_correct_1),
-          identical(panel_avg$coh, coh_correct_2)))
+    any(c(identical(panel_avg$coh_weights, coh_correct_1),
+          identical(panel_avg$coh_weights, coh_correct_2)))
   )
 })
 
@@ -320,7 +320,7 @@ test_that("cohort level from Y with X with contr and treat covs and non unit pop
   expect_true(is.matrix(panel_avg$W_avg))
   expect_equal(panel_avg$Y_avg, Y_correct)
   expect_equal(panel_avg$W_avg, W_correct)
-  expect_equal(panel_avg$coh, c(4, 6, 8, 4, 6))
+  expect_equal(panel_avg$coh_weights, c(4, 6, 8, 4, 6))
 })
 
 test_that("cohort level from Y_wt with contr and treat covs and non unit population works fine", {
@@ -371,7 +371,7 @@ test_that("cohort level from Y_wt with contr and treat covs and non unit populat
   expect_true(is.matrix(panel_avg$W_avg))
   expect_equal(panel_avg$Y_avg, Y_correct)
   expect_equal(panel_avg$W_avg, W_correct)
-  expect_equal(panel_avg$coh, c(4, 6, 8, 4, 6))
+  expect_equal(panel_avg$coh_weights, c(4, 6, 8, 4, 6))
 })
 
 
@@ -400,7 +400,7 @@ test_that("unit level from Y with X works fine", {
   expect_true(is.matrix(panel_avg$W_avg))
   expect_equal(panel_avg$Y_avg, Y)
   expect_equal(panel_avg$W_avg, W)
-  expect_equal(panel_avg$coh, rep(1, 10))
+  expect_equal(panel_avg$coh_weights, rep(1, 10))
 })
 
 test_that("unit level from Y_wt works fine", {
@@ -430,5 +430,5 @@ test_that("unit level from Y_wt works fine", {
   expect_true(is.matrix(panel_avg$W_avg))
   expect_equal(panel_avg$Y_avg, Y)
   expect_equal(panel_avg$W_avg, W)
-  expect_equal(panel_avg$coh, rep(1, 10))
+  expect_equal(panel_avg$coh_weights, rep(1, 10))
 })

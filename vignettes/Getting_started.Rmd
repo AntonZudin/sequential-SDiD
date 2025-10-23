@@ -8,7 +8,6 @@ vignette: >
 ---
 
 
-## Usage 
 ```{r, setup}
 library(seq.sdid)
 data(CHC)
@@ -36,7 +35,7 @@ The package uses 2 functions to prepare the dataset.
 panel <- to_wide(CHC,
   unit = 1, time = 3, outcome = 2,
   treatment = 4, contr_covs = c(5), treat_covs = c(),
-  population = 6
+  weight = 6
 )
 
 panel$X$popwt <- panel$X$popwt / 10000
@@ -45,21 +44,48 @@ panel_avg <- prepare_wide(panel, level = "cohort")
 ```
 
 1. Estimate `s^2` - noise variance. s2 is utilized in determining the regularization parameter: $\eta^2 = s^2/n^{0.9}$. To get upper bound of `s^2`, time and unit fixed effects are estimated on the untreated observations. Then `s^2` is computed as residual sum of squares divided by the degrees of freedom. If the weights are passed, WLS is estimated rather then OLS.   
-2. Estimate the average treatment effect.
-3. Conduct Bayesian bootstrap to obtain standard errors for the estimator. 
 ```{r}
 s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
+```
+
+You can change default cohort weights (sum of weights of units in the cohort). 
+To weight the estimated effects by the provided weights,
+you need to set aggregate_by_weight function for aggregate_effect parameter. 
+```{r}
+panel_avg$coh_weights
+```
+
+2. Estimate the treatment effect.
+
+You can specify your own function for `aggregate_effect` and `penalty_func` functions.
+- The first function specifies how the aggregation of estimated effects will be conducted. 
+  For  should take the following parameters: tau, var, W, coh_weights, N0, N.
+
+- The second function computes regularization parameter $\eta$. If you have any prior domain knowledge on this parameter, you can create your own function for that. This function should have `s2` and `N` as arguments.  
+```{r}
 est <- sequential_estimator(
   panel_avg,
   s2 = s2,
-  type = "sdid")
-est
-
-se <- vcov(est, panel)
-se
+  type = "both",
+  aggregate_effect = aggregate_inv_did_var,
+  penalty_func = default_penalty
+)
+print(est, n_lags = 11)
 ```
 
+3. Conduct Bayesian bootstrap to obtain standard errors for the estimator. 
+```{r}
+se <- vcov(est, panel, B = 1000)
+cat("St. error of SDiD estimator:", "\n")
+cat(sprintf("%1.2f", se$se_sdid[1:11]), "\n\n")
+cat("St. error of DiD estimator:", "\n")
+cat(sprintf("%1.2f", se$se_did[1:11]), "\n")
+```
 
-```{r, fig.retina=2}
-plot(est, se)
+```{r,fig.retina = 3, fig.width=9, fig.height=6, out.height = "100%", out.width = "100%"}
+plot(
+  est, se, 11,
+  error_bar_width = 0.4, xlab = "Lags",
+  legend_position = "right"
+)
 ```

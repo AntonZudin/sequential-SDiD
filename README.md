@@ -4,8 +4,8 @@
 Sequential Synthetic Difference-in-Differences (sequential SDiD)
 estimator for event studies with staggered treatment adoption.
 
-This package estimates average treatment effect, particularly when the
-parallel trends assumption fails.
+This package estimates treatment effect, particularly when the parallel
+trends assumption fails.
 
 ## Installation
 
@@ -21,6 +21,7 @@ devtools::install_github("AntonZudin/sequential-SDiD")
 ``` r
 library(seq.sdid)
 data(CHC)
+set.seed(42)
 ```
 
 The package uses 2 functions to prepare the dataset .
@@ -40,7 +41,7 @@ The package uses 2 functions to prepare the dataset .
 panel <- to_wide(CHC,
   unit = 1, time = 3, outcome = 2,
   treatment = 4, contr_covs = c(5), treat_covs = c(),
-  population = 6
+  weights = 6
 )
 
 panel$X$popwt <- panel$X$popwt / 10000
@@ -48,36 +49,65 @@ panel$X$popwt <- panel$X$popwt / 10000
 panel_avg <- prepare_wide(panel, level = "cohort")
 ```
 
+Estimate the noise variance on the untreated part of the panel.
+
 ``` r
-set.seed(42)
 s2 <- estimate_s2(panel$Y[, -1], panel$W[, -1], panel$X$popwt)
+```
+
+``` r
 est <- sequential_estimator(
   panel_avg,
   s2 = s2,
-  type = "sdid")
-est
+  type = "both",
+  aggregate_effect = aggregate_inv_did_var)
+print(est, n_lags = 11)
 ```
 
     ## Synthetic DiD:
-    ## -4.74 -5.68 -6.56 -9.44 -13.22 -13.56 -16.10 -11.43 -13.07 -12.85 -11.87 -13.72 -12.59 -10.72 -12.35 -15.61 -14.19 -12.45 -9.56 -12.38 -0.60 -2.39 -75.64 -64.37 
+    ## -4.76 -5.68 -6.57 -9.45 -13.25 -13.57 -16.13 -11.44 -13.09 -12.84 -11.88 
+    ## 
+    ## DiD:
+    ## -6.30 -7.88 -7.41 -9.41 -10.61 -11.58 -10.59 -10.30 -9.62 -10.06 -7.15 
     ## 
     ## s2: 2728.60
 
-``` r
-se <- vcov(est, panel)
-se
-```
-
-    ##  [1]  3.442402  3.517237  4.417285  4.447733  5.227896  5.278684  5.962290
-    ##  [8]  6.283429  6.569504  7.342846  6.974452  9.543372  9.972621 10.263685
-    ## [15] 10.968570 11.736318 11.854961 12.786417 14.031863 15.222889 14.862728
-    ## [22] 16.469635 48.961334 54.116311
+Estimate standard error with Bayesian bootstrap.
 
 ``` r
-plot(est, se)
+se <- vcov(est, panel, B = 1000)
+cat("St. error of SDiD estimator:", "\n")
 ```
 
-<img src="man/figures/unnamed-chunk-4-1.png" width="672" />
+    ## St. error of SDiD estimator:
+
+``` r
+cat(sprintf("%1.2f", se$se_sdid[1:11]), "\n\n")
+```
+
+    ## 3.46 3.53 4.44 4.47 5.26 5.31 6.00 6.32 6.60 7.38 7.00
+
+``` r
+cat("St. error of DiD estimator:", "\n")
+```
+
+    ## St. error of DiD estimator:
+
+``` r
+cat(sprintf("%1.2f", se$se_did[1:11]), "\n")
+```
+
+    ## 2.37 2.60 2.71 2.62 2.83 2.77 3.15 3.02 3.18 3.61 3.63
+
+``` r
+plot(
+  est, se, 11,
+  error_bar_width = 0.4, xlab = "Lags",
+  legend_position = "right"
+)
+```
+
+<img src="man/figures/readme_plot.png" width="100%" height="100%" />
 
 #### References
 

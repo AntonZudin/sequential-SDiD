@@ -33,22 +33,26 @@ data(CHC)
 panel <- to_wide(CHC,
   unit = 1, time = 3, outcome = 2,
   treatment = 4, contr_covs = c(5), treat_covs = c(),
-  population = 6
+  weights = 6
 )
 ```
 
 ```{r}
-s2 <- estimate_s2(panel$Y, panel$W, panel$X$popwt, wls = FALSE)
+s2 <- estimate_s2(panel$Y, panel$W, panel$X$popwt)
 
 panel$X$popwt <- panel$X$popwt / 10000
 panel_avg <- prepare_wide(panel)
 #s2 <- 5000
 ```
 
-
 ```{r}
-est <- sequential_estimator(panel_avg, "cohort",
-                            s2 = s2, "both")
+est <- sequential_estimator(
+  panel_avg = panel_avg,
+  level = "cohort",
+  s2 = s2,
+  type = "both",
+  aggregate_effect = aggregate_inv_did_var
+)
 est
 ```
 
@@ -56,11 +60,12 @@ est
 se <- vcov(est, panel, B = 1000, return_tau_b = TRUE)
 ```
 
+
 ```{r, fig.retina = 3, fig.width=16, fig.height=9, out.height = "100%", out.width = "100%"}
 plot_chc_effect(est$tau_sdid, se$tau_b$tau_b_sdid, save_pdf = TRUE)
 ```
 
-# Simulation
+# Simulations
 
 ```{r}
 M <- 1000
@@ -97,8 +102,12 @@ for (m in 1:M) {
   panel_avg <- prepare_wide(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
-  est <- sequential_estimator(panel_avg, "cohort",
-                              s2 = s2, "both")
+  est <- sequential_estimator(
+    panel_avg, "cohort",
+    s2 = s2, "both",
+    aggregate_effect = aggregate_inv_did_var,
+    compute_var = TRUE
+  )
   se <- vcov(est, panel_b, 100)
   tau_array_sdid[, m] <- est$tau_sdid
   tau_array_did[, m] <- est$tau_did
@@ -174,8 +183,12 @@ for (m in 1:M) {
   panel_avg <- prepare_wide(panel_b, "cohort", boot = TRUE)
   panel_avg$W_avg <- W_avg
 
-  est <- sequential_estimator(panel_avg, "cohort",
-                              s2 = s2, "both")
+  est <- sequential_estimator(
+    panel_avg, "cohort",
+    s2 = s2, "both",
+    aggregate_effect = aggregate_inv_did_var,
+    compute_var = TRUE
+  )
   se <- vcov(est, panel_b, 100)
   tau_array_sdid[, m] <- est$tau_sdid
   tau_array_did[, m] <- est$tau_did
