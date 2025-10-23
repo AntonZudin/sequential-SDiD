@@ -1,4 +1,4 @@
-#' Plot average estimated effect.
+#' Plot estimated treatment effect by lag.
 #'
 #' @import ggplot2
 #' @param object :          `sequential_estimate` class object.
@@ -95,7 +95,7 @@ plot.sequential_estimate <- function(
 
   if (plot_title == "") {
     # get title right depending on which aggregation
-    plot_title <- ("Average Effect by Lag")
+    plot_title <- ("Treatment Effect by Lag")
   }
 
   plt <- ggplot(results,

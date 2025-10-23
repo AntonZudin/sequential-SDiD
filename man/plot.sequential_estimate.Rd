@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.sequential_estimate}
 \alias{plot.sequential_estimate}
-\title{Plot average estimated effect.}
+\title{Plot estimated treatment effect by lag.}
 \usage{
 \method{plot}{sequential_estimate}(
   object,
@@ -39,5 +39,5 @@
 \item{title_font_size}{: Integer. The font size of the title.}
 }
 \description{
-Plot average estimated effect.
+Plot estimated treatment effect by lag.
 }
