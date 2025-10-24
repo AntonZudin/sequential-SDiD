@@ -51,7 +51,10 @@ Then the function aggregates the treatment effect by length of the exposure.</p>
 <span>  level <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"sdid"</span>,</span>
-<span>  aggregate_effect <span class="op">=</span> <span class="va">aggregate_inv_did_var</span></span>
+<span>  aggregate_effect <span class="op">=</span> <span class="va">aggregate_inv_did_var</span>,</span>
+<span>  penalty_func <span class="op">=</span> <span class="va">default_penalty</span>,</span>
+<span>  compute_var <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  fast_mat_inv <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -60,10 +63,10 @@ Then the function aggregates the treatment effect by length of the exposure.</p>
 
 
 <dl><dt id="arg-panel-avg">panel_avg<a class="anchor" aria-label="anchor" href="#arg-panel-avg"></a></dt>
-<dd><p>: List. The list should contain:</p><ul><li><p><code>Y_avg</code>: Numeric matrix. The N x T matrix of outcomes.</p></li>
-<li><p><code>W_avg</code>: Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.</p></li>
-<li><p><code>coh</code>:   Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).</p></li>
-<li><p><code>X</code>:     Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.</p></li>
+<dd><p>:        List. The list should contain:</p><ul><li><p><code>Y_avg</code>:       Numeric matrix. The N x T matrix of outcomes.</p></li>
+<li><p><code>W_avg</code>:       Binary or boolen matrix. The N x T matrix of treatment indicators. The matrix has a stair-like structure with treated cells being at the bottom.</p></li>
+<li><p><code>coh_weights</code>: Numeric vector. The Nx1 cohort weights vector (the number of units in cohorts or the cohort population).</p></li>
+<li><p><code>X</code>:           Dataframe. The dataframe is not aggregated to cohort and covariate level. It contains auxiliary data like adoption date, population weights and covariates.</p></li>
 </ul></dd>
 
 
@@ -81,21 +84,33 @@ Then the function aggregates the treatment effect by length of the exposure.</p>
 
 <dt id="arg-aggregate-effect">aggregate_effect<a class="anchor" aria-label="anchor" href="#arg-aggregate-effect"></a></dt>
 <dd><p>: Function. The function aggregates the treatment effect for every lag by weighting the effect for every cohort.
-The function should contain the following arguments:</p><ul><li><p><code>tau</code>: Numeric matrix or array.</p></li>
-<li><p><code>W</code>:   Numeric matrix.</p></li>
-<li><p><code>coh</code>: Numeric vector.</p></li>
-<li><p><code>N0</code>:  Integer. The number of control (never-treated) units.</p></li>
-<li><p><code>N</code>:   Integer. The total number of units.</p></li>
+The function should contain the following arguments:</p><ul><li><p><code>tau</code>:         Numeric matrix or array.</p></li>
+<li><p><code>W</code>:           Numeric matrix.</p></li>
+<li><p><code>coh_weights</code>: Numeric vector.</p></li>
+<li><p><code>N0</code>:          Integer. The number of control (never-treated) units.</p></li>
+<li><p><code>N</code>:           Integer. The total number of units.</p></li>
 </ul></dd>
 
 
-<dt id="arg-return-s-">return_s2<a class="anchor" aria-label="anchor" href="#arg-return-s-"></a></dt>
-<dd><p>:        Bool. If TRUE, returns s2. If s2 is not passed (NULL), s2 is estimated and returned.</p></dd>
+<dt id="arg-compute-var">compute_var<a class="anchor" aria-label="anchor" href="#arg-compute-var"></a></dt>
+<dd><p>:     Bool. If TRUE, computes the asymptotic variance of the base_estimator when the noise is homoscedastic and there is no autocorrelation.
+This parameter should be set to TRUE if aggregate_effect function utilizes the asymptotic variance (only aggregate_inv_var).</p></dd>
+
+
+<dt id="arg-fast-mat-inv">fast_mat_inv<a class="anchor" aria-label="anchor" href="#arg-fast-mat-inv"></a></dt>
+<dd><p>:    Bool. If TRUE, matrix equation (H * w = - g) is solved with solve_opts::fast flag in Armadillo.</p></dd>
+
+
+<dt id="arg-penalty-func-">penalty_func:<a class="anchor" aria-label="anchor" href="#arg-penalty-func-"></a></dt>
+<dd><p>Function. You can create your own one and pass it as a parameter.
+The function should have the following arguments:</p><ul><li><p><code>s2</code> :          Numeric or NULL. The estimated noise variance.</p></li>
+<li><p><code>N</code>  :          Numeric.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>              sequential_estimator</span></code></pre><p></p></div>
+    <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>             sequential_estimator</span></code></pre><p></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

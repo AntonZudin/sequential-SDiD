@@ -75,9 +75,37 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">CPS</span><span class="op">)</span></span>
 <span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_wide.html">to_wide</a></span><span class="op">(</span><span class="va">CPS</span>, unit <span class="op">=</span> <span class="fl">1</span>, time <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>                     treatment <span class="op">=</span> <span class="st">'min_wage'</span>, outcome <span class="op">=</span> <span class="st">'log_wage'</span>,</span>
-<span>                     never_treat <span class="op">=</span> <span class="st">"2500"</span><span class="op">)</span></span>
+<span>                 treatment <span class="op">=</span> <span class="st">'min_wage'</span>, outcome <span class="op">=</span> <span class="st">'log_wage'</span>,</span>
+<span>                 never_treat <span class="op">=</span> <span class="st">"2500"</span><span class="op">)</span></span>
 <span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_wide.html">prepare_wide</a></span><span class="op">(</span><span class="va">panel</span>, <span class="st">"unit"</span><span class="op">)</span></span></code></pre></div>
+<p>This simulation is an adjusted version of the Current Population
+Survey Placebo Studies (section 3.1) in Arkhangelsky et al. (2021) [<a href="https://doi.org/10.1257/aer.20190159" class="external-link uri">https://doi.org/10.1257/aer.20190159</a>].</p>
+<p>The differences are:</p>
+<ul>
+<li>
+<p>Two-stage procedure to assign adoption date</p>
+<ol style="list-style-type: decimal">
+<li><p>Assign “ever-treated” with prob.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>π</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\pi_i</annotation></semantics></math></p></li>
+<li><p>The adoption date for chosen “ever-treated” units on the first
+stage is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>μ</mi><mo accent="true">̃</mo></mover><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[\mathcal{N}(\tilde{\mu}, 1)]</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>μ</mi><mo accent="true">̃</mo></mover><annotation encoding="application/x-tex">\tilde{\mu}</annotation></semantics></math>
+is smaller for units with larger
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>.</p></li>
+</ol>
+</li>
+<li><p>For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>π</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\pi_i</annotation></semantics></math>
+use scaled first principal component of the interactive-effects model
+instead of fitted values of logit.</p></li>
+</ul>
+<p>We use <code>didimputation</code> package in this simulation for
+reference. ``did’’ type of estimator coincides with didimputation if we
+weight estimated effects by cohort population.</p>
+<p><code>didimputation</code> implements DiD proposed in Borusyak et
+al. (2024)[<a href="https://doi.org/10.1093/restud/rdae007" class="external-link uri">https://doi.org/10.1093/restud/rdae007</a>].</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dgp.html">estimate_dgp</a></span><span class="op">(</span></span>
 <span>  <span class="va">panel</span><span class="op">$</span><span class="va">Y</span>, <span class="fu"><a href="../reference/last_col.html">last_col</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">W</span><span class="op">)</span>,</span>
@@ -85,7 +113,7 @@
 <span><span class="op">)</span></span>
 <span><span class="va">params</span><span class="op">$</span><span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">Sigma</span></span>
 <span><span class="va">pi</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">pi</span></span>
-<span><span class="co"># The difference between the first and the second smallest numbers is significant </span></span>
+<span><span class="co"># The difference between the first and the second smallest numbers is significant.</span></span>
 <span><span class="va">pi</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">pi_scaled</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">pi</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pi</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Increase the treatment probability</span></span>
@@ -101,9 +129,11 @@
 <span><span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">W_avg</span><span class="op">)</span></span>
 <span><span class="va">sim_setup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rank <span class="op">=</span> <span class="fl">4</span>, N1 <span class="op">=</span> <span class="fl">45</span>, a1 <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></code></pre></div>
-<p>The state ever-treated status and adoption date depends on the
+<div class="section level3">
+<h3 id="the-state-ever-treated-status-and-adoption-date-depends-on-the-states-factor-loading-on-the-first-principal-component-of-the-interactive-effects-model-">The state ever-treated status and adoption date depends on the
 state’s factor loading on the first principal component of the
-interactive-effects model</p>
+interactive-effects model.<a class="anchor" aria-label="anchor" href="#the-state-ever-treated-status-and-adoption-date-depends-on-the-states-factor-loading-on-the-first-principal-component-of-the-interactive-effects-model-"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max_treat_periods</span> <span class="op">&lt;-</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span> <span class="op">+</span> <span class="fl">1</span></span>
 <span><span class="va">tau_array_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
@@ -115,7 +145,6 @@ interactive-effects model</p>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">M</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_dgp.html">simulate_dgp</a></span><span class="op">(</span><span class="va">params</span>, <span class="va">sim_setup</span><span class="op">$</span><span class="va">N1</span>,<span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span>,</span>
 <span>                      permute_pi <span class="op">=</span> <span class="cn">FALSE</span>, as_df <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
 <span>  <span class="va">panel_b</span> <span class="op">&lt;-</span> <span class="va">panel_sim</span></span>
 <span>  <span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">Y</span>; <span class="va">panel_b</span><span class="op">$</span><span class="va">W</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">W</span></span>
 <span>  <span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_s2.html">estimate_s2</a></span><span class="op">(</span><span class="va">panel_b</span><span class="op">$</span><span class="va">Y</span>, <span class="va">panel_b</span><span class="op">$</span><span class="va">W</span><span class="op">)</span></span>
@@ -136,7 +165,6 @@ interactive-effects model</p>
 <span>  <span class="va">panel_wide</span><span class="op">$</span><span class="va">adopt_date</span><span class="op">[</span><span class="va">never_treat_index</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span>  </span>
 <span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">panel_wide</span><span class="op">)</span></span>
-<span>  <span class="va">panel_wide</span></span>
 <span>  <span class="va">did_imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/didimputation/man/did_imputation.html" class="external-link">did_imputation</a></span><span class="op">(</span></span>
 <span>    <span class="va">panel_wide</span>,</span>
 <span>    yname <span class="op">=</span> <span class="st">"outcome"</span>,</span>
@@ -145,11 +173,13 @@ interactive-effects model</p>
 <span>    idname <span class="op">=</span> <span class="st">"state"</span>,</span>
 <span>    horizon <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span>
-<span></span>
+<span>  </span>
 <span>  <span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span></span>
 <span>    <span class="va">panel_avg</span>, <span class="st">"unit"</span>,</span>
-<span>    s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"sdid"</span>, <span class="va">aggregate_by_pop</span><span class="op">)</span></span>
+<span>    s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"sdid"</span>,</span>
+<span>    aggregate_effect <span class="op">=</span> <span class="va">aggregate_inv_did_var</span><span class="op">)</span></span>
 <span>  <span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel_b</span>, <span class="fl">100</span><span class="op">)</span></span>
+<span>  </span>
 <span>  <span class="va">max_lag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span></span>
 <span>  <span class="va">tau_array_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span><span class="op">]</span></span>
 <span>  <span class="va">tau_array_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">did_imp</span><span class="op">$</span><span class="va">estimate</span></span>
@@ -190,7 +220,7 @@ interactive-effects model</p>
 <span>  <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Wed Aug 20 02:26:36 2025</span></span>
+<span><span class="co">#&gt; % Thu Oct 23 22:45:52 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
@@ -199,28 +229,28 @@ interactive-effects model</p>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt; SSDiD RMSE &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp; 0.13 &amp; 0.15 &amp; 0.16 &amp; 0.18 &amp; 0.19 &amp; 0.21 &amp; 0.23 &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD RMSE &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.10 &amp; 0.10 &amp; 0.11 &amp; 0.12 &amp; 0.13 &amp; 0.14 &amp; 0.15 &amp; 0.17 &amp; 0.19 &amp; 0.21 &amp; 0.23 &amp; 0.26 &amp; 0.28 &amp; 0.29 &amp; 0.31 &amp; 0.33 &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 0.54 &amp; 0.53 &amp; 0.51 &amp; 0.51 &amp; 0.51 &amp; 0.54 &amp; 0.54 &amp; 0.56 &amp; 0.58 &amp; 0.59 &amp; 0.58 &amp; 0.59 &amp; 0.61 &amp; 0.63 &amp; 0.64 &amp; 0.63 &amp; 0.65 &amp; 0.66 &amp; 0.66 &amp; 0.71 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 0.54 &amp; 0.53 &amp; 0.51 &amp; 0.52 &amp; 0.51 &amp; 0.54 &amp; 0.55 &amp; 0.56 &amp; 0.58 &amp; 0.59 &amp; 0.59 &amp; 0.59 &amp; 0.61 &amp; 0.63 &amp; 0.64 &amp; 0.63 &amp; 0.65 &amp; 0.66 &amp; 0.66 &amp; 0.71 &amp;  \\ </span></span>
 <span><span class="co">#&gt;   SSDiD Bias &amp; 0.01 &amp; 0.02 &amp; 0.02 &amp; 0.02 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.11 &amp; 0.12 &amp; 0.14 &amp; 0.16 &amp; 0.16 &amp; 0.17 &amp; 0.18 &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD Bias &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp; 0.11 &amp; 0.13 &amp; 0.14 &amp; 0.15 &amp; 0.16 &amp; 0.18 &amp; 0.21 &amp; 0.23 &amp; 0.26 &amp; 0.28 &amp; 0.29 &amp; 0.31 &amp; 0.32 &amp;  \\ </span></span>
 <span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; 0.17 &amp; 0.24 &amp; 0.24 &amp; 0.30 &amp; 0.32 &amp; 0.36 &amp; 0.38 &amp; 0.40 &amp; 0.44 &amp; 0.43 &amp; 0.44 &amp; 0.46 &amp; 0.48 &amp; 0.52 &amp; 0.53 &amp; 0.54 &amp; 0.57 &amp; 0.56 &amp; 0.55 &amp; 0.56 &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD Bias/SD &amp; 0.31 &amp; 0.46 &amp; 0.52 &amp; 0.66 &amp; 0.77 &amp; 0.84 &amp; 0.92 &amp; 0.97 &amp; 1.08 &amp; 1.05 &amp; 1.11 &amp; 1.15 &amp; 1.22 &amp; 1.36 &amp; 1.46 &amp; 1.64 &amp; 1.70 &amp; 1.57 &amp; 1.41 &amp; 1.23 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD Bias/SD &amp; 0.31 &amp; 0.46 &amp; 0.52 &amp; 0.66 &amp; 0.77 &amp; 0.84 &amp; 0.92 &amp; 0.96 &amp; 1.08 &amp; 1.04 &amp; 1.11 &amp; 1.15 &amp; 1.21 &amp; 1.35 &amp; 1.45 &amp; 1.63 &amp; 1.69 &amp; 1.56 &amp; 1.41 &amp; 1.22 &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD Bias/SD &amp; 2.56 &amp; 2.94 &amp; 3.30 &amp; 3.56 &amp; 3.89 &amp; 4.03 &amp; 4.04 &amp; 4.19 &amp; 4.64 &amp; 4.84 &amp; 4.98 &amp; 5.10 &amp; 5.36 &amp; 5.58 &amp; 5.90 &amp; 6.02 &amp; 6.27 &amp; 5.97 &amp; 5.58 &amp; 4.72 &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; 0.12 &amp; 0.16 &amp; 0.16 &amp; 0.19 &amp; 0.20 &amp; 0.21 &amp; 0.23 &amp; 0.23 &amp; 0.23 &amp; 0.22 &amp; 0.22 &amp; 0.23 &amp; 0.23 &amp; 0.24 &amp; 0.25 &amp; 0.27 &amp; 0.27 &amp; 0.26 &amp; 0.25 &amp; 0.26 &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; 0.12 &amp; 0.16 &amp; 0.16 &amp; 0.19 &amp; 0.20 &amp; 0.21 &amp; 0.23 &amp; 0.23 &amp; 0.23 &amp; 0.22 &amp; 0.22 &amp; 0.22 &amp; 0.23 &amp; 0.24 &amp; 0.25 &amp; 0.27 &amp; 0.27 &amp; 0.26 &amp; 0.25 &amp; 0.26 &amp;  \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{RMSE and Bias table, CPS} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span>
-<span><span class="co">#&gt; [1] "\n\n"</span></span>
-<span><span class="co">#&gt; [1] ""</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Wed Aug 20 02:26:36 2025</span></span>
+<span><span class="co">#&gt; % Thu Oct 23 22:45:52 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
 <span><span class="co">#&gt;   \hline</span></span>
-<span><span class="co">#&gt; SSDiD &amp; 0.91 &amp; 0.88 &amp; 0.86 &amp; 0.83 &amp; 0.80 &amp; 0.72 &amp; 0.71 &amp; 0.72 &amp; 0.66 &amp; 0.65 &amp; 0.64 &amp; 0.61 &amp; 0.58 &amp; 0.53 &amp; 0.48 &amp; 0.45 &amp; 0.39 &amp; 0.43 &amp; 0.47 &amp; 0.46 &amp;  \\ </span></span>
+<span><span class="co">#&gt; SSDiD &amp; 0.90 &amp; 0.87 &amp; 0.85 &amp; 0.81 &amp; 0.79 &amp; 0.70 &amp; 0.70 &amp; 0.70 &amp; 0.65 &amp; 0.63 &amp; 0.63 &amp; 0.60 &amp; 0.57 &amp; 0.52 &amp; 0.47 &amp; 0.45 &amp; 0.38 &amp; 0.42 &amp; 0.46 &amp; 0.46 &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD &amp; 0.29 &amp; 0.20 &amp; 0.15 &amp; 0.09 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.04 &amp; 0.03 &amp; 0.02 &amp; 0.01 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.01 &amp;  \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
@@ -231,8 +261,11 @@ interactive-effects model</p>
 <p><img src="CPS_files/figure-html/unnamed-chunk-9-1.png" width="100%" height="100%"></p>
 <pre><code><span><span class="co">#&gt; agg_png </span></span>
 <span><span class="co">#&gt;       2</span></span></code></pre>
-<p>The treatment assignment is random (first principal component is
-permuted).</p>
+</div>
+<div class="section level3">
+<h3 id="the-treatment-assignment-is-random-first-principal-component-is-permuted-">The treatment assignment is random (first principal component is
+permuted).<a class="anchor" aria-label="anchor" href="#the-treatment-assignment-is-random-first-principal-component-is-permuted-"></a>
+</h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max_treat_periods</span> <span class="op">&lt;-</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">sim_setup</span><span class="op">$</span><span class="va">a1</span> <span class="op">+</span> <span class="fl">1</span></span>
 <span><span class="va">tau_array_sdid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">max_treat_periods</span>, <span class="va">M</span><span class="op">)</span><span class="op">)</span></span>
@@ -276,7 +309,8 @@ permuted).</p>
 <span></span>
 <span>  <span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span></span>
 <span>    <span class="va">panel_avg</span>, <span class="st">"unit"</span>,</span>
-<span>    s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"sdid"</span>, <span class="va">aggregate_by_pop</span><span class="op">)</span></span>
+<span>    s2 <span class="op">=</span> <span class="va">s2</span>, <span class="st">"sdid"</span>,</span>
+<span>    aggregate_effect <span class="op">=</span> <span class="va">aggregate_inv_did_var</span><span class="op">)</span></span>
 <span>  <span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel_b</span>, <span class="fl">100</span><span class="op">)</span></span>
 <span>  <span class="va">max_lag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span></span>
 <span>  <span class="va">tau_array_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span>, <span class="va">m</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">max_lag</span><span class="op">]</span></span>
@@ -318,37 +352,37 @@ permuted).</p>
 <span>  <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Wed Aug 20 03:41:11 2025</span></span>
+<span><span class="co">#&gt; % Fri Oct 24 00:03:06 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
 <span><span class="co">#&gt;   \hline</span></span>
-<span><span class="co">#&gt; SSDiD RMSE &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.09 &amp; 0.11 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt; SSDiD RMSE &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp; 0.11 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD RMSE &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.03 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.04 &amp; 0.05 &amp; 0.05 &amp; 0.05 &amp; 0.06 &amp; 0.06 &amp; 0.07 &amp; 0.08 &amp; 0.09 &amp; 0.10 &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 1.13 &amp; 1.15 &amp; 1.14 &amp; 1.11 &amp; 1.11 &amp; 1.06 &amp; 1.11 &amp; 1.08 &amp; 1.10 &amp; 1.13 &amp; 1.16 &amp; 1.17 &amp; 1.17 &amp; 1.15 &amp; 1.18 &amp; 1.17 &amp; 1.11 &amp; 1.11 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD RMSE ratio &amp; 1.13 &amp; 1.16 &amp; 1.14 &amp; 1.12 &amp; 1.11 &amp; 1.07 &amp; 1.11 &amp; 1.08 &amp; 1.10 &amp; 1.13 &amp; 1.16 &amp; 1.18 &amp; 1.17 &amp; 1.15 &amp; 1.18 &amp; 1.17 &amp; 1.11 &amp; 1.11 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;   SSDiD Bias &amp; -0.00 &amp; 0.00 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD Bias &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; 0.00 &amp; -0.00 &amp; 0.00 &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; -5.94 &amp; 0.76 &amp; -0.17 &amp; -0.06 &amp; 0.04 &amp; -3.16 &amp; 0.95 &amp; 1.29 &amp; 1.54 &amp; 1.31 &amp; 1.04 &amp; 2.30 &amp; 0.13 &amp; 1.12 &amp; 6.95 &amp; 0.74 &amp; 3.35 &amp; 3.15 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias ratio &amp; -5.76 &amp; 0.76 &amp; -0.06 &amp; -0.06 &amp; 0.04 &amp; -3.24 &amp; 0.95 &amp; 1.31 &amp; 1.58 &amp; 1.32 &amp; 1.04 &amp; 2.36 &amp; 0.16 &amp; 1.13 &amp; 7.02 &amp; 0.78 &amp; 3.36 &amp; 3.16 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;   SSDiD Bias/SD &amp; -0.01 &amp; 0.04 &amp; -0.00 &amp; -0.00 &amp; 0.00 &amp; 0.02 &amp; 0.04 &amp; 0.05 &amp; 0.02 &amp; 0.05 &amp; 0.05 &amp; 0.03 &amp; 0.00 &amp; 0.02 &amp; 0.05 &amp; 0.01 &amp; -0.04 &amp; 0.02 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD Bias/SD &amp; 0.00 &amp; 0.06 &amp; 0.01 &amp; 0.04 &amp; 0.03 &amp; -0.01 &amp; 0.04 &amp; 0.04 &amp; 0.01 &amp; 0.04 &amp; 0.06 &amp; 0.01 &amp; 0.01 &amp; 0.02 &amp; 0.01 &amp; 0.01 &amp; -0.01 &amp; 0.01 &amp;  &amp;  &amp;  \\ </span></span>
-<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; -5.26 &amp; 0.66 &amp; -0.15 &amp; -0.05 &amp; 0.04 &amp; -2.98 &amp; 0.85 &amp; 1.20 &amp; 1.41 &amp; 1.16 &amp; 0.90 &amp; 1.96 &amp; 0.11 &amp; 0.98 &amp; 5.90 &amp; 0.64 &amp; 3.02 &amp; 2.84 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt;   SSDiD to DiD Bias/SD &amp; -5.08 &amp; 0.66 &amp; -0.05 &amp; -0.05 &amp; 0.04 &amp; -3.04 &amp; 0.86 &amp; 1.21 &amp; 1.44 &amp; 1.17 &amp; 0.90 &amp; 2.01 &amp; 0.14 &amp; 0.98 &amp; 5.94 &amp; 0.67 &amp; 3.01 &amp; 2.84 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
 <span><span class="co">#&gt; \caption{RMSE and Bias table, CPS} </span></span>
 <span><span class="co">#&gt; \end{table}</span></span>
-<span><span class="co">#&gt; [1] "\n\n"</span></span>
-<span><span class="co">#&gt; [1] ""</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; % latex table generated in R 4.5.1 by xtable 1.8-4 package</span></span>
-<span><span class="co">#&gt; % Wed Aug 20 03:41:11 2025</span></span>
+<span><span class="co">#&gt; % Fri Oct 24 00:03:06 2025</span></span>
 <span><span class="co">#&gt; \begin{table}[ht]</span></span>
 <span><span class="co">#&gt; \centering</span></span>
 <span><span class="co">#&gt; \begin{tabular}{rrrrrrrrrrrrrrrrrrrrrr}</span></span>
 <span><span class="co">#&gt;   \hline</span></span>
 <span><span class="co">#&gt;  &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 &amp; 12 &amp; 13 &amp; 14 &amp; 15 &amp; 16 &amp; 17 &amp; 18 &amp; 19 &amp; 20 \\ </span></span>
 <span><span class="co">#&gt;   \hline</span></span>
-<span><span class="co">#&gt; SSDiD &amp; 0.93 &amp; 0.91 &amp; 0.91 &amp; 0.91 &amp; 0.89 &amp; 0.89 &amp; 0.88 &amp; 0.89 &amp; 0.89 &amp; 0.87 &amp; 0.87 &amp; 0.87 &amp; 0.89 &amp; 0.88 &amp; 0.87 &amp; 0.86 &amp; 0.89 &amp; 0.84 &amp;  &amp;  &amp;  \\ </span></span>
+<span><span class="co">#&gt; SSDiD &amp; 0.92 &amp; 0.90 &amp; 0.90 &amp; 0.90 &amp; 0.88 &amp; 0.88 &amp; 0.87 &amp; 0.88 &amp; 0.88 &amp; 0.86 &amp; 0.86 &amp; 0.86 &amp; 0.88 &amp; 0.87 &amp; 0.86 &amp; 0.85 &amp; 0.88 &amp; 0.84 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;   DiD &amp; 0.89 &amp; 0.90 &amp; 0.89 &amp; 0.88 &amp; 0.88 &amp; 0.88 &amp; 0.88 &amp; 0.90 &amp; 0.88 &amp; 0.88 &amp; 0.88 &amp; 0.86 &amp; 0.85 &amp; 0.82 &amp; 0.83 &amp; 0.81 &amp; 0.80 &amp; 0.75 &amp;  &amp;  &amp;  \\ </span></span>
 <span><span class="co">#&gt;    \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
@@ -359,7 +393,9 @@ permuted).</p>
 <p><img src="CPS_files/figure-html/unnamed-chunk-14-1.png" width="100%" height="100%"></p>
 <pre><code><span><span class="co">#&gt; agg_png </span></span>
 <span><span class="co">#&gt;       2</span></span></code></pre>
-  </main>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

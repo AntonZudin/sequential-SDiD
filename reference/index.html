@@ -57,7 +57,7 @@
           <code><a href="estimation_unit.html">estimation_unit()</a></code>
 
         </dt>
-        <dd>Computes the <code>unit</code> level sequential synthetic diff-in-diff or diff-in-diff estimate.</dd>
+        <dd>#' Computes the <code>unit</code> level sequential synthetic diff-in-diff or diff-in-diff estimate.</dd>
       </dl><dl><dt>
 
           <code><a href="estimation_cohort.html">estimation_cohort()</a></code>
@@ -66,16 +66,22 @@
         <dd>Computes the <code>cohort</code> level sequential synthetic diff-in-diff or diff-in-diff estimate.</dd>
       </dl><dl><dt>
 
-          <code><a href="estimate_s2.html">estimate_s2()</a></code>
-
-        </dt>
-        <dd>Estimates the upper bound of the noise variance.</dd>
-      </dl><dl><dt>
-
           <code><a href="tau_sdid.html">tau_sdid()</a></code>
 
         </dt>
         <dd>Computes the base synthetic diff-in-diff or diff-in-diff estimate.</dd>
+      </dl><dl><dt>
+
+          <code><a href="base_estimator.html">base_estimator()</a></code>
+
+        </dt>
+        <dd>Computes the base synthetic diff-in-diff or diff-in-diff estimate.</dd>
+      </dl><dl><dt>
+
+          <code><a href="estimate_s2.html">estimate_s2()</a></code>
+
+        </dt>
+        <dd>Estimates the upper bound of the noise variance.</dd>
       </dl><dl><dt>
 
           <code><a href="vcov.sequential_estimate.html">vcov(<i>&lt;sequential_estimate&gt;</i>)</a></code>
@@ -185,7 +191,7 @@
           <code><a href="plot_chc_effect.html">plot_chc_effect()</a></code>
 
         </dt>
-        <dd>Plot Figure 1 with effect of CHC on mortality</dd>
+        <dd>Plot Figure 1 with effect of CHC on mortality.</dd>
       </dl><dl><dt>
 
           <code><a href="create_tables.html">create_tables()</a></code>
@@ -197,13 +203,13 @@
           <code><a href="plot_t_stat.html">plot_t_stat()</a></code>
 
         </dt>
-        <dd>Generate t-statistic plot that compares the emperical t-statistic distribution with the standard normal distribution. There is should be no treatment effect since the matrix completion was used on the untreated part of our dataset.</dd>
+        <dd>Generate t-statistic plot that compares the emperical t-statistic distribution with the standard normal distribution.</dd>
       </dl><dl><dt>
 
           <code><a href="plot_cohorts.html">plot_cohorts()</a></code>
 
         </dt>
-        <dd>Plot the empirical CDF of simuated adoption dates</dd>
+        <dd>Plot the empirical CDF of simuated adoption dates.</dd>
       </dl></div><div class="section level2">
       <h2 id="aggregation-functions">Aggregation functions<a class="anchor" aria-label="anchor" href="#aggregation-functions"></a></h2>
 
@@ -217,7 +223,7 @@
 
       <dl><dt>
 
-          <code><a href="aggregate_by_pop.html">aggregate_by_pop()</a></code>
+          <code><a href="aggregate_by_weight.html">aggregate_by_weight()</a></code>
 
         </dt>
         <dd>Weight the estimated effect by cohort weight (population).</dd>
@@ -227,6 +233,12 @@
 
         </dt>
         <dd>Weight the estimated effect inversely proportional to DiD variance. DiD variance is used instead of SSDiD variance to eliminate potential overfitting.</dd>
+      </dl><dl><dt>
+
+          <code><a href="aggregate_inv_var.html">aggregate_inv_var()</a></code>
+
+        </dt>
+        <dd>Weight the estimated effect inversely proportional to asymptotic variance.</dd>
       </dl></div><div class="section level2">
       <h2 id="auxiliary-functions">Auxiliary functions<a class="anchor" aria-label="anchor" href="#auxiliary-functions"></a></h2>
 
@@ -243,7 +255,7 @@
           <code><a href="decompose_Y.html">decompose_Y()</a></code>
 
         </dt>
-        <dd>Decompose Y into components F, M, and E. also computes a set of 'unit factors': the first <a href="https://rdrr.io/r/base/rank.html" class="external-link">rank</a> left singular vectors from SVD(Y)</dd>
+        <dd>Decompose Y into components F, M, and E. Also computes a set of 'unit factors': the first <a href="https://rdrr.io/r/base/rank.html" class="external-link">rank</a> left singular vectors from SVD(Y).</dd>
       </dl><dl><dt>
 
           <code><a href="svd_compact.html">svd_compact()</a></code>
@@ -255,7 +267,7 @@
           <code><a href="fit_ar2.html">fit_ar2()</a></code>
 
         </dt>
-        <dd>Estimate ar2 coefficients from iid time series</dd>
+        <dd>Estimate ar2 coefficients from iid time series.</dd>
       </dl><dl><dt>
 
           <code><a href="ar2_correlation_matrix.html">ar2_correlation_matrix()</a></code>
@@ -279,7 +291,7 @@
           <code><a href="plot.sequential_estimate.html">plot(<i>&lt;sequential_estimate&gt;</i>)</a></code>
 
         </dt>
-        <dd>Plot average estimated effect.</dd>
+        <dd>Plot estimated treatment effect by lag.</dd>
       </dl><dl><dt>
 
           <code><a href="est_names.html">est_names</a></code>
@@ -300,10 +312,10 @@
         <dd>Take the last column of a dataframe or matrix.</dd>
       </dl><dl><dt>
 
-          <code><a href="penalty.html">penalty()</a></code>
+          <code><a href="default_penalty.html">default_penalty()</a></code>
 
         </dt>
-        <dd>Penalty for SSDiD</dd>
+        <dd>Default regularization function for SSDiD.</dd>
       </dl><dl><dt>
 
           <code><a href="remove_adopt_date.html">remove_adopt_date()</a></code>

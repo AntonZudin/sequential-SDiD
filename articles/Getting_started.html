@@ -64,9 +64,6 @@
 
     
     
-<div class="section level2">
-<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://antonzudin.github.io/sequential-SDiD/">seq.sdid</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">CHC</span><span class="op">)</span></span>
@@ -105,7 +102,7 @@ remains the same.</li>
 <code class="sourceCode R"><span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_wide.html">to_wide</a></span><span class="op">(</span><span class="va">CHC</span>,</span>
 <span>  unit <span class="op">=</span> <span class="fl">1</span>, time <span class="op">=</span> <span class="fl">3</span>, outcome <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  treatment <span class="op">=</span> <span class="fl">4</span>, contr_covs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>, treat_covs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  population <span class="op">=</span> <span class="fl">6</span></span>
+<span>  weight <span class="op">=</span> <span class="fl">6</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">panel</span><span class="op">$</span><span class="va">X</span><span class="op">$</span><span class="va">popwt</span> <span class="op">&lt;-</span> <span class="va">panel</span><span class="op">$</span><span class="va">X</span><span class="op">$</span><span class="va">popwt</span> <span class="op">/</span> <span class="fl">10000</span></span>
@@ -118,34 +115,73 @@ determining the regularization parameter:
 To get upper bound of <code>s^2</code>, time and unit fixed effects are
 estimated on the untreated observations. Then <code>s^2</code> is
 computed as residual sum of squares divided by the degrees of freedom.
-If the weights are passed, WLS is estimated rather then OLS.<br>
-</li>
-<li>Estimate the average treatment effect.</li>
+If the weights are passed, WLS is estimated rather then OLS.</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_s2.html">estimate_s2</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">Y</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">panel</span><span class="op">$</span><span class="va">W</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">panel</span><span class="op">$</span><span class="va">X</span><span class="op">$</span><span class="va">popwt</span><span class="op">)</span></span></code></pre></div>
+<p>You can change default cohort weights (sum of weights of units in the
+cohort). To weight the estimated effects by the provided weights, you
+need to set aggregate_by_weight function for aggregate_effect
+parameter.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">panel_avg</span><span class="op">$</span><span class="va">coh_weights</span></span></code></pre></div>
+<pre><code><span><span class="co">##  [1] 1504.1080  766.4536 2326.6195 2192.5936  726.5843 1060.1646  166.9377</span></span>
+<span><span class="co">##  [8] 2041.4321  240.5665  296.1709   43.9506  347.0123   75.3100  641.3449</span></span>
+<span><span class="co">## [15]  333.2621  592.1347  313.2747  477.2299 1627.6912  128.5216</span></span></code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Estimate the treatment effect.</li>
+</ol>
+<p>You can specify your own function for <code>aggregate_effect</code>
+and <code>penalty_func</code> functions. - The first function specifies
+how the aggregation of estimated effects will be conducted. For should
+take the following parameters: tau, var, W, coh_weights, N0, N.</p>
+<ul>
+<li>The second function computes regularization parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>η</mi><annotation encoding="application/x-tex">\eta</annotation></semantics></math>.
+If you have any prior domain knowledge on this parameter, you can create
+your own function for that. This function should have <code>s2</code>
+and <code>N</code> as arguments.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span></span>
+<span>  <span class="va">panel_avg</span>,</span>
+<span>  s2 <span class="op">=</span> <span class="va">s2</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"both"</span>,</span>
+<span>  aggregate_effect <span class="op">=</span> <span class="va">aggregate_inv_did_var</span>,</span>
+<span>  penalty_func <span class="op">=</span> <span class="va">default_penalty</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">est</span>, n_lags <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Synthetic DiD:</span></span>
+<span><span class="co">## -4.76 -5.68 -6.57 -9.45 -13.25 -13.57 -16.13 -11.44 -13.09 -12.84 -11.88 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## DiD:</span></span>
+<span><span class="co">## -6.30 -7.88 -7.41 -9.41 -10.61 -11.58 -10.59 -10.30 -9.62 -10.06 -7.15 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## s2: 2728.60</span></span></code></pre>
+<ol start="3" style="list-style-type: decimal">
 <li>Conduct Bayesian bootstrap to obtain standard errors for the
 estimator.</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_s2.html">estimate_s2</a></span><span class="op">(</span><span class="va">panel</span><span class="op">$</span><span class="va">Y</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">panel</span><span class="op">$</span><span class="va">W</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">panel</span><span class="op">$</span><span class="va">X</span><span class="op">$</span><span class="va">popwt</span><span class="op">)</span></span>
-<span><span class="va">est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sequential_estimator.html">sequential_estimator</a></span><span class="op">(</span></span>
-<span>  <span class="va">panel_avg</span>,</span>
-<span>  s2 <span class="op">=</span> <span class="va">s2</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"sdid"</span><span class="op">)</span></span>
-<span><span class="va">est</span></span></code></pre></div>
-<pre><code><span><span class="co">## Synthetic DiD:</span></span>
-<span><span class="co">## -4.74 -5.68 -6.56 -9.44 -13.22 -13.56 -16.10 -11.43 -13.07 -12.85 -11.87 -13.72 -12.59 -10.72 -12.35 -15.61 -14.19 -12.45 -9.56 -12.38 -0.60 -2.39 -75.64 -64.37 </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## s2: 2728.60</span></span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel</span><span class="op">)</span></span>
-<span><span class="va">se</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1]  3.442402  3.517237  4.417285  4.447733  5.227896  5.278684  5.962290</span></span>
-<span><span class="co">##  [8]  6.283429  6.569504  7.342846  6.974452  9.543372  9.972621 10.263685</span></span>
-<span><span class="co">## [15] 10.968570 11.736318 11.854961 12.786417 14.031863 15.222889 14.862728</span></span>
-<span><span class="co">## [22] 16.469635 48.961334 54.116311</span></span></code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">se</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Getting_started_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-</div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">panel</span>, B <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"St. error of SDiD estimator:"</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## St. error of SDiD estimator:</span></span></code></pre>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%1.2f"</span>, <span class="va">se</span><span class="op">$</span><span class="va">se_sdid</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">11</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n\n"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## 3.46 3.53 4.44 4.47 5.26 5.31 6.00 6.32 6.60 7.38 7.00</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"St. error of DiD estimator:"</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## St. error of DiD estimator:</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%1.2f"</span>, <span class="va">se</span><span class="op">$</span><span class="va">se_did</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">11</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## 2.37 2.60 2.71 2.62 2.83 2.77 3.15 3.02 3.18 3.61 3.63</span></span></code></pre>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">est</span>, <span class="va">se</span>, <span class="fl">11</span>,</span>
+<span>  error_bar_width <span class="op">=</span> <span class="fl">0.4</span>, xlab <span class="op">=</span> <span class="st">"Lags"</span>,</span>
+<span>  legend_position <span class="op">=</span> <span class="st">"right"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_started_files/figure-html/unnamed-chunk-6-1.png" width="100%" height="100%"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -5,10 +5,9 @@ articles:
   CA_prop99: CA_prop99.html
   CHC: CHC.html
   CPS: CPS.html
-  did_imputation: did_imputation.html
   Getting_started: Getting_started.html
   Preprocessing_CHC: Preprocessing_CHC.html
-last_built: 2025-08-19T22:34Z
+last_built: 2025-10-23T18:44Z
 urls:
   reference: https://antonzudin.github.io/sequential-SDiD/reference
   article: https://antonzudin.github.io/sequential-SDiD/articles
