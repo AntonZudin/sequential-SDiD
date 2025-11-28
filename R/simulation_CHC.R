@@ -69,7 +69,6 @@ simulate_dgp_chc <- function(params) {
   Y_sim <- params$L
   eps_sim <- mvtnorm::rmvnorm(n = N, mean = rep(0, T),
                               sigma = diag(sigma_2, nrow = T))
-  # TODO Why does numbers for rownames work?
   {Y_sim[,names(Y_sim) %in% c(1959:1988)] <-
     Y_sim[,names(Y_sim) %in% c(1959:1988)] + eps_sim}
   list(Y = Y_sim)

@@ -19,11 +19,10 @@ vec_paste0 <- function(base_string, len) {
 
 # FIXME: There is an issue that the aggregate_Y sorts the data by `adopt_date` in the increasing order,
 #       so the correctness of the output depends on the right format of `adopt_date` column.
-# TODO: Add sorting by colSums(W), so the unit order is correct
 
 #' Aggregate dataframe on adoption_date and covariates.
 #' @description
-#' `NB`:  Dataframe Y should presorted in non increasing order by `adopt_date`.
+#' `NB`:  Dataframe Y should be presorted in non increasing order by `adopt_date`.
 #' @param Y         Dataframe. The dataframe should contain 'adopt_date', 'popwt', covariate and time columns with outcomes.
 #' @param covs      Character vector. The covariate columns to be used in aggregation.
 #' @param time_cols Character vector. The time columns of Y dataframe with outcomes.
@@ -78,13 +77,12 @@ svd_compact <- function(A) {
   res
 }
 
-# TODO: Write that we specify covariates by passing the arguments
 # TODO: Write that if you want to avoid utilizing to_wide function,
 #       then you need to have "contr_cov_" and "treat_cov_"
-# TODO: ?Sort unsorted dataframe, so that later treated units are later
+# TODO: Sort unsorted dataframe, so that later treated units are later
 
 
-#' Converts a data set into wide panels.
+#' Converts a dataframe into wide panels.
 #'
 #' @param panel       Dataframe. The dataframe is utilized to
 #' @param unit        Numeric or character. The column number or index that corresponds to the unit identifier.
@@ -95,6 +93,7 @@ svd_compact <- function(A) {
 #' @param contr_covs  Numeric or character vector. If the length of the vector is not 0, the vector coresponds to the covariates for control (never-treated) units.
 #' @param treat_covs  Numeric or character vector. If the length of the vector is not 0, the vector coresponds to the covariates for ever treated units.
 #' @param never_treat Character. The time index that indicates never-treated units.
+#' @param sort
 #' @return `panel`    List. The list contains:
 #'   - `Y`:  Dataframe. This is a wide panel dataframe of outcomes with adoption date column being the first one.
 #'   - `W`:  Dataframe. This is a wide panel dataframe of treatment indicators with adoption date column being the first one.
@@ -176,7 +175,7 @@ to_wide <- function(
   num.years <- length(unique(panel[, time]))
   num.units <- length(unique(panel[, unit]))
 
-  ##unit level
+  ## unit level
   Y <- matrix(panel[, outcome], num.units, num.years, byrow = TRUE,
               dimnames = list(unique(panel[, unit]), unique(panel[, time])))
   W <- matrix(panel[, treatment], num.units, num.years, byrow = TRUE,
@@ -221,7 +220,6 @@ to_wide <- function(
 }
 
 
-# TODO: Check when Y and W can be a matrix
 #' Aggregate panel to `cohort` level or prepare for the `unit` level.
 #' @description
 #' The function prepares the data for sequential_estimator.

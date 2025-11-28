@@ -17,7 +17,7 @@ test_that("All essential elements are present", {
     panel_long,
     unit = "unit", time = "time",
     outcome = 1, treatment = 4,
-    population = 5,
+    weights = 5,
     contr_covs = "contr_cov_1",
     treat_covs = c("treat_cov_1"),
     sort = TRUE)

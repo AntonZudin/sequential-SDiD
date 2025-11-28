@@ -98,7 +98,7 @@ test_that("From long to wide works fine with population, without covariates", {
     panel_long,
     unit = "unit", time = "time",
     outcome = 1, treatment = 4,
-    population = 5,
+    weights = 5,
     sort = TRUE)
 
   adopt_date <- c(rep("2500", 6), "7", "5", "5", "3")
@@ -164,7 +164,7 @@ test_that("From long to wide works fine with population, with covariates", {
     panel_long,
     unit = "unit", time = "time",
     outcome = 1, treatment = 4,
-    population = 5,
+    weights = "population",
     contr_covs = "contr_cov_1",
     treat_covs = c("treat_cov_1"),
     sort = TRUE)

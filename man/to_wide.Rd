@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare data.R
 \name{to_wide}
 \alias{to_wide}
-\title{Converts a data set into wide panels.}
+\title{Converts a dataframe into wide panels.}
 \usage{
 to_wide(
   panel,
@@ -45,5 +45,5 @@ to_wide(
 }
 }
 \description{
-Converts a data set into wide panels.
+Converts a dataframe into wide panels.
 }

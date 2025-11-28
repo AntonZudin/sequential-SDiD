@@ -12,7 +12,6 @@
 #' @param return_tau_b Bool. If TRUE, returns the bootstrap replications.
 #' @return             Numeric vector or List.
 #' @exportS3Method vcov sequential_estimate
-# TODO: Think what should I do with the name vcov while returning standard error
 vcov.sequential_estimate <- function(
   object,
   panel,
@@ -49,7 +48,6 @@ vcov.sequential_estimate <- function(
   N <- dim(panel$Y)[1]
   W_avg <- prepare_wide(panel, level = level)$W_avg
 
-  # TODO: Rename variables to make them more intuitive
   tau_lag_b <- array(dim = c(max(rowSums(W_avg[, -1])), B))
   if (both_est) tau_lag_b_2 <- array(dim = c(max(rowSums(W_avg[, -1])), B))
 
@@ -71,16 +69,16 @@ vcov.sequential_estimate <- function(
 
     panel_b_agg <- prepare_wide(panel_b, level, TRUE)
     panel_b_agg$W_avg <- W_avg
-    # TODO: Should panel be replaced with more explicit Y, W and coh_weights?
+
     estimate <- sequential_estimator(
       panel_avg = panel_b_agg,
-	  level = level,
-	  s2 = s2,
-	  type = type,
+	    level = level,
+	    s2 = s2,
+	    type = type,
       aggregate_effect = agg_func,
-	  penalty_func = penalty_func,
-	  compute_var = compute_var,
-	  fast_mat_inv = fast_mat_inv
+	    penalty_func = penalty_func,
+	    compute_var = compute_var,
+	    fast_mat_inv = fast_mat_inv
     )
     if (both_est) {
       tau_lag_b[, b] <- estimate[["tau_sdid"]]

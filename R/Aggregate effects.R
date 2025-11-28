@@ -39,7 +39,6 @@ aggregate_by_weight <- function(tau, var, W, coh_weights, N0, N) {
 #'
 #' @return `tau_lag`   Numeric vector. The lag aggregated treatment effect vector.
 #' @export
-# TODO: Should I use pi = share of popwt?
 aggregate_inv_did_var <- function(tau, var, W, coh_weights, N0, N) {
   tau_avg <- array(0, dim = max(rowSums(W)))
   counter <- array(0, dim = max(rowSums(W)))
@@ -69,7 +68,6 @@ aggregate_inv_did_var <- function(tau, var, W, coh_weights, N0, N) {
 #'
 #' @return `tau_lag`   Numeric vector. The lag aggregated treatment effect vector.
 #' @export
-# TODO: Should I use pi = share of popwt?
 aggregate_inv_var <- function(tau, var, W, coh_weights, N0, N) {
   tau_avg <- array(0, dim = max(rowSums(W)))
   counter <- array(0, dim = max(rowSums(W)))

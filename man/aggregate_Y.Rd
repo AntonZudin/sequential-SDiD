@@ -22,5 +22,5 @@ aggregate_Y(Y, covs, time_cols)
 }
 }
 \description{
-\code{NB}:  Dataframe Y should presorted in non increasing order by \code{adopt_date}.
+\code{NB}:  Dataframe Y should be presorted in non increasing order by \code{adopt_date}.
 }

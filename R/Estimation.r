@@ -155,7 +155,6 @@ estimation_cohort <- function(
   for (t in 1:ncol(W)) {
     for (j in (N0 + 1):nrow(W)) {
       if (W[j, t] == 1) {
-        # TODO: Decide how N should be calculated
         N <- sum(coh_weights[1:j])
         pen <- penalty_func(s2, N)
         tau_est <- base_estimator(
@@ -198,7 +197,6 @@ estimation_unit <- function(
   N0 = 1,
   fast_mat_inv = FALSE
 ) {
-  # TODO: Rename the variables to comprehend better their purpose
   if (!(type %in% c('did', 'sdid'))) {
 	stop("The 'type' argument should be either 'sdid' or 'did'")
   }
@@ -210,7 +208,8 @@ estimation_unit <- function(
   } else {
     var_hat <- NULL
   }
-  # TODO: Why s2 equals to -1.0
+  # s2 = -1.0 indicates NULL
+  # We use s2 in the base_estimator function
   if (is.null(s2)) s2 <- -1.0
 
   adopt_date <- T + 1 - rowSums(W)
@@ -232,7 +231,6 @@ estimation_unit <- function(
       size_tr_coh <- cohorts$n[[c]]
       for (j in 1:size_tr_coh) {
         idx <- c(cont_idx, j_c + j)
-        # TODO: Decide how N should be calculated
         N <- sum(coh_weights[idx])
         pen <- penalty_func(s2, N)
         tau_est <- base_estimator(
@@ -321,7 +319,6 @@ sequential_estimator <- function(
   N <- nrow(panel_avg$Y_avg)
   coh_weights <- panel_avg$coh_weights
 
-  # TODO: Check whether N0 calculation should be removed
   if (!is.null(panel_avg$N0)) {
     N0 <- panel_avg$N0
   } else {

@@ -272,7 +272,7 @@ test_that("cohort level from Y_wt with control covariate works fine", {
   )
 })
 
-test_that("cohort level from Y with X with contr and treat covs and non unit population works fine", {
+test_that("cohort level from Y with X with contr and treat covs and non unit weights (population) works fine", {
   adopt_date <- as.character(c(rep(2500, 5), rep(2014, 5), rep(2012, 10)))
   colnames <- as.character(2010:2019)
   Y <- matrix(1:200, nrow = 20, byrow = TRUE, dimnames = list(1:20, colnames))
@@ -323,7 +323,7 @@ test_that("cohort level from Y with X with contr and treat covs and non unit pop
   expect_equal(panel_avg$coh_weights, c(4, 6, 8, 4, 6))
 })
 
-test_that("cohort level from Y_wt with contr and treat covs and non unit population works fine", {
+test_that("cohort level from Y_wt with contr and treat covs and non unit weights (population) works fine", {
   adopt_date <- as.character(c(rep(2500, 5), rep(2014, 5), rep(2012, 10)))
   colnames <- as.character(2010:2019)
   Y <- matrix(1:200, nrow = 20, byrow = TRUE, dimnames = list(1:20, colnames))
